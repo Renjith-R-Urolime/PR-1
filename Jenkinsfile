@@ -4,7 +4,7 @@ pipeline {
     }
     environment {
         AWS_ACCOUNT_ID="016222040435"
-        AWS_DEFAULT_REGION="us-east-1"
+        AWS_DEFAULT_REGION="me-south-1"
         IMAGE_NAME="app-frontend"
         REPOSITORY_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_NAME}"
         BRANCH=getBranch()
