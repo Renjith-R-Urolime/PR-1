@@ -1,0 +1,46 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+  <div class="card h-100 p-6">
+    <div class=" card-body p-0 d-flex flex-column justify-content-between">
+      <div class="d-flex flex-row align-items-center justify-content-between">
+        <div>
+          <span class="text-dark fw-bolder fs-2x">{{ shortcutsCardData.title }}</span>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between px-3">
+        <div *ngFor="let shortcut of shortcutsCardData.shortcuts" class="text-center">
+            <div class="symbol symbol-44px mb-2 position-relative">
+              <img [src]="shortcut.iconSrc" alt="" />
+            </div>
+          <p class="fw-semibold text-wrap m-0">{{ shortcut.text }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<ng-template #skeleton>
+  <div class="card h-100 p-6">
+    <div class=" card-body p-0 d-flex flex-column justify-content-between">
+      <div class="d-flex flex-row align-items-center justify-content-between">
+        <div>
+          <span class="text-dark fw-bolder fs-2x">
+            <ngx-skeleton-loader [theme]="{
+              height: '2rem',
+              width: '14rem'
+            }"></ngx-skeleton-loader>
+          </span>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between px-3">
+        <div *ngFor="let shortcut of shortcutsCardData.shortcuts" class="text-center">
+          <a href="#" class="symbol symbol-44px mb-2">
+            <img [src]="shortcut.iconSrc" alt="" />
+          </a>
+          <p class="fw-semibold text-wrap m-0"><ngx-skeleton-loader [theme]="{
+            height: '1.5rem',
+            width: '8rem'
+          }"></ngx-skeleton-loader></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

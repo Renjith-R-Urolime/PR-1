@@ -1,0 +1,909 @@
+<app-page-title [isNewButton]="false" [isEditDeleteBtn]="false" [isGoBack]="false"></app-page-title>
+
+<!-- <h5>[Payroll Type: {{payrollType}}]</h5> -->
+<app-wizard-tabs [wizardData]="wizardData" (switchTab)="switchTab($event)"></app-wizard-tabs>
+<ng-container *ngIf=" currentStep === 1">
+    <div class="mt-5 d-flex flex-row justify-content-between bg-color rounded-1  border-{{theme}} p-3 px-7">
+        <div class="d-flex flex-column ">
+            <div class="text-gray-600">
+                Total Employees
+            </div>
+            <div class="fw-bolder text-dark">
+                {{employeeCount}}
+            </div>
+        </div>
+        <div class="d-flex flex-column ">
+            <div class="text-gray-600">
+                Employees not included
+            </div>
+            <div class="fw-bolder text-dark">
+                {{employeeNotIncludedCount}}
+            </div>
+        </div>
+        <div class="d-flex flex-column ">
+            <div class="text-gray-600">
+                Employees Selected
+            </div>
+            <div class="fw-bolder text-dark">
+                {{selectedEmployeeCount}}
+            </div>
+        </div>
+        <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+            <div class="d-flex flex-column ">
+                <div class="text-gray-600">
+                    Pay Period
+                </div>
+                <div class="fw-bolder text-dark">
+                    {{currentMonthName}} {{currentYear}}
+                </div>
+            </div>
+            <div class="d-flex flex-column ">
+                <div class="text-gray-600">
+                    Total Gross Amount
+                </div>
+                <div class="fw-bolder text-dark">
+                    {{ currency ? currency : 'AED' }} {{ totalGrossPay.toFixed(3) }}
+                </div>
+            </div>
+        </ng-container>
+
+    </div>
+    <ng-container>
+        <div class="card mt-5">
+            <div class="d-flex justify-content-between my-2 px-6 align-items-center">
+                <search-and-filter filterButton="false">
+                    <ng-template additional-options>
+                        <app-response-filter  [selectedItem]="selectedItem"
+                            [responseFilterMeta]="employeeFilterMeta" (onSubmit)="filteredData($event)"
+                            (onSelectedNames)="handleSelectedNames($event)"></app-response-filter>
+
+                    </ng-template>
+                </search-and-filter>
+                <div class="scroll-bar-hide d-flex gap-3 scrollll w-100 overflow-auto">
+                    <div *ngFor="let item of selectedItem" class="pill" [ngClass]="{'pill-required' : item?.required } ">
+                        {{ item?.label }}
+                        <ng-container *ngIf="!item?.required">
+                            <span
+                                class="svg-icon svg-icon-2 me-1"
+                                [inlineSVG]="'./assets/media/icons/close-circle-outline.svg'"
+                                (click)="unselectName(item?.id, item?.name)">
+                            </span>
+                        </ng-container>
+                    </div>
+                </div>
+
+
+                <button (click)="showExport = !showExport"
+                    class="align-items-center border d-flex gap-2 h-40px min-w-175px p-2 btn-{{theme}}">
+                    <span class="svg-icon svg-icon-2 me-1"
+                        [inlineSVG]="'./assets/media/icons/share-outline.svg'"></span>
+                    <span class="fs-4">Export As</span>
+                    <span class="svg-icon svg-icon-2 ms-2"
+                        [inlineSVG]="'./assets/media/icons/down-arrow-outline.svg'"></span>
+                </button>
+
+            </div>
+            <div *ngIf="showExport">
+                <ng-container *ngTemplateOutlet="exportDropDown"></ng-container>
+            </div>
+            <div class="card-body h-100 p-0" *ngIf="!isLoading ; else skeleton">
+                <div class="table-rounded-bottom-no-border overflow-scroll top-0 table-scroll-container">
+                    <ng-container *ngIf="payrollTableData[0].step === currentStep">
+                        <table class="table align-middle gs-0 gy-4 table-sticky mb-0">
+                            <thead>
+                                <tr class="fw-bolder text-muted mb-5 ">
+                                    <th class="bg-{{ theme }}-bright min-w-300px mb-5 z-index-2 ">
+                                        <div class="d-flex align-items-center">
+                                            <div
+                                                class="form-check form-check-sm form-check-custom my-3 form-check-solid form-check-color-{{theme}} ms-7">
+                                                <input class="form-check-input" type="checkbox"
+                                                [checked]="selectAllChecked" (change)="onSelectAll()">
+                                            </div>
+                                            <div>
+                                                <!-- Adjust the label text as needed -->
+                                                <label class="bg-{{ theme }}-bright text-dark fs-6 ps-2">{{
+                                                    payrollTableData[0].headers[0] }}</label>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <ng-container
+                                        *ngFor="let header of payrollTableData[0].headers.slice(1); let i = index">
+                                        <th class="bg-{{ theme }}-bright text-dark fs-6 ps-2 z-index-2 "
+                                            [ngClass]="{ 'text-end min-w-300px': i === 6, 'min-w-125px': i !== 6 }">
+                                            <div class="my-3">
+                                                {{ header }}
+                                            </div>
+                                        </th>
+                                    </ng-container>
+                                    <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                        <th class=" bg-{{ theme }}-bright w-75px mb-5">
+                                            <div (click)="onCollapseAll(1)" class=" my-3 me-3 ">
+                                                <span class="svg-icon svg-icon-2 "
+                                                    [inlineSVG]="isCollapsed1 ? './assets/media/icons/add-circle-outline.svg' :  './assets/media/icons/remove-circle-outline.svg'"></span>
+                                            </div>
+                                        </th>
+                                    </ng-container>
+
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let member of employeeList | matchFilter : filterText; ; let i = index"
+                                class=" overflow-auto">
+                                <tr>
+                                    <td>
+                                        <div
+                                            class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}} ms-7 my-2">
+                                            <input class="form-check-input widget-9-check" type="checkbox"
+                                                [checked]="member?.isChecked" (change)="onEmployeeSelect($event,i)" />
+                                            <span class="d-flex align-items-center ps-2 mt-n1 text-truncate">
+                                                {{ member?.employeeId ? member?.employeeId : 'EMP - '+member?.id }} {{ member?.fullName }}
+                                            </span>
+                                        </div>
+
+                                    </td>
+
+                                    <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                        <td>
+                                            <div class="d-flex justify-content-start flex-column mt-1">
+                                                {{ member?.daysToPay }}
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <td>
+                                        <div class="d-flex justify-content-start flex-column mt-1">
+                                            {{ member?.subsidiary?.name }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-start flex-column mt-1">
+                                            {{ member?.sponserSubsidiary?.name }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-start flex-column mt-1">
+                                            {{ member?.bankDetails?.[0]?.paymentMethod?.name }}
+                                        </div>
+                                    </td>
+                                    <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+
+                                        <td>
+                                            <div class="d-flex justify-content-start flex-column mt-1">
+                                                {{ member?.from }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex justify-content-start flex-column mt-1">
+                                                {{ member?.to }}
+                                            </div>
+                                        </td>
+                                        <td class="d-flex justify-content-end flex mt-1">
+                                            <div class="d-flex flex-column fw-bold">
+                                                <div>
+                                                    {{ (member?.totalSalary).toFixed(3) }}
+                                                </div>
+                                            </div>
+
+                                        </td>
+
+                                        <td>
+                                            <div class="mt-1">
+                                                <span class="svg-icon svg-icon-2 me-3 " (click)="toggleExpand(i,1)"
+                                                    [inlineSVG]="isExpanded1[i] ? './assets/media/icons/remove-circle-outline.svg' :  './assets/media/icons/add-circle-outline.svg'"></span>
+                                            </div>
+
+                                        </td>
+                                    </ng-container>
+
+                                </tr>
+                                <tr *ngIf="isExpanded1[i]" class="sub-table">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <ng-container *ngFor="let fixcmp of member.fixedComponents; let last = last">
+                                            <div class="d-flex flex-row justify-content-between mt-2">
+                                                <div class="text-start">
+                                                    {{ fixcmp?.name }}
+                                                </div>
+                                                <div class="text-end fw-bold">
+                                                    {{ (fixcmp?.amount).toFixed(3)}}
+                                                </div>
+                                            </div>
+                                            <hr *ngIf="!last" class="w-100 border-{{theme}} mt-1 mb-1">
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tr *ngIf="loading">
+                                <td colspan="6" class="text-center">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                            <tfoot>
+                                <tr class="bg-{{ theme }}-bright h-50px">
+                                    <td class="bg-{{ theme }}-bright text-start">
+                                        <div class="d-flex ms-10 fw-bold">
+                                            <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                                Total Amount ({{employeeList?.length}} Employees)
+                                            </ng-container>
+                                            <ng-container *ngIf="payrollType === 'one-time'">
+                                                Total Count
+                                            </ng-container>
+                                        </div>
+                                    </td>
+
+                                    <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                        <td class="bg-{{ theme }}-bright"></td>
+                                    </ng-container>
+                                    <td class="bg-{{ theme }}-bright"></td>
+                                    <td class="bg-{{ theme }}-bright"></td>
+                                    <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                        <td class="bg-{{ theme }}-bright"></td>
+                                        <td class="bg-{{ theme }}-bright"></td>
+                                        <td class="bg-{{ theme }}-bright"></td>
+                                    </ng-container>
+
+                                    <td class="bg-{{ theme }}-bright text-end">
+                                        <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                            <div class="d-flex flex-column fw-bold">
+                                                {{ currency ? currency : 'AED' }} {{step1Total.toFixed(3)}}
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="payrollType === 'one-time'">
+                                            <div class="d-flex flex-column fw-bold">
+                                                {{selectedEmployeeCount}} Employees
+                                            </div>
+                                        </ng-container>
+                                    </td>
+                                    <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                        <td class="bg-{{ theme }}-bright"></td>
+                                    </ng-container>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                        <!-- <div class="d-flex justify-content-between align-items-center bg-{{ theme }}-bright p-4 px-9">
+                            <div class="left-content">
+                                Total Amount ({{employeeList?.length}} Employees)
+                            </div>
+                            <div class="right-content">
+                                {{step1Total}}ooo
+                            </div>
+                        </div> -->
+                        <!-- <div class="app-container my-3">
+                            <div
+                                class="d-flex flex-stack flex-wrap p-md-1 px-md-6 flex-column flex-md-row border-top-1">
+                                <div
+                                    class="fs-7 fw-semibold text-gray-700 d-flex flex-row align-items-center flex-grow-1 me-4">
+                                    <div>Showing</div>
+                                    <select [(ngModel)]="pageSize" name="tickets-table_length"
+                                        aria-controls="tickets-table" (change)="onEntryChange()" name="pageSize"
+                                        class="border-1 form-control fs-7 mx-2 ng-valid p-0 px-2 rounded-1 w-fit">
+                                        <option [ngValue]="5">5</option>
+                                        <option [ngValue]="10">10</option>
+                                        <option [ngValue]="25">25</option>
+                                        <option [ngValue]="50">50</option>
+                                        <option [ngValue]="100">100</option>
+                                    </select>
+                                    <div>of {{ collectionSize }} entries</div>
+                                </div>
+                                <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                                    [maxSize]="3" (pageChange)="onPageChange($event)"
+                                    class="pagination-{{ theme }} fs-8">
+                                    <ng-template ngbPaginationPrevious>
+                                        <div
+                                            class="border border-1 pagination-control rounded-1 rounded-1 d-flex align-items-center justify-content-center">
+                                            <span class="svg-icon svg-icon-4 p-0"
+                                                [inlineSVG]="'./assets/media/icons/chevron-back-outline.svg'"></span>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template ngbPaginationNext>
+                                        <div
+                                            class="border pagination-control border-1 rounded-1 rounded-1 d-flex align-items-center justify-content-center">
+                                            <span class="svg-icon svg-icon-4 p-0"
+                                                [inlineSVG]="'./assets/media/icons/chevron-forward-outline.svg'"></span>
+                                        </div>
+                                    </ng-template>
+                                </ngb-pagination>
+                            </div>
+                        </div> -->
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</ng-container>
+<ng-container *ngIf="currentStep === 2">
+    <section class="button mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex gap-4">
+                    <ng-container *ngFor="let adCmp of additionalComponent;let k = index">
+                        <button (click)="onSelectAllComponent(k,adCmp.id)" class="btn btn-disabled rounded-100px"
+                            [ngClass]="isAdditionalComponentChecked[k] ? 'btn-'+theme : 'btn-'+theme+'-outline'">
+                            {{ adCmp.name }}</button>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="employee-list">
+        <div class="card mt-5">
+            <div class="d-flex justify-content-between my-2 px-6 align-items-center">
+                <search-and-filter filterButton="false"></search-and-filter>
+                <button (click)="showExport = !showExport"
+                    class="align-items-center border d-flex gap-2 h-40px p-2 btn-{{theme}}"><span
+                        class="svg-icon svg-icon-2 me-1"
+                        [inlineSVG]="'./assets/media/icons/share-outline.svg'"></span>Export As<span
+                        class="svg-icon svg-icon-2 ms-2"
+                        [inlineSVG]="'./assets/media/icons/down-arrow-outline.svg'"></span>
+                </button>
+            </div>
+            <div *ngIf="showExport">
+                <ng-container *ngTemplateOutlet="exportDropDown"></ng-container>
+            </div>
+
+            <div class="card-body  p-0">
+                <div class="table-rounded-bottom-no-border overflow-scroll top-0 table-scroll-container">
+                    <ng-container *ngIf="payrollTableData[1].step === currentStep">
+                        <table class="table align-middle gs-0 gy-4 table-sticky mb-0">
+                            <thead>
+                                <tr class="fw-bolder text-muted ">
+                                    <!-- <th class="w-25px ">
+                                        <div
+                                            class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}} mx-3">
+                                            <input class="form-check-input" type="checkbox" value="1"
+                                                data-kt-check="true" data-kt-check-target=".widget-9-check"
+                                                [(ngModel)]="selectAllChecked" (change)="onSelectAll()">
+                                        </div>
+                                    </th> -->
+                                    <ng-container *ngFor="let header of payrollTableData[1].headers; let i = index">
+                                        <th class="bg-{{ theme }}-bright min-w-100px text-dark fs-6 ps-2 z-index-2"
+                                            [ngClass]="{'ps-10': i !== 5 && i !== 6, 'text-end': i === 6}">
+                                            <div class="my-3">
+                                                {{ header }}
+                                            </div>
+                                        </th>
+
+
+                                    </ng-container>
+
+                                    <th class="bg-{{ theme }}-bright w-75px mb-5 ">
+                                        <div (click)="onCollapseAll(2)" class=" my-3 me-3 ">
+                                            <span class="svg-icon svg-icon-2 "
+                                                [inlineSVG]="isCollapsed2 ? './assets/media/icons/add-circle-outline.svg' :  './assets/media/icons/remove-circle-outline.svg'"></span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr class="bg-{{ theme }}-bright h-50px">
+                                    <td class="text-start bg-{{ theme }}-bright">
+                                        <div class="d-flex ms-10 fw-bold">
+                                            Total Amount ({{selectedEmployees?.length}} Employees)
+                                        </div>
+                                    </td>
+                                    <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                        <td class="bg-{{ theme }}-bright"></td>
+                                    </ng-container>
+                                    <td class="bg-{{ theme }}-bright"></td>
+                                    <td class="bg-{{ theme }}-bright"></td>
+                                    <td class="bg-{{ theme }}-bright"></td>
+                                    <td class="bg-{{ theme }}-bright z-index-2"></td>
+                                    <td class="bg-{{ theme }}-bright text-end">
+                                        <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                            <div class="d-flex flex-column fw-bold">
+                                                {{totalSummary.toFixed(3)}}
+                                                <!-- {{ calculateSelectedAmount() | decimalFormat}} -->
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="payrollType === 'one-time'">
+                                            <div class="d-flex flex-column fw-bold">
+                                                {{totalSummary.toFixed(3)}}
+                                                <!-- {{ calculateSelectedAmount() | decimalFormat}} -->
+                                            </div>
+                                        </ng-container>
+                                    </td>
+                                    <td class="bg-{{ theme }}-bright"></td>
+                                </tr>
+                            </tfoot>
+                            <ng-container *ngIf="selectedEmployees.length === 0; else otherTemplate">
+                                <tr>
+                                    <td></td>
+                                    <td class=" fw-bold"> No employees selected !!!</td>
+                                    <!-- Add more properties as needed -->
+                                </tr>
+                            </ng-container>
+                            <ng-template #otherTemplate>
+                                <tbody *ngFor="let member of selectedEmployees; let j = index" class="overflow-auto ">
+
+
+
+
+
+
+                                    <tr>
+                                        <!-- <td>
+                                        <div
+                                            class="form-check form-check-color-{{theme}} form-check-sm form-check-custom form-check-solid mx-3">
+                                            <input class="form-check-input widget-9-check" type="checkbox"
+                                                [checked]="member.id" [value]="member.id" />
+                                        </div>
+                                    </td> -->
+                                        <td class="ps-10">
+                                            <div class="d-flex align-items-center mt-1">
+                                                <div class="d-flex justify-content-start flex-column">
+                                                    {{ member.employeeId ? member.employeeId : 'EMP - '+member.id }} {{
+                                                    member.fullName }}
+
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                            <td class="ps-10">
+                                                <div class="d-flex align-items-center mt-1">
+                                                    <div class="d-flex justify-content-start flex-column">
+                                                        {{ member.daysToPay }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+
+                                        <td class="ps-10">
+                                            <div class="d-flex align-items-center mt-1">
+                                                <div class="d-flex justify-content-start flex-column">
+                                                    {{ member?.subsidiary?.name }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="ps-10">
+                                            <div class="d-flex align-items-center mt-1">
+                                                <div class="d-flex justify-content-start flex-column">
+                                                    {{ member?.sponserSubsidiary?.name }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="ps-10">
+                                            <div class="d-flex align-items-center mt-1">
+                                                <div class="d-flex justify-content-start flex-column">
+                                                    {{ member?.bankDetails?.[0]?.paymentMethod?.name }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                            <td>
+                                                <ng-container *ngIf="!isExpanded2[j]">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center h-100 mt-1">
+                                                        <div class="symbol-group symbol-hover flex-nowrap">
+                                                            <div *ngFor="let comp of member.fixedComponents | slice:0:3; let k = index"
+                                                                class="symbol symbol-36px symbol-circle"
+                                                                data-bs-toggle="tooltip" [title]="comp?.name">
+                                                                <span
+                                                                    class="symbol-label border-white fw-medium bg-{{theme}}{{ k > 0 ? '-' +shades[k] : '' }}">{{
+                                                                    k < 2 ? comp?.name[0] :
+                                                                        member.fixedComponents?.length - 2 + '+'
+                                                                        }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container *ngIf="isExpanded2[j]">
+                                                    <div *ngFor="let component of member.fixedComponents">
+                                                        <!-- <label>class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}"  -->
+                                                        <!-- <input type="checkbox" class="form-check-input"
+                                                        [checked]="member.components.includes(component)"
+                                                        (change)="onComponentChange(member, component)"> -->
+                                                        {{ component?.name }}
+                                                        <!-- </label> -->
+                                                    </div>
+                                                    <div class="fw-bold ">
+                                                        Gross Salary
+                                                    </div>
+                                                    <!-- <div class="fw-bold ">
+                                                    Total Salary
+                                                </div> -->
+                                                    <!-- <div>Gross Salary</div> -->
+                                                </ng-container>
+                                            </td>
+
+                                            <td class="d-flex justify-content-end flex">
+                                                <div class="d-flex flex-column mt-1">
+                                                    <ng-container *ngIf="isExpanded2[j]">
+                                                        <div *ngFor="let salary of member.fixedComponents"
+                                                            class="text-end">
+                                                            {{ (salary?.amount).toFixed(3)}}
+                                                        </div>
+                                                        <div *ngIf="member.fixedComponents?.length > 0"
+                                                            class="fw-bold text-end">
+                                                            {{ (member?.totalSalary).toFixed(3) }}
+
+                                                        </div>
+                                                        <!-- <div class="fw-bold ">
+                                                        {{member?.totalSalary}}
+                                                    </div> -->
+                                                    </ng-container>
+                                                    <ng-container *ngIf="!isExpanded2[j]">
+                                                        <div *ngIf="member.fixedComponents?.length > 0"
+                                                            class="fw-bold mt-1">
+                                                            {{(member?.totalSalary).toFixed(3)}}
+                                                        </div>
+                                                    </ng-container>
+
+
+
+                                                </div>
+
+                                            </td>
+                                            <ng-container *ngIf="!isExpanded2[j]">
+                                                <td>
+                                                    <div class="mt-1">
+                                                        <span class="svg-icon svg-icon-2 me-3"
+                                                            (click)="toggleExpand(j,2)"
+                                                            [inlineSVG]="isExpanded2[j] ? './assets/media/icons/remove-circle-outline.svg' :  './assets/media/icons/add-circle-outline.svg'"></span>
+                                                    </div>
+
+                                                </td>
+                                            </ng-container>
+                                        </ng-container>
+                                        <ng-container *ngIf="payrollType === 'one-time'">
+
+                                            <ng-container *ngIf="!isExpanded2[j]">
+                                                <td class="ps-10">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center h-100 mt-1">
+                                                        <div class="symbol-group symbol-hover flex-nowrap">
+                                                            <div *ngFor="let comp of member?.additionalComponents?.earnings | slice:0:3; let k = index"
+                                                                class="symbol symbol-36px symbol-circle"
+                                                                data-bs-toggle="tooltip" [title]="comp?.name">
+                                                                <span
+                                                                    class="symbol-label border-white fw-medium bg-{{theme}}{{ k > 0 ? '-' +shades[k] : '' }}">{{
+                                                                    k < 2 ? comp?.name[0] :
+                                                                        member?.additionalComponents?.earnings?.length -
+                                                                        2 + '+' }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </ng-container>
+
+
+
+                                            <ng-container *ngIf="!isExpanded2[j]">
+                                                <td class="d-flex justify-content-end flex">
+                                                    <div class="d-flex flex-column mt-1">
+                                                        <div class="fw-bold mt-1">
+                                                            {{ (member?.additionalComponents?.earnings |
+                                                            sum:'amount').toFixed(3) }}
+                                                        </div>
+                                                    </div>
+
+                                                </td>
+                                            </ng-container>
+
+
+                                            <ng-container *ngIf="isExpanded2[j]">
+
+                                                <div class="fw-bold ">
+                                                    Addition:-
+                                                </div>
+                                            </ng-container>
+
+                                            <ng-container *ngIf="!isExpanded2[j]">
+                                                <td>
+                                                    <div class="mt-1">
+                                                        <span class="svg-icon svg-icon-2 me-3"
+                                                            (click)="toggleExpand(j,2)"
+                                                            [inlineSVG]="isExpanded2[j] ? './assets/media/icons/remove-circle-outline.svg' :  './assets/media/icons/add-circle-outline.svg'"></span>
+                                                    </div>
+
+                                                </td>
+                                            </ng-container>
+                                        </ng-container>
+                                    </tr>
+                                    <ng-container *ngIf="payrollType === 'regular' || payrollType === 'full-and-final'">
+                                        <tr class="line-row">
+                                            <td colspan="8">
+                                                <div class="custom-line-common"></div>
+
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="isExpanded2[j]">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <div *ngFor="let earningCmp of member?.additionalComponents?.earnings; let m = index"
+                                                    class="mb-1">
+                                                    <label
+                                                        class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+                                                        <input type="checkbox" class="form-check-input"
+                                                            [disabled]="!(earningCmp?.type?.id === '2' && (earningCmp?.subType?.id === '4' || earningCmp?.subType?.id === '6' || earningCmp?.subType?.id === '7' || earningCmp?.subType?.id === '8'))"
+                                                            [checked]="earningCmp.isChecked"
+                                                            (change)="onAdditionalSelect($event,'earning',j,m)">
+                                                        {{ earningCmp.name }}
+                                                    </label>
+
+                                                </div>
+                                                <div *ngFor="let cmp of member?.additionalComponents?.deductions; let n = index"
+                                                    class="mb-1">
+                                                    <label
+                                                        class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+                                                        <input type="checkbox" class="form-check-input"
+                                                            [disabled]="!(cmp?.type?.id === '2' && (cmp?.subType?.id === '4' || cmp?.subType?.id === '6' || cmp?.subType?.id === '7' || cmp?.subType?.id === '8'))"
+                                                            [checked]="cmp.isChecked"
+                                                            (change)="onAdditionalSelect($event,'deduction',j,n)">
+                                                        {{ cmp.name }}
+                                                    </label>
+
+                                                </div>
+                                                <div class="fw-bold fs-3">
+                                                    Net Salary
+                                                </div>
+
+                                            </td>
+                                            <td class="d-flex justify-content-end flex ">
+
+                                                <div class="d-flex flex-column gap-1">
+                                                    <ng-container
+                                                        *ngFor="let earningSal of member?.additionalComponents?.earnings">
+                                                        <div class="text-end text-success">
+                                                            {{ (earningSal.amount).toFixed(3) }}
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-container
+                                                        *ngFor="let sal of member?.additionalComponents?.deductions">
+                                                        <div class="text-end text-danger">
+                                                            {{ (sal.amount).toFixed(3) }}
+                                                        </div>
+                                                    </ng-container>
+
+                                                    <div class="fw-bold fs-3">
+                                                        {{(member?.employeeNet).toFixed(3)}}
+                                                        <!-- {{ calculateEmployeeNet(member) | decimalFormat}} -->
+                                                    </div>
+                                                </div>
+
+                                            </td>
+
+                                            <td>
+                                                <span class="svg-icon svg-icon-2 me-3" (click)="toggleExpand(j,2)"
+                                                    [inlineSVG]="isExpanded2[j] ? './assets/media/icons/remove-circle-outline.svg' :  './assets/media/icons/add-circle-outline.svg'"></span>
+                                            </td>
+                                        </tr>
+
+                                        <tr *ngIf="isExpanded2[j]" class="line-row">
+                                            <td colspan="8">
+                                                <div class="custom-line"></div>
+
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-container *ngIf="payrollType === 'one-time'">
+                                        <tr *ngIf="isExpanded2[j]">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <div *ngFor="let earningCmp of member?.additionalComponents?.earnings; let m = index"
+                                                    class="mb-1">
+                                                    <label
+                                                        class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+                                                        <input type="checkbox" class="form-check-input"
+                                                            [disabled]="!(earningCmp?.type?.id === '2' && (earningCmp?.subType?.id === '4' || earningCmp?.subType?.id === '6' || earningCmp?.subType?.id === '7' || earningCmp?.subType?.id === '8'))"
+                                                            [checked]="earningCmp.isChecked"
+                                                            (change)="onAdditionalSelect($event,'earning',j,m)">
+                                                        {{ earningCmp.name }}
+                                                    </label>
+
+                                                </div>
+                                                <div *ngFor="let cmp of member?.additionalComponents?.deductions; let n = index"
+                                                    class="mb-1">
+                                                    <label
+                                                        class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+                                                        <input type="checkbox" class="form-check-input"
+                                                            [disabled]="!(cmp?.type?.id === '2' && (cmp?.subType?.id === '4' || cmp?.subType?.id === '6' || cmp?.subType?.id === '7' || cmp?.subType?.id === '8'))"
+                                                            [checked]="cmp.isChecked"
+                                                            (change)="onAdditionalSelect($event,'deduction',j,n)">
+                                                        {{ cmp.name }}
+                                                    </label>
+
+                                                </div>
+
+                                            </td>
+                                            <td class="d-flex justify-content-end flex ">
+
+                                                <div class="d-flex flex-column gap-1">
+                                                    <ng-container
+                                                        *ngFor="let earningSal of member?.additionalComponents?.earnings">
+                                                        <div class="text-end text-success">
+                                                            {{ (earningSal.amount).toFixed(3) }}
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-container
+                                                        *ngFor="let sal of member?.additionalComponents?.deductions">
+                                                        <div class="text-end text-danger">
+                                                            {{ (sal.amount).toFixed(3) }}
+                                                        </div>
+                                                    </ng-container>
+
+
+                                                </div>
+
+                                            </td>
+
+                                            <td>
+                                                <span class="svg-icon svg-icon-2 me-3" (click)="toggleExpand(j,2)"
+                                                    [inlineSVG]="isExpanded2[j] ? './assets/media/icons/remove-circle-outline.svg' :  './assets/media/icons/add-circle-outline.svg'"></span>
+                                            </td>
+                                        </tr>
+
+                                        <tr *ngIf="isExpanded2[j]" class="line-row">
+                                            <td colspan="8">
+                                                <div class="custom-line"></div>
+
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+
+
+                                </tbody>
+                            </ng-template>
+                        </table>
+
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </section>
+</ng-container>
+
+<ng-container>
+    <div class="mt-3">
+        <app-progress-button [isProcessing]="isProcessing" [isDraftBtn]="true"
+            [submitBtnText]="currentStep === 1 ? 'Next' : 'Process Payroll'"
+            [cancelBtnText]="currentStep === 1 ? 'Cancel' : 'Back'" (submitEvent)="onSubmit()"
+            (cancelEvent)="onCancel()" [modal]="true" [isSubmitBtnDisabled]="selectedEmployees.length === 0 && currentStep === 2">
+        </app-progress-button>
+
+
+    </div>
+</ng-container>
+
+
+<ng-template #exportDropDown>
+    <div class="bg-white left-100 mt-2 position-absolute right-0 rounded shadow me-3 z-index-9" appOutsideClick
+        [filterToggle]="showExport" (toggleFilter)="showExport=!showExport">
+        <!-- dropdown -->
+        <!-- <div class="card p-4"> -->
+        <div class="card p-4">
+            <div class=" d-flex flex-column justify-content-start p-0 ">
+                <a class=" mt-2 text-dark text-hover-{{ theme }}" (click)="getExcelSheet('vertical')"
+                    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+                    XLSX Row-wise
+                </a>
+            </div>
+            <div class=" d-flex flex-column justify-content-start p-0 ">
+                <a class="text-dark mt-2 text-hover-{{ theme }}" (click)="getExcelSheet('horizontal')"
+                    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+                    XLSX Column-wise</a>
+            </div>
+        </div>
+        <!-- </div> -->
+    </div>
+</ng-template>
+
+
+
+<ng-template #filterTemplate>
+
+    <div *ngFor="let data of datas; let i = index">
+        <div class="accordion" [id]="'accordionExample' + i">
+            <div class="accordion-item">
+                <h2 class="accordion-header" [id]="'heading'+i">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        [attr.data-bs-target]="'#collapse'+i" aria-expanded="false" [attr.aria-controls]="'collapse'+i">
+                        {{data.label}}
+                    </button>
+                </h2>
+                <div [id]="'collapse'+i" class="accordion-collapse collapse" [attr.aria-labelledby]="'heading'+i"
+                    [attr.data-bs-parent]="'#accordionExample' + i">
+                    <div class="pt-2">
+                        <div class="d-flex justify-content-between align-items-center ps-5">
+                            <input (keydown)="onKeyDown($event)"
+                                class="form-control light select-search w-60 line-clamp-1 h-24px" type="text"
+                                placeholder="Search..." (input)="onSearch($event, i)" />
+
+                            <div class="d-flex align-items-center">
+                                <span class="me-2 text-gray-600">{{ data?.count || 0}} selected</span>
+                                <div class="separator"></div>
+                                <button class="btn btn-link ms-auto clear-button-style"
+                                    (click)="reset(i)">Clear</button>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-container" style="max-height: 150px; overflow-y: auto;">
+                            <div *ngFor="let item of data.data; let j = index" class="checkbox-item border-bottom">
+                                <div class="form-check form-check-color-{{theme}}">
+                                    <input [(ngModel)]="item.selected" class="form-check-input mt-2 mb-3"
+                                        type="checkbox" [disabled]="!data.multiple && atLeastOneSelected(data.data,j)"
+                                        (change)="onSelectChange($event,i,j,item)" [id]="name + j" />
+                                    <label class="form-label fs-6 mt-2 mb-1" [for]="name + j">
+                                        {{ item?.name | changeCase: 'capital' }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+
+</ng-template>
+
+
+<ng-template #skeleton>
+    <div class="p-0">
+        <div class="card-body p-0 border-bottom-4">
+            <div class="table-skeleton">
+                <!-- begin::Table -->
+                <table class="table standard align-middle table-striped">
+                    <thead>
+                        <tr>
+                            <th class="ps-5 pt-6 pb-2 bg-gray-400 z-index-9" *ngFor="let header of [0, 0, 0, 0, 0,0]">
+                                <div class="d-flex align-items-center h-100">
+                                    <ngx-skeleton-loader [theme]="{
+                        height: '1.1rem',
+                        width: '7rem',
+                        'margin-right': '0.5rem'
+                      }"></ngx-skeleton-loader>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of [0,0,0,0,0]">
+                            <td class="ps-5 bg-white">
+                                <div class="d-flex gap-5">
+                                    <a *ngFor="let row of [0]">
+                                        <ngx-skeleton-loader
+                                            [theme]="{ width: '1.2rem', height: '1.2rem' }"></ngx-skeleton-loader>
+                                    </a>
+                                </div>
+                            </td>
+                            <td *ngFor="let col of [0,0,0,0,0]">
+                                <a class="text-dark fw-medium text-hover-primary d-block fs-6">
+                                    <ngx-skeleton-loader
+                                        [theme]="{ width: '80%', height: '1em' }"></ngx-skeleton-loader>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="app-container">
+            <div class="d-flex flex-stack flex-wrap pb-0 px-3  flex-column flex-md-row  bg-gray-400 h-40px">
+                <div class="mt-1">
+                    <ngx-skeleton-loader [theme]="{ width: '18em', height: '1.6em' }"></ngx-skeleton-loader>
+                </div>
+                <!--begin::Pages-->
+                <ul class="pagination p-md-0 pt-4 gap-3 mt-1">
+                    <ngx-skeleton-loader [theme]="{ width: '12em', height: '1.6em' }"></ngx-skeleton-loader>
+
+                </ul>
+                <!--end::Pages-->
+            </div>
+        </div>
+    </div>
+</ng-template>

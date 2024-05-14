@@ -1,0 +1,29 @@
+/* Add this style to position the profile modal to the left when in fullscreen mode */
+.fullscreen-mode .position-absolute.right-0 {
+  right: calc(100vw - 100%);
+  top: 0;
+  bottom: 0;
+  margin: 1;
+}
+
+/* Adjust the z-index to ensure the profile modal is above other elements */
+.fullscreen-mode .z-index-6 {
+  z-index: 9999;
+}
+
+/* To center the profile modal in the viewport */
+.fullscreen-mode .align-items-center {
+  align-items: center;
+}
+
+/* To vertically center the close button */
+.fullscreen-mode .d-flex.p-1.rounded-circle {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Add this style to ensure the modal content stays within the viewport */
+.fullscreen-mode .bg-white {
+  max-height: calc(100vh - 200px); /* Adjust the value as needed */
+  overflow-y: auto;
+}

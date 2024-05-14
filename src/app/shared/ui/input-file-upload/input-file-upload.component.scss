@@ -1,0 +1,111 @@
+::ng-deep {
+    .filepond--credits {
+        display: none;
+    }
+}
+
+::ng-deep {
+
+    // [data-filepond-item-state=processing-complete]{
+    //     .filepond--file{
+    //         color: #fff!important;
+    //     }
+    //     .filepond--item-panel{
+    //         background-color: #33b26c!important;
+    //     }
+    // }
+    // [data-filepond-item-state*=invalid], [data-filepond-item-state*=error]{
+    //     .filepond--file{
+    //         color: #fff!important;
+    //     }
+    //     .filepond--item-panel{
+    //         background-color: #d05c56!important;
+    //     }
+    // }
+    .filepond--item:has(.filepond--pdf-preview-wrapper) {
+        height: 236px !important;
+
+        .filepond--pdf-preview-wrapper {
+            &:before {
+                height: 5rem !important;
+            }
+        }
+    }
+
+    .filepond--item[data-filepond-item-state="processing-complete"]:has(.filepond--pdf-preview-wrapper) {
+        .filepond--pdf-preview-wrapper {
+            &:before {
+                height: 5rem !important;
+                mix-blend-mode: normal !important;
+                background: linear-gradient(to bottom, #359763 0%, rgba(0, 0, 0, 0) 100%) !important;
+            }
+        }
+    }
+
+    .compact-light {
+        height: 36px;
+
+        .filepond--panel-root {
+            background-color: var(--gray-200);
+        }
+
+        .filepond--file {
+            cursor: pointer;
+            color: #171717;
+        }
+
+        .filepond--item-panel {
+            background-color: #eaeaea;
+        }
+
+        .filepond--list-scroller {
+            overflow: visible;
+            margin: 0 !important;
+            -webkit-mask: unset;
+            mask: unset;
+        }
+
+        .filepond--list {
+            position: static;
+        }
+
+        .filepond--item {
+            margin: 0;
+        }
+
+        .filepond--drop-label {
+            height: 100% !important;
+            min-height: 100% !important;
+
+            label {
+                font-size: 14px;
+            }
+        }
+
+        .filepond--pdf-preview-wrapper {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    }
+}
+
+.filepond--uploaded-files-wrapper {
+    background-color: #f1f0ef;
+    margin-top: -22px;
+    padding: 8px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .filepond--image-preview-wrapper[data-state="idle"] {
+        &:before {
+            content: " ";
+            position: absolute;
+            width: 100%;
+            height: 5rem !important;
+            z-index: 3;
+            background: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0) 100%);
+        }
+    }
+}

@@ -1,0 +1,12 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true" ></app-page-title>
+
+
+<ng-container *ngFor="let deatilsCard of detailsCardList ">
+    <details-card  [detailsCardData]="deatilsCard"></details-card>
+</ng-container>
+
+<!-- <trapezoid-tabs [tabs]="trapezoidTabs"></trapezoid-tabs> -->
+<div class="card top-left-border-none">
+     <search-and-filter [tableData]="tableData"></search-and-filter>
+    <data-table-list [tableData]="tableData"></data-table-list>
+</div>

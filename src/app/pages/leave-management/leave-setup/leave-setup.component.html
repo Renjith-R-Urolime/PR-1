@@ -1,0 +1,57 @@
+
+<app-page-title [isNewButton]="true"></app-page-title>
+<div class="card" [ngClass]="{ 'bg-transparent bs-none' : view==='card' }">
+  <div class="d-flex flex-row justify-content-between align-items-center">
+    <app-breadcrumb [breadcrumbs]="['List']"></app-breadcrumb>
+    <div>
+      <search-and-filter [view]="'card'" (viewSelected)="changeView($event)" [multipleViewOptions]="true"></search-and-filter>
+    </div>
+  </div>
+</div>
+<div *ngIf="view === 'card'" class="mt-1">
+  <app-card-view-list [cardMetaData]="cardJsonData">
+    <ng-template card-button-temp let-id="id" let-data="data">
+      <div class="bg-white shadow rounded-1 ">
+        <div class="d-flex flex-column">
+          <button (click)="openView('edit' , id)" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+            <span [inlineSVG]="'./assets/media/icons/create-outline.svg'" class="svg-icon svg-icon-3 "></span>
+            Edit
+          </button>
+          <button (click)="openView('add-leave-type' , id)" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+            <span [inlineSVG]="'./assets/media/icons/add-outline.svg'" class="svg-icon svg-icon-3 "></span>
+            Add Leave Type
+          </button>
+        </div>
+      </div>
+    </ng-template>
+      <ng-template card-footer-temp let-item="item$">
+        <div class="d-flex flex-column">
+    <ng-container *ngIf=" item.leaveTypes.length > 0; else noType">
+      <div class="d-flex gap-3 mt-3 align-items-center"
+        *ngFor="let type of item.leaveTypes | orderBy:'name':'alphabeticalOrder' | slice:0:4">
+        <span class="svg-icon svg-icon-2"
+          [ngClass]="{ 'svg-icon-success' : getValidStatus(type),'svg-icon-danger' : !getValidStatus(type) }"
+          [inlineSVG]="getValidStatus(type) ? './assets/media/icons/checkmark-circle-outline.svg' : './assets/media/icons/close-circle-outline.svg'"></span>
+        <p class="m-0 fw-medium fs-6">{{type['name']}}</p>
+      </div>
+      <div class="symbol-group symbol-hover flex-nowrap mt-3">
+        <div *ngFor="let type of item.leaveTypes | orderBy:'name':'alphabeticalOrder' | slice:4:7; let i = index"
+          class="symbol symbol-36px symbol-circle" data-bs-toggle="tooltip" [title]="type['name']">
+          <span class="symbol-label border-white fw-medium bg-{{theme}}{{ i > 0 ? '-' +shades[i] : '' }}">{{ i < 2
+              ? type['name'][0] : item.leaveTypes.length - 6 + '+' }}</span>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #noType>
+      <div class="d-flex gap-3 mt-3 align-items-center">
+        <span class="svg-icon svg-icon-2 svg-icon-danger"
+          [inlineSVG]="'./assets/media/icons/close-circle-outline.svg'"></span>
+        <p class="m-0 fw-medium fs-6 text-muted">No Leave Type</p>
+      </div>
+    </ng-template>
+  </div>
+      </ng-template>
+  </app-card-view-list>
+
+  <!-- <app-card-view-list></app-card-view-list> -->
+</div>

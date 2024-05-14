@@ -1,0 +1,160 @@
+<!-- <div class="my-4">
+  <p>PHONE NUMBER TEST</p>
+  <app-phone-number></app-phone-number>
+</div> -->
+<notification-alert
+  [notificationHeader]="'Employee Wellness Survey 2023'"
+  [notificationSubHeading]="'Open to view details about Employee Wellness begins on Monday, August 1st.'"
+  modalType="survey"
+  theme="purple"
+>
+</notification-alert>
+<!-- <notification-alert
+  [notificationHeader]="'Exciting News! The Infitha Launch is Here!'"
+  [notificationSubHeading]="'Discover our latest product, designed to enhance your HR and Payroll experience.'"
+  modalType="announcement"
+  theme="tangerine"
+>
+</notification-alert> -->
+<!-- <notification-alert
+  [notificationHeader]="'Run Rayroll Requested by Revathy'"
+  [notificationSubHeading]="'Salary Payroll is requested for the month of July 2023 for 110 employee'"
+  modalType="run-payroll"
+  theme="purple"
+>
+</notification-alert> -->
+<div class="row">
+  <div class="d-flex flex-row justify-content-between">
+    <h2 class="m-0 fs-2x">Dashboard</h2>
+    <button *ngIf="!isCustomizable" [routerLink]="['/dashboard']" [queryParams]="{ edit: true }" class="btn btn-dark">
+      <span class="svg-icon" [inlineSVG]="'./assets/media/icons/options-outline.svg'"></span>
+      Customize
+    </button>
+    <button *ngIf="isCustomizable" [routerLink]="['/dashboard']" class="btn btn-success">
+      <span class="svg-icon" [inlineSVG]="'./assets/media/icons/checkmark.svg'"></span>
+      Save
+    </button>
+  </div>
+</div>
+<!-- <div class="d-flex "> -->
+<div class="row mt-4">
+  <div class="col-md-4">
+    <h1 class="fs-2hx">
+      Welcome back,<br />
+      {{user.name}}.
+    </h1>
+    <p class="line-clam-4">
+      You have an interview scheduled today<br />
+      at 11:00 AM for the Developer role.
+    </p>
+  </div>
+  <div class="col-md-8 overflow-auto">
+    <app-scrollable-cards [metaData]="quickCardsMeta" [isLoading]="isLoading"></app-scrollable-cards>
+  </div>
+</div>
+<div class="mt-5">
+  <ng-container *ngIf="initializeLayout">
+    <ktd-grid [compactType]="compactType" [cols]="cols" [gap]="10" [rowHeight]="rowHeight" [layout]="widgetLayout" [compactOnPropsChange]="true"
+      (layoutUpdated)="onLayoutUpdated($event)">
+      <ktd-grid-item id="widget1" [draggable]="isEditable" [resizable]="isResizable">
+        <ng-container [ngTemplateOutletContext]="{ id: 'widget1' }" [ngTemplateOutlet]="editMenu"
+          *ngIf="isEditable"></ng-container>
+        <app-onboard-widget description="Total Onboarding" color="#F1416C"
+          img="./assets/media/patterns/vector-1.png"></app-onboard-widget>
+        <ng-template ktdGridItemPlaceholder>
+          <ng-container [ngTemplateOutlet]="card_placeholder"></ng-container>
+        </ng-template>
+      </ktd-grid-item>
+      <ktd-grid-item id="widget2" [draggable]="isEditable" [resizable]="isResizable">
+        <ng-container [ngTemplateOutletContext]="{ id: 'widget2' }" [ngTemplateOutlet]="editMenu"
+          *ngIf="isEditable"></ng-container>
+        <app-people-list-widget></app-people-list-widget>
+        <ng-template ktdGridItemPlaceholder>
+          <ng-container [ngTemplateOutlet]="card_placeholder"></ng-container>
+        </ng-template>
+      </ktd-grid-item>
+      <ktd-grid-item id="widget3" [draggable]="isEditable" [resizable]="isResizable">
+        <ng-container [ngTemplateOutletContext]="{ id: 'widget3' }" [ngTemplateOutlet]="editMenu"
+          *ngIf="isEditable"></ng-container>
+        <app-shortcuts-widget></app-shortcuts-widget>
+        <ng-template ktdGridItemPlaceholder>
+          <ng-container [ngTemplateOutlet]="card_placeholder"></ng-container>
+        </ng-template>
+      </ktd-grid-item>
+      <ktd-grid-item id="widget4" [draggable]="isEditable" [resizable]="isResizable">
+        <ng-container [ngTemplateOutletContext]="{ id: 'widget4' }" [ngTemplateOutlet]="editMenu"
+          *ngIf="isEditable"></ng-container>
+        <app-donut-chart-widget></app-donut-chart-widget>
+        <ng-template ktdGridItemPlaceholder>
+          <ng-container [ngTemplateOutlet]="card_placeholder"></ng-container>
+        </ng-template>
+      </ktd-grid-item>
+      <ktd-grid-item id="widget5" [draggable]="isEditable" [resizable]="isResizable">
+        <ng-container [ngTemplateOutletContext]="{ id: 'widget5' }" [ngTemplateOutlet]="editMenu"
+          *ngIf="isEditable"></ng-container>
+        <app-payroll-progress-widget description="Payroll Progress"
+          progress="357 Employees"></app-payroll-progress-widget>
+        <ng-template ktdGridItemPlaceholder>
+          <ng-container [ngTemplateOutlet]="card_placeholder"></ng-container>
+        </ng-template>
+      </ktd-grid-item>
+      <ktd-grid-item id="widget6" [draggable]="isEditable" [resizable]="isResizable">
+        <ng-container [ngTemplateOutletContext]="{ id: 'widget6' }" [ngTemplateOutlet]="editMenu"
+          *ngIf="isEditable"></ng-container>
+        <app-requests-widget></app-requests-widget>
+        <ng-template ktdGridItemPlaceholder>
+          <ng-container [ngTemplateOutlet]="card_placeholder"></ng-container>
+        </ng-template>
+      </ktd-grid-item>
+      <ktd-grid-item id="widget7" [draggable]="isEditable" [resizable]="isResizable">
+        <ng-container [ngTemplateOutletContext]="{ id: 'widget7' }" [ngTemplateOutlet]="editMenu"
+          *ngIf="isEditable"></ng-container>
+        <app-polls-widget></app-polls-widget>
+        <ng-template ktdGridItemPlaceholder>
+          <ng-container [ngTemplateOutlet]="card_placeholder"></ng-container>
+        </ng-template>
+      </ktd-grid-item>
+      <ktd-grid-item id="widget8" [draggable]="isEditable" [resizable]="isResizable">
+        <ng-container [ngTemplateOutletContext]="{ id: 'widget8' }" [ngTemplateOutlet]="editMenu"
+          *ngIf="isEditable"></ng-container>
+        <app-employee-finder-widget></app-employee-finder-widget>
+        <ng-template ktdGridItemPlaceholder>
+          <ng-container [ngTemplateOutlet]="card_placeholder"></ng-container>
+        </ng-template>
+      </ktd-grid-item>
+    </ktd-grid>
+  </ng-container>
+</div>
+<!-- <div class="card d-flex h-full justify-content-center h-100 align-items-center fs-5tx bg-purple">{{item.id}}</div> -->
+<ng-template #editMenu let-id="id">
+  <div class="d-flex left-0 p-2 position-absolute top-0 w-100 z-index-1">
+    <div class="align-items-center d-flex p-1 rounded-circle bg-white border-1 border-gray-300"
+      (click)="onDeleteWidget(id)">
+      <span class="svg-icon" [inlineSVG]="'./assets/media/icons/close-outline.svg'"></span>
+    </div>
+    <div class="border-1 border-gray-300 align-items-center d-flex p-1 rounded-circle bg-white ms-auto"
+      (click)="toggleMenu(id)">
+      <span class="svg-icon" [inlineSVG]="'./assets/media/icons/ellipsis-vertical.svg'"></span>
+    </div>
+  </div>
+  <div class="position-relative" *ngIf="toggleSizeMenu && toggleSizeMenuId === id" appOutsideClick [filterToggle]="toggleSizeMenu" (toggleFilter)="toggleMenu($event)">
+    <div class="align-items-center d-flex justify-content-center me-2 mt-10 position-absolute right-0 rounded-2 z-index-4">
+      <!-- new sort/pin view -->
+      <div class="bg-white d-flex gap-3 p-2 rounded-2 bs-dropdown">
+        <div class="rounded-1 bg-hover-dark align-items-center gap-2 d-flex text-dark p-2 "[ngClass]="{'active': checkSizeName('sm')}"  (click)="onSizeChange('sm')">
+          <p class="m-0">SM</p>
+        </div>
+        <div class=" rounded-1 bg-hover-dark align-items-center gap-2 d-flex text-dark p-2"
+        [ngClass]="{'active': checkSizeName('md')}" (click)="onSizeChange('md')">
+          <p class="m-0">MD</p>
+        </div>
+        <div class="rounded-1 bg-hover-dark align-items-center gap-2 d-flex text-dark p-2" [ngClass]="{'active': checkSizeName('lg')}"  (click)="onSizeChange('lg')">
+          <p class="m-0">LG</p>
+        </div>
+      </div>
+  </div>
+  </div>
+</ng-template>
+<ng-template #card_placeholder>
+  <div class="card d-flex h-full h-100 bg-gray-300 border-gray-500 border-3 border-dashed"></div>
+</ng-template>

@@ -1,0 +1,129 @@
+<ng-container *ngIf="isVisible">
+  <ng-container class="align-items-center" [ngSwitch]="type">
+    <ng-container *ngSwitchCase="'text'">
+      <input [maxlength]="maxLength" pattern="\d{2}" [(ngModel)]="inputValue" type="text"
+        class="form-control form-control-sm highlight-{{theme}}" [placeholder]="placeholder" [ngClass]="ngClass"
+        (input)="setValue($event)" [disabled]="isFieldDisabled"/>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'password'">
+      <input [(ngModel)]="inputValue" type="password" class="form-control form-control-sm highlight-{{theme}}"
+        [placeholder]="placeholder" [ngClass]="ngClass" (blur)="setValue($event)" />
+    </ng-container>
+
+   <!--  <ng-container *ngSwitchCase="'email'">
+      <input [(ngModel)]="inputValue" type="email" class="form-control form-control-sm highlight-{{theme}}"
+        [placeholder]="placeholder" [ngClass]="ngClass" (blur)="setValue($event)" />
+    </ng-container>
+ -->
+ <ng-container *ngSwitchCase="'email'">
+  <div class="input-group highlight-{{theme}}" [ngClass]="{ 'focus' : isFocused }" >
+    <input (focus)="onInputFocus()" [(ngModel)]="inputValue" type="email" class="form-control form-control-sm highlight-{{theme}}" [placeholder]="placeholder" [ngClass]="ngClass" (blur)="setValue($event)" />
+    <ng-container *ngIf="emailVerify">
+      <!--begin::Spinner-->
+      <span class="position-absolute top-50 end-0 translate-middle-y lh-0 me-5" data-kt-search-element="spinner">
+        <span class="spinner-border h-20px w-20px align-middle text-gray-400"></span>
+      </span>
+      <!--end::Spinner-->
+    </ng-container>
+  </div>
+</ng-container>
+    <ng-container *ngSwitchCase="'number'">
+      <input (focus)="onInputFocus()" [disabled]="isFieldDisabled" [(ngModel)]="inputValue" type="number" [max]="max" [min]="min"
+        (keydown)="onKeyDown($event)" (input)="onInput($event)" class="form-control form-control-sm highlight-{{theme}}"
+        [placeholder]="placeholder" [ngClass]="ngClass" (blur)="setValue($event)"  />
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'decimal'">
+      <input (focus)="onInputFocus()" [disabled]="isFieldDisabled" [(ngModel)]="inputValue" type="number" [max]="max"
+        (keydown)="onKeyDown($event)" class="form-control form-control-sm highlight-{{theme}}"  (input)="onInput($event)"
+        [placeholder]="placeholder" [ngClass]="ngClass" (blur)="setValue($event)" />
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'days'">
+      <div class="input-group highlight-{{theme}}" [ngClass]="{ 'focus' : isFocused }" >
+      <input (focus)="onInputFocus()" [disabled]="isFieldDisabled"  [(ngModel)]="inputValue" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if (parseInt(this.value) > max) this.value = max;if (parseInt(this.value) < min) this.value = min;" [min]="min" [max]="max" type="number" (keydown)="onKeyDown($event)" class="form-control form-control-sm highlight-{{theme}}" [placeholder]="placeholder" [ngClass]="ngClass" (blur)="setValue($event)" (input)="onInput($event)"/>
+      <div class="input-group-prepend p-1">
+        <span class="input-group-text p-0 rounded-half h-100 px-1 me-1 fw-medium bg-{{theme}} border-0">Days</span>
+      </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'amount'">
+      <div class="input-group highlight-{{theme}}" [ngClass]="{ 'focus' : isFocused }">
+        <div class="input-group-prepend p-1">
+          <span class="input-group-text p-0 rounded-half h-100 px-3 fw-medium bg-{{theme}} border-0">AED</span>
+        </div>
+        <input [disabled]="isFieldDisabled" [(ngModel)]="inputValue" (focus)="onInputFocus()"
+          (input)="onAmountInput($event)" type="number" class="form-control form-control-sm" [placeholder]="placeholder"
+          [ngClass]="ngClass" (blur)="setValue($event)" />
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'url'">
+      <div class="input-group highlight-{{theme}}" [ngClass]="{ 'focus' : isFocused }">
+        <div class="input-group-prepend p-1">
+          <span class="input-group-text p-0 rounded-half h-100 px-3 fw-medium bg-{{theme}} border-0">https://</span>
+        </div>
+        <input [(ngModel)]="inputValue" class="form-control form-control-sm" placeholder="example.com"
+          (focus)="onInputFocus()" (blur)="setValue($event)"
+          (input)="inputValue = inputValue.startsWith('https://') ? inputValue.substring(8) : inputValue" />
+        <!-- <div class="input-group-append px-2">
+            <span class="input-group-icon svg-icon svg-icon-2" [inlineSVG]="'./assets/media/icons/open-outline.svg'"></span>
+        </div> -->
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'height'">
+      <div class="input-group highlight-{{theme}}" [ngClass]="{ 'focus' : isFocused }" >
+        <input [(ngModel)]="inputValue" class="form-control form-control-sm"  [placeholder]="placeholder" (focus)="onInputFocus()" (blur)="setValue($event)" type="number" (keydown)="onKeyDown($event)" (input)="onInput($event)"/>
+        <div class="input-group-prepend p-1">
+          <span class="input-group-text p-0 rounded-half h-100 px-2 fw-medium bg-{{theme}} border-0">CM</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'weight'">
+      <div class="input-group highlight-{{theme}}" [ngClass]="{ 'focus' : isFocused }" >
+        <input [(ngModel)]="inputValue" class="form-control form-control-sm"  [placeholder]="placeholder"  (focus)="onInputFocus()" (blur)="setValue($event)" type="number" (keydown)="onKeyDown($event)" (input)="onInput($event)"/>
+        <div class="input-group-prepend p-1">
+          <span class="input-group-text p-0 rounded-half h-100 px-2 fw-medium bg-{{theme}} border-0">KG</span>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container  *ngSwitchCase="'checkbox'">
+      <div class="form-check {{ isLableDisabled ? 'mt-2 mx-7' : 'mt-5' }} form-check-color-{{theme}}">
+        <input [(ngModel)]="inputValue" [disabled]="isFieldDisabled" (blur)="toggleCheckbox(inputValue)"
+          class="form-check-input {{ isLableDisabled ? 'mb-1' : 'mt-2 mb-3' }}" type="checkbox" [id]="name" />
+        <label class="form-label fs-6 mt-2 mb-1" [for]="name">
+          {{ name | changeCase : "capital" }}
+        </label>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'toggle'">
+      <div class="form-check form-switch mt-5 ps-0">
+        <label class="switch">
+          <input type="checkbox"
+          [(ngModel)]="inputValue"  (change)="toggleCheckbox(inputValue)">
+          <span class="slider round "
+          [ngClass]="[inputValue ? 'bg-' + theme : '']"
+          ></span>
+        </label>
+        <label class="form-label mt-3 ms-2 mb-1" [for]="name">
+          {{ name | changeCase : "capital" }}
+        </label>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'radio'">
+      <div class="form-check form-check-inline form-check-color-{{theme}}">
+        <input class="form-check-input me-2 radio-form" type="radio" [name]="name"
+          [id]="radioBtnID" (change)="onRadioBtnSelected()">
+        <label class="form-label fs-6 mb-0"  [for]="name"
+        [ngClass]="ngClass"> {{ radioBtnID | changeCase : "capital" }}</label>
+      </div>
+    </ng-container>
+
+  </ng-container>
+</ng-container>

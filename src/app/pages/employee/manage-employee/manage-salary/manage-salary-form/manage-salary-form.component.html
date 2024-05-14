@@ -1,0 +1,272 @@
+<app-page-title></app-page-title>
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="!isLoading ; else skeleton">
+
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngIf="section.tabName === formData.tabName">
+              <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                <!--begin::Col-->
+                <div class="ps-9">
+                  <ng-container *ngIf="!isLoading;">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+
+
+                </div>
+                <div class="card-body py-0">
+                  <form [formGroup]="manageSalaryForm">
+                    <div class="row">
+                      <ng-container *ngFor="let label of formData.labels">
+                        <ng-container *ngIf="label.sectionName === section.sectionName">
+                          <div class="position-relative col-lg-{{ label.col ? label.col : col }} mb-2">
+                            <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                              <ng-container *ngIf="label.type !== 'toggle'">
+                                <label class="form-label fs-6 mb-0"
+                                  [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, manageSalaryForm) }">{{
+                                  label.labelTransformationCancelled ? label.labelName.alias.replace('Id','') :
+                                  label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'employee'">
+                                <employee-select (onchange)="fetchSalaryDetails($event)"
+                                  [scope]="label.scope" [isDisabled]="id ? true : false"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, manageSalaryForm)}"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital') "></employee-select>
+                              </ng-container>
+                              <app-input-text-field
+                              [disabled]="label.isFieldDisabled"
+                                [patchValue]="manageSalaryForm?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [isFieldDisabled]="label.labelName.defaultValue ==='grossPay'?true:false"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, manageSalaryForm) }"
+                                [type]="label.type" [name]="label.labelName.alias!"
+                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true">
+                              </app-input-text-field>
+                              <ng-container *ngIf="label.type === 'date'">
+                                <!-- ngb-bootstrap datepicker -->
+                                <!-- <div class="position-relative">
+                                  <ng-container>
+                                    <input (input)="sharedService.formatDate($event)"  class="form-control form-control-sm" data-type="date"
+                                      [patchValue]="manageSalaryForm?.value[label.labelName.defaultValue!]"
+                                      formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD"
+                                      name="dp" ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                                      (click)="d.toggle()"
+                                      [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate"/>
+                                    <span class="date-icon" (click)="d.toggle()"></span>
+                                  </ng-container>
+                                </div> -->
+                                <input-date-picker [formControlName]="label.labelName.defaultValue!"></input-date-picker>
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'dropDown'">
+                                <custom-ng-select
+                                    [ngClass]="{ 'mb-3': true, 'invalid': sharedService.hasValidationErrors(label, submit, manageSalaryForm) }"
+                                    [jsonListName]="label.jsonListName"
+                                    [patchData]="manageSalaryForm?.value.allocation"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [controlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter ' + (label.labelName.alias | changeCase : 'capital')"
+                                    [multiple]="false"
+                                    (onchange)="onDropdownChange($event)">
+                                </custom-ng-select>
+                            </ng-container>
+
+
+                              <!-- <ng-container *ngIf="label.type === 'paymentMethod'">
+                                <custom-ng-select
+                                  [ngClass]="{ 'mb-3': true, 'invalid': sharedService.hasValidationErrors(label,submit, manageSalaryForm) }"
+                                  [apiLink]="label.apiLink"
+                                   [patchData]="manageSalaryForm?.value.paymentMethod"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                  [multiple]="false">
+                                </custom-ng-select>
+                              </ng-container>
+ -->
+
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <ng-container *ngIf="manageSalaryForm.value.employeeId">
+              <div class="form-table-card overflow-hidden mt-5 mb-4 px-6">
+
+                <table class="table m-0 border table-bordered border-gray-500">
+                  <thead class="bg-{{ theme }}-bright rounded-3 rounded-top">
+                    <tr class="fw-bold h-36px">
+                      <th class="fs-7 vertical-middle text-center w-50">
+                        Component
+                      </th>
+                      <th class="fs-7 vertical-middle min-w-125px text-center">
+                        Rate
+                      </th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let component of salaryComponents; let i = index" class="bg-white">
+                      <td >
+                        <div class="row">
+                          <div class="col-md-5">
+
+                          </div>
+                          <div class="col-md-6 ms-n3">
+                              <p class="m-0 w-content fs-7 py-2">{{ component.componentName }}</p>
+                          </div>
+                        </div>
+
+                    </td>
+
+                      <td>
+                        <div class="h-100 d-flex justify-content-evenly align-items-center fs-6 ps-4">
+                          <div class="col-md-6 d-flex justify-content-center">
+                            <div *ngIf="component.isExisted"
+                                 class="form-check form-switch ps-0">
+                              <label class="switch">
+                                <input type="checkbox" [(ngModel)]="component.isChecked"  (change)="toggleCheckbox($event,i)">
+                                <span class="slider round" [ngClass]="[component?.isChecked ? 'bg-' + theme : '']"></span>
+                              </label>
+                            </div>
+                            <input  [(ngModel)]="component.isChecked" *ngIf="!component.isExisted"
+                                   class="h-20px w-20px rounded-half form-check-input form-check-input-sm form-check-color-{{theme}}"
+                                   type="checkbox" (change)="toggleCheckbox($event,i)" />
+                          </div>
+
+                          <div class="ms-2 col-md-6">
+                            <ng-container *ngIf="!component.isChecked && manageSalaryForm.value.allocation === this.selectedEmployee?.salaryDetails?.[0]?.allocation?.id">
+                              {{component.oldRate}}
+                            </ng-container>
+                            <ng-container *ngIf="component.isChecked">
+                              <input type="text" (change)="onRateChange()" [(ngModel)]="component.rate"   class="form-control custom-align-right w-100px" />
+                            </ng-container>
+
+                          </div>
+
+                        </div>
+                      </td>
+                    </tr>
+
+
+                  </tbody>
+                </table>
+
+              </div>
+            </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+     <div class=" p-md-0  mx-9 mb-5">
+      <div class="d-flex flex-column flex-md-row justify-content-end gap-4">
+        <ng-container>
+          <button class="btn btn-secondary" (click)="goBack()"> Cancel</button>
+        </ng-container>
+
+        <button type="button" class="btn  btn-{{theme}}" (click)="getFormTemplate(classificationApplicabilityTemplate,'Manage Salary')"
+
+        [id]="'kt_drawer_form_toggle'">
+          Save and Review
+        </button>
+
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+
+
+
+
+<ng-template #skeleton>
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+
+</ng-template>
+
+<!-- <label class="form-label fs-6 mt-2 mb-1" [for]="name">
+             5000
+            </label>   -->
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+    <div class="fv-plugins-message-container ">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
+
+
+<ng-template #classificationApplicabilityTemplate (isCanceled)="cancelFormSave($event)">
+  <div>
+    <div class="row">
+          <ng-container  *ngFor="let label of formData.labels; let i = index">
+            <div class="col-6 mt-5">
+          <label class="form-label fs-6 mb-0">{{
+            label.labelName.alias.replace('Id','') | changeCase : "capital"
+          }}</label>
+          <div>{{ manageFormReview[label.labelName.defaultValue] }}</div>
+            </div>
+        </ng-container>
+    </div>
+  </div>
+
+  <div *ngIf="filteredSalaryComponents?.length>0" class="form-table-card overflow-hidden mt-5 mb-4">
+
+    <table class="table m-0 border table-bordered border-gray-500 custom-rounded-table">
+      <thead class="bg-{{ theme }}-bright rounded-3 rounded-top">
+        <tr class="fw-bold h-36px">
+          <th class="fs-7 vertical-middle text-center">
+            Component
+          </th>
+          <th class="fs-7 vertical-middle min-w-125px text-center">
+            Old Rate
+          </th>
+          <th class="fs-7 vertical-middle min-w-125px text-center">
+            New Rate
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let component of filteredSalaryComponents; let i = index" class="bg-white">
+          <td>
+            <div class="d-flex justify-content-center align-items-center">
+              <p class="m-0 w-content fs-7 py-2">{{ component.componentName }}</p>
+            </div>
+          </td>
+          <td>
+            <div class="h-100 d-flex justify-content-end align-items-center fs-6 ps-4">
+              <span>{{ component.oldRate ? component.oldRate : "-" }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="h-100 d-flex justify-content-end align-items-center fs-6 ps-4">
+              <span>{{ component.rate }}</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</ng-template>
+
+<app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" [saveButtonText]="'Submit'" (isSaved)="onDrawerSave($event)"
+  (isCanceled)="onDrawerCancel($event)"></app-form-drawer>
+

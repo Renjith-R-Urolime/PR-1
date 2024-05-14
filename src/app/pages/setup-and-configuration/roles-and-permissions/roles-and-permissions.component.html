@@ -1,0 +1,115 @@
+<app-page-title></app-page-title>
+<div class="card" [ngClass]="{ 'bg-transparent bs-none' : view ==='card' }">
+  <div class="d-flex flex-row justify-content-between align-items-center">
+    <app-breadcrumb></app-breadcrumb>
+    <div>
+      <search-and-filter (viewSelected)="changeView($event)" [multipleViewOptions]="false">
+        <ng-template additional-options>
+            <button (click)="openDrawer()" class="btn btn-icon btn-36px bg-white btn-active-{{ theme }}" data-kt-menu-trigger="click"
+            id="kt_drawer_form_toggle">
+            <span class="svg-icon svg-icon-1" [inlineSVG]="'./assets/media/icons/person-with-gear-outline.svg'"></span>
+          </button>
+        </ng-template>
+      </search-and-filter>
+    </div>
+  </div>
+  <div *ngIf="view === 'table'">
+    <data-table-list [metaData]="tableMetaData">
+      <ng-template action-btn-temp let-id="id" let-item="item$">
+        <a *ngIf="item.roleType === 'Standard'; else editOption" class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0" (click)="open('customise',id)">
+          <span [inlineSVG]="'./assets/media/icons/options-outline.svg'"
+            class="svg-icon svg-icon-2"></span>
+        </a>
+        <ng-template #editOption>
+          <a class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0" (click)="open('edit', id)">
+            <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+              class="svg-icon svg-icon-2"></span>
+          </a>
+        </ng-template>
+        <a class=" btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0" (click)="open('view', id)">
+          <span [inlineSVG]="
+              './assets/media/icons/document-text-outline.svg'
+            " class="svg-icon svg-icon-3"></span>
+        </a>
+      </ng-template>
+    </data-table-list>
+  </div>
+
+</div>
+
+<app-form-drawer [headerText]="templateName" [formTemplate]="allocation" (isSaved)="onDrawerSave($event)" (isCanceled)="onDrawerCancel($event)" [buttonDisable]="roleAssignEnable">
+</app-form-drawer>
+
+<ng-template #allocation>
+    <div class="d-flex flex-column mt-5 gap-5">
+      <div class="d-flex gap-2 align-items-center position-relative">
+          <label class="form-label fs-6 mb-0 min-w-200px">Select Role</label>
+          <custom-ng-select
+            [(ngModel)]="roleId"
+            class="w-100"
+            [items]="roles"
+            [placeholder]="'Select Role'">
+          </custom-ng-select>
+        </div>
+        <div class="d-flex">
+          <div class="d-flex gap-3 w-100">
+            <div class="flex-grow-1 bg-white align-items-center border border-1 border-dark d-flex ps-3 rounded-1 ">
+              <span [inlineSVG]="'./assets/media/icons/search-outline.svg'" class="svg-icon svg-icon-3"></span>
+              <input type="text" data-kt-permissions-table-filter="search"
+                class="form-control form-control-sm border-0 " placeholder="Enter atleast 3 characters..."  name="searchText" #input />
+            </div>
+            <div class="d-flex gap-2 align-items-center position-relative">
+              <label class="w-content form-check form-check-sm form-check-custom  form-check-color-{{theme}}">
+              <input id="formchecked" class="form-check-input" type="checkbox" value=""
+              (change)="checkUncheckAll()" [(ngModel)]="selectAll"/>
+              <span class="form-check-label text-dark">Select All</span>
+            </label>
+            </div>
+          </div>
+      </div>
+      <div class="d-flex flex-column gap-3">
+        <ng-container *ngIf="!listLoading; else skeleton">
+          <div  class="d-flex gap-4 align-items-center" *ngFor="let employee of employeeList">
+            <label class="form-check form-check-color-{{theme}}">
+              <input id="formchecked" [(ngModel)]="employee.isSelected" class="form-check-input h-25px w-25px" type="checkbox"
+              (change)="isAllSelected()"/>
+            </label>
+            <div class="flex-grow-1 bg-white align-items-center border border-1 border-dark d-flex ps-3 rounded-1 px-3 py-2">
+            <ng-container *ngIf="employee.image && ( employee.image | s3FileFetch | async)!=='null' ;else noImg">
+              <div class="symbol symbol-circle symbol-30px me-5 rounded-3" data-bs-toggle="tooltip" data-bs-boundary="window"
+                data-bs-placement="top" [title]="employee.firstName">
+                <img class="object-fit-cover object-position-top" [src]="employee.image | s3FileFetch | async " alt="profile" />
+              </div>
+            </ng-container>
+            <ng-template #noImg>
+              <div class="symbol symbol-circle symbol-30px overflow-hidden me-3" data-bs-toggle="tooltip" data-bs-boundary="window"
+                data-bs-placement="top" [title]="employee.firstName">
+                <a href="javascript:void(0)">
+                  <div class="symbol-label fs-3 fw-bold bg-{{theme}}-light text-white">{{ employee.firstName !== null ? (employee.firstName[0] | uppercase ) : '?' }}</div>
+                </a>
+              </div>
+            </ng-template>
+            <div class="d-flex flex-column">
+              <p clss="m-0 fw-bold fs-4">{{employee.firstName}} {{employee.lastName}}</p>
+              <p clss="m-0 fw-medium text-muted fs-6">{{employee.designation}}</p>
+            </div>
+            </div>
+          </div>
+          <button *ngIf="employeeList.length < employeesCount" class="btn" (click)="loadMore()">Load More</button>
+        </ng-container>
+
+        <!-- skeleton -->
+        <ng-template #skeleton>
+          <div class="d-flex gap-4 align-items-center" *ngFor="let employee of [0,0,0,0,0]">
+            <div class="flex-grow-1 bg-white align-items-center border border-1 border-dark d-flex ps-3 rounded-1 px-3 py-2 gap-5">
+              <ngx-skeleton-loader [theme]="{ width: '4rem', height: '4rem', 'border-radius':'50%' }"></ngx-skeleton-loader>
+              <div class="d-flex flex-column w-100">
+                <ngx-skeleton-loader [theme]="{ width: '80%', height: '1.2em' }"></ngx-skeleton-loader>
+                <ngx-skeleton-loader [theme]="{ width: '45%', height: '1em' }"></ngx-skeleton-loader>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+</ng-template>

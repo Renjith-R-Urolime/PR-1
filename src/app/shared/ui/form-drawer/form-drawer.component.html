@@ -1,0 +1,50 @@
+<div [id]="formDrawerId" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="form" data-kt-drawer-activate="true"
+    data-kt-drawer-overlay="true" data-kt-drawer-direction="end" [attr.data-kt-drawer-toggle]="formDrawerId"
+    [attr.data-kt-drawer-close]="'#' + formDrawerCloseId" [ngStyle]="{'width.px': drawerWidth, 'important': true}">
+    <div class="card w-100 rounded-0" id="kt_drawer_form_messenger">
+        <div class="card-header d-flex flex-row justify-content-between pe-5" id="kt_drawer_form_messenger_header">
+            <div class="card-title fs-4 fw-bold py-2 flex-grow-1">
+                {{ headerText | changeCase: 'capital' }}
+            </div>
+            <div class="card-toolbar">
+                <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+                    [id]="formDrawerCloseId" (click)="onCancel()">
+                    <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+                </div>
+            </div>
+        </div>
+        <div class="{{responseFilterStyle ? '':'card-body' }} pt-0 {{ customClass }}  overflow-auto"
+            id="kt_drawer_form_messenger_body">
+            <!-- Use the captured custom content -->
+            <ng-container *ngTemplateOutlet="formTemplate"></ng-container>
+        </div>
+
+        <div *ngIf="!viewMode" id="kt_drawer_form_messenger_footer">
+            <ng-template [ngTemplateOutlet]="( footerTemplate || defaultFooterTemplate)"></ng-template>
+
+            <ng-template #defaultFooterTemplate>
+                <div class="card-footer p-5">
+                    <div class="d-flex flex-column flex-md-row justify-content-end gap-4">
+                        <button type="button" class=" btn border btn-sm cursor-pointer bg-{{ theme }}-bright"
+                            [id]="formDrawerCloseId" (click)="onCancel()">
+                            {{cancelButtonText}}
+                        </button>
+
+                        <button [id]="buttonDisable ? null : formDrawerCloseId" type="submit"
+                        class="btn btn-sm cursor-pointer bg-{{theme}} btn-{{theme}}" (click)="onSave() ">
+                            <ng-container *ngIf="!isProcessing">
+                                {{saveButtonText}}
+                            </ng-container>
+                            <ng-container *ngIf="isProcessing">
+                                <div class="d-flex gap-3">
+                                    Please wait
+                                    <div class="spinner"></div>
+                                </div>
+                            </ng-container>
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

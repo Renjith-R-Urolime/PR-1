@@ -1,0 +1,94 @@
+:host {
+  height: 100%;
+}
+
+.lap-img {
+  margin-top: -26px;
+  margin-left: -37px;
+  margin-bottom: -25px;
+}
+
+.border-line-light {
+  border-top: 4px solid #b7b6b9;
+  border-radius: 5px;
+
+  &.selected {
+    border-color: #482084 !important;
+  }
+}
+
+.bg-login {
+  background-color: #f1eafc;
+}
+
+.ng-otp-input-wrapper.wrapper {
+  display: flex !important;
+  justify-content: space-between !important;
+
+  &input {
+    height: 50px !important;
+    width: 50px !important;
+  }
+}
+
+.form-check-input {
+  background-size: inherit !important;
+
+}
+@media (max-width: 1023px) {
+  .content-display {
+    display: none !important;
+  }
+  .lap-img{
+    width: 81%;
+    margin-top: -40px;
+    margin-left: -11px;
+    margin-bottom: -9px;
+}
+.content{
+  width: 100%;
+}
+}
+@media (max-width: 766px) {
+  .lap-img{
+    width: 31%;
+  }
+}
+
+.custom-select {
+  height: 45px;
+}
+
+.card{
+  border: 4px solid #ffffff00!important;
+  &.selected {
+    border: 4px solid  #53B881!important;
+    border-radius: 10px;
+  }
+}
+
+
+.green-tick{
+  position: absolute;
+  top: 76px;
+  width: 23px;
+  height: 24px;
+  right: -16px;
+}
+
+.green-tick {
+  position: absolute;
+  top: 77px;
+  width: 21px;
+  height: 21px;
+  right: -15px
+}
+
+.card-width{
+  width: 120px;
+  height: 120px;
+}
+
+.invert {
+  filter: invert(1);
+}

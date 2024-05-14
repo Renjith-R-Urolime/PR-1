@@ -1,0 +1,92 @@
+<app-page-title [title]="componentTitle" [isNewButton]="true" btnPrefix="Create" [isEditDeleteBtn]="false"
+  newRecordOpenType="page"></app-page-title>
+
+<!-- <div class="row"> -->
+  <!-- <div class="col-xl-4">
+    <app-donut-chart-widget></app-donut-chart-widget>
+  </div>
+  <div class="col-xl-4">
+    <app-metric-info-widget></app-metric-info-widget>
+  </div>
+  <div class="col-xl-4">
+    <app-people-list-widget></app-people-list-widget>
+  </div> -->
+<!-- </div> -->
+
+<div class="d-flex flex-row justify-content-between align-items-center mt-4">
+  <app-breadcrumb></app-breadcrumb>
+ <search-and-filter (viewSelected)="changeView($event)" [view]="view" [multipleViewOptions]="true" [importExportOption]="true" (openImportModal)="openModalFromEvent()" class="ms-auto"></search-and-filter>
+  <!-- <div class="d-flex gap-4">
+    <button class="btn btn-icon btn-sm btn-active-{{theme}}" [ngClass]="{'active':view==='card'}"
+      (click)="view = 'card'"><span [inlineSVG]="gridIcon" class="svg-icon svg-icon-2"></span></button>
+    <button class="btn btn-icon btn-sm btn-active-{{theme}}" [ngClass]="{'active':view==='table'}"
+      (click)="view = 'table'"> <span [inlineSVG]="tableIcon" class="svg-icon svg-icon-2"></span></button>
+  </div> -->
+</div>
+
+
+<!-- If opted for card view -->
+<!-- <app-card-list *ngIf="view==='card'" [details]="employeeDetails"></app-card-list> -->
+<app-card-view-list *ngIf="view === 'card'" [cardMetaData]="cardJsonData">
+  <ng-template card-header-temp let-item="item$">
+    <div class="d-flex flex-center flex-column justify-content-center mb-2 ">
+      <!-- Image -->
+      <ng-container *ngIf="item?.['image'] ; else noImage">
+        <div class="symbol">
+          <ng-container *ngIf="item?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+            <ng-container *ngIf="imageData !=='null' ;else noImage">
+              <div class="symbol symbol-70px symbol-circle rounded-3" data-bs-toggle="tooltip"
+                data-bs-boundary="window" data-bs-placement="top" [title]="item?.['firstName']+' '+item?.['lastName']">
+                <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                  alt="profile" />
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+        <ng-template #noImage>
+      <div class="mb-3">
+        <div class="symbol symbol-70px symbol-circle ">
+          <ng-container *ngIf="item.firstName">
+            <div class="symbol-label fs-2qx fw-bolder symbol-color bg-{{theme}} cursor-pointer" (click)="viewEmployee(item.id)">
+              {{item?.firstName[0] | uppercase}}
+            </div>
+          </ng-container>
+
+        </div>
+      </div>
+      </ng-template>
+      <!-- Name -->
+      <div class="text-center">
+        <div [title]="item.firstName +' '+ item.lastName" class="line-clamp-1 fs-6 fw-bolder cursor-pointer" (click)="viewEmployee(item.id)"> {{
+          item.firstName +' '+ item.lastName }}
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template card-footer-temp let-item="item$">
+    <div class="d-flex flex-row gap-4 justify-content-center">
+        <button *ngIf="!item.isOnboarded && !item.isEmployeeExit" class="btn btn-sm btn-primary my-2"
+          (click)="onBoardEmployee(item.id,item)">Onboard</button>
+        <button *ngIf="item.isOnboarded" class="btn btn-sm btn-primary my-2" (click)="viewEmployee(item.id)">View</button>
+    </div>
+  </ng-template>
+  <ng-template card-button-temp let-id="id" let-data="data">
+    <div class="bg-white shadow rounded-1 ">
+      <div class="d-flex flex-column">
+        <button *ngIf="!data.isEmployeeExit" (click)="editEmployee(id)" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+          <span [inlineSVG]="'./assets/media/icons/create-outline.svg'" class="svg-icon svg-icon-3 "></span>
+          Edit
+        </button>
+        <button *ngIf="data.isOnboarded && (data?.contributions !=='0' && data?.contributions !== data?.registeredContributions)" (click)="openView('register' , id,data)" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+          <span [inlineSVG]="'./assets/media/icons/add-outline.svg'" class="svg-icon svg-icon-3 "></span>
+          Contribution Register
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</app-card-view-list>
+<!-- if opted for table view -->
+<div class="card overflow-hidden">
+  <data-table-list *ngIf="view === 'table'"></data-table-list>
+</div>

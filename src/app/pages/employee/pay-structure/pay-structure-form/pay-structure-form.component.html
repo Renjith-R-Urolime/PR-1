@@ -1,0 +1,248 @@
+<app-page-title ></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="!isLoading && !componentListLoading && !gradeLoading ; else skeleton">
+
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngIf="section.tabName === formData.tabName">
+              <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                <!--begin::Col-->
+                <div class="ps-9">
+                  <ng-container *ngIf="!isLoading;">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+
+
+                </div>
+                <div class="card-body py-0">
+                  <form [formGroup]="payStructureForm">
+                    <div class="row">
+                      <ng-container *ngFor="let label of formData.labels">
+                        <div class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                          <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                            <label class="form-label fs-6 mb-0" [ngClass]="{
+                        'required': label?.required,
+                        'invalid': sharedService.hasValidationErrors(label, submit, payStructureForm)
+                      }">{{
+                              label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                            <app-input-text-field
+                        [patchValue]="payStructureForm?.value[label.labelName.defaultValue!]" [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, payStructureForm) }"
+                        [type]="label.type"
+                        [name]="label.labelName.alias!"
+                        [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"
+                        ></app-input-text-field>
+                            <ng-container *ngIf="label.type === 'dropdown'">
+                              <custom-ng-select
+                                [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, payStructureForm) }"
+                                [apiLink]="label.apiLink" [maxLimit]="2" [formGroup]="payStructureForm"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [controlName]="label.labelName.defaultValue!"
+                                [patchData]="payStructureData[label.labelName.defaultValue!] ? payStructureData[label.labelName.defaultValue!] : undefined"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [multiple]="label.multiple">
+                              </custom-ng-select>
+                            </ng-container>
+                            <ng-container *ngFor="let validation of label.validations;">
+                              <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: validation.name,
+                          message: validation.message,
+                          control: payStructureForm.get(label.labelName.defaultValue)
+                        }"></ng-container>
+                            </ng-container>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+
+                    <div class="mb-4 me-9">
+                      <table class="table m-0 border-gray-400 table-bordered table-rounded">
+                        <thead class="bg-{{ theme }}-bright">
+                          <tr class="fw-bold h-36px">
+                            <!--  <th class="fs-7 vertical-middle min-w-150px">
+                            Particular
+                          </th> -->
+                            <th *ngFor="let tableHeader of tableMeta.labels"
+                              class="fs-7 text-center vertical-middle min-w-125px">
+                              {{tableHeader.labelName.alias | changeCase : "capital"}}
+                            </th>
+                            <th class="fs-7 text-center vertical-middle min-w-250px w-250px">Component Allocation</th>
+                          </tr>
+                        </thead>
+                        <tbody [formArrayName]="'details'">
+                          <tr class="bg-white h-50px" *ngFor="let item of formFields?.controls; let i = index"
+                            [formGroupName]="i">
+                            <ng-container *ngFor="let label of tableMeta.labels">
+                              <td class="vertical-middle">
+                                <div class="d-flex h-100 align-items-center justify-content-center">
+                                  <ng-container *ngIf="!item?.get('viewMode')?.value">
+                                  <ng-container [ngSwitch]="label.type">
+                                    <input *ngSwitchCase="'text'" [formControlName]="label.labelName.defaultValue!"
+                                      [type]="label.type" class="form-control form-control-sm"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " />
+                                    <custom-ng-select
+                                    (onchange)="ongradeChange($event,i)"
+                                      *ngSwitchCase="'grade'"
+                                      class="w-100"
+                                      [apiLink]="label.apiLink" [maxLimit]="2" [formGroup]="payStructureForm"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [patchData]="item?.get('gradeId')?.value"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                    <custom-ng-select
+                                     *ngSwitchCase="'designation'"
+                                      class="w-100"
+                                      [items]="getDesignationList(i)" [maxLimit]="2" [formGroup]="payStructureForm"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [patchData]="item?.get('designationId')?.value"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                    <custom-ng-select
+                                     *ngSwitchCase="'salaryAllocation'" [multiple]="label.multiple"
+                                      class="w-100"
+                                      [jsonListName]="label.jsonListName" [formControlName]="label.labelName.defaultValue!"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [patchData]="item?.get('salaryAllocation')?.value"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  </ng-container>
+                                  <ng-container *ngIf="item?.get('viewMode')?.value">
+                                    {{ showData(item?.get(label.labelName.defaultValue)?.value,label.labelName.defaultValue) }}
+                                  </ng-container>
+                                </div>
+                              </td>
+                            </ng-container>
+                            <td>
+                              <div class="d-flex justify-content-between align-items-center h-100 ">
+                                <div class="symbol-group symbol-hover flex-nowrap" (click)="onDrawerClick(i)">
+                                  <div *ngFor="let comp of componentList | orderBy:'name':'alphabeticalOrder'| slice:0:3; let i = index" [id]="disableDrawer ? null : 'kt_drawer_form_toggle'"
+                                    class="symbol symbol-36px symbol-circle" data-bs-toggle="tooltip" [title]="comp['name']" >
+                                    <span class="symbol-label border-white fw-medium bg-{{theme}}{{ i > 0 ? '-' +shades[i] : '' }}">{{ i < 2 ? comp['name'][0] : componentList?.length - 2 + '+' }}</span>
+                                  </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                  <ng-container *ngIf="item?.get('viewMode')?.value; else onEditView" >
+                                    <a (click)="setMode(false,i,'edit')" class="btn btn-icon text-hover-{{ theme }} btn-sm p-0" (click)="onEdit(i)">
+                                      <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                                        class="svg-icon svg-icon-2"></span>
+                                    </a>
+                                  </ng-container>
+                                  <ng-template #onEditView>
+                                    <button (click)="setMode(true,i)" class="btn btn-36px border-gray-300"  >
+                                      <span [inlineSVG]="'./assets/media/icons/checkmark-outline.svg'" class="svg-icon m-1 svg-icon-success py-1"></span>
+                                    </button>
+                                    <button *ngIf="checkFilled(i)" (click)="setMode(true,i,'cancel')" class="btn btn-36px border-gray-300">
+                                      <span [inlineSVG]="'./assets/media/icons/close-outline.svg'" class="svg-icon m-1  svg-icon-danger py-1"></span>
+                                    </button>
+                                    <button *ngIf="checkFilled(i)"  (click)="setMode(true,i,'delete')" class="btn btn-36px border-gray-300"  >
+                                        <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'" class="svg-icon m-1  svg-icon-danger py-1"></span>
+                                    </button>
+                                  </ng-template>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="6" class="border-0">
+                              <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3" (click)="addMore()">Add More</button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <div class="me-9">
+          <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+        </div>
+      </ng-container>
+    </div>
+    <ng-template #skeleton>
+      <app-edit-form-skeleton></app-edit-form-skeleton>
+    </ng-template>
+    <ng-template #formError let-control="control" let-message="message" let-validation="validation">
+      <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container ">
+          <span role="alert" class="fv-help-block fs-9">
+            {{ message }}
+          </span>
+        </div>
+      </ng-container>
+    </ng-template>
+
+    <app-form-drawer drawerWidth="720" [headerText]="templateName" [formTemplate]="componentAllocation" (isSaved)="onDrawerSave($event)"
+      (isCanceled)="onDrawerCancel($event)">
+    </app-form-drawer>
+
+    <ng-template #componentAllocation>
+      <form [formGroup]="payStructureForm">
+        <div [formArrayName]="'details'">
+          <div [formGroupName]="formArrayIndex">
+            <div [formArrayName]="'componentDetails'">
+       <div class="row border-top border-bottom mt-5">
+        <div class="col-3 mt-2 mb-2 position-relative">
+          <label class="form-label fs-6 fw-bolder mb-1">Component</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative">
+          <label class="form-label fs-6 fw-bolder mb-1">Is Basic Pay</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative ">
+          <label class="form-label fs-6 fw-bolder mb-1">Percentage</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative">
+          <label class="form-label fs-6 fw-bolder mb-1">Formula</label>
+        </div>
+      </div>
+      <ng-container *ngIf="componentAllocationData()">
+      <ng-container *ngFor="let control of componentAllocationData()?.controls; let k=index">
+
+      <div [formGroupName]="k" class="row mt-5">
+        <div class="col-3 mb-2 position-relative">
+          <label class="form-label fs-6 pt-2 mb-1">{{componentAllocationData().at(k).value?.name || 'Not Available'}}</label>
+          <!-- <input [formControlName]="'component'"  hidden type="number" class="form-control form-control-sm" /> -->
+        </div>
+        <div class="col-3 position-relative ">
+          <div style="color: red;">
+            <app-input-text-field [isLableDisabled]='true'  [isFieldDisabled]="isCheckboxDisabled && !payStructureForm.value?.details[this.formArrayIndex]['componentDetails'][k]?.isBasic "  [formControlName]="'isBasic'" (change)="checkboxChange($event,k)"
+            placeholder="xxxxx"  type="checkbox"></app-input-text-field>
+
+          </div>
+
+
+        </div>
+        <div class="col-3 mb-2 position-relative ">
+          <input [formControlName]="'percentage'" type="number" class="form-control form-control-sm" />
+        </div>
+        <div class="col-3 mb-2 position-relative">
+          <custom-ng-select [multiple]="false" [items]="formulaList" [isSelectDisabled]="payStructureForm.value?.details[this.formArrayIndex]['componentDetails'][k]?.isBasic"
+            [formControlName]="'formula'" [controlName]="'formula'"
+            [patchData]="payStructureData?.details?.[formArrayIndex]?.componentDetails?.[k]?.formula ? payStructureData?.details?.[formArrayIndex]?.componentDetails?.[k]?.formula : undefined">
+          </custom-ng-select>
+        </div>
+      </div>
+      </ng-container>
+    </ng-container>
+            </div>
+          </div>
+        </div>
+      </form>
+    </ng-template>

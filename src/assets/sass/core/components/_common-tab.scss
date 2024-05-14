@@ -1,0 +1,15 @@
+.bg-custom {
+  background-color: #D4D4F9;
+  opacity: 0.9;
+}
+
+@media (max-width: 767px) {
+  .overflow-auto::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.btn.active{
+  color: #fff !important;
+  background-color: #482084 !important;
+}

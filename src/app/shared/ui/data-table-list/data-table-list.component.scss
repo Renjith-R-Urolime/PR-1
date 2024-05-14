@@ -1,0 +1,8 @@
+th.min-w-200px {
+    //display: flex; /* Use flexbox to control the width */
+    align-items: center; /* Center the content vertically */
+    padding: 5px; /* Add padding to create some space around the content */
+    white-space: nowrap; /* Prevent text from wrapping to the next line */
+
+    min-width: 200px;
+  }

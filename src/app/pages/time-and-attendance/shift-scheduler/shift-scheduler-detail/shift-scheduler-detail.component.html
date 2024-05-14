@@ -1,0 +1,274 @@
+
+
+<div  *ngIf="!ifWorkCalendarView">
+  <app-page-title [isGoBack]="true" [isEditDeleteBtn]="true"></app-page-title>
+</div>
+<div *ngIf="data && !isLoading">
+  <details-card [detailsCardData]="detailsCardData"  [data]="data"   [headingToHide]="headingToHide"
+  >
+    <ng-template custom-element let-data$="data$" let-key$="key$">
+
+      <ng-container *ngIf="key$?.type==='time'">
+        <div class="fw-medium fs-6 text-dark px-0 mt-1">
+          <ng-container>
+            <div class=" w-50px h-40px border-2 border-{{theme}} rounded-1 align-items-center pt-2 ps-1 fs-6">
+              <div> {{ data$?.[key$?.labelName.defaultValue] }}</div>
+            </div>
+          </ng-container>
+          <ng-template #noInfo>
+            <div class="fw-medium fs-6 text-gray-300 px-0 mt-1">
+              Not Availaible
+            </div>
+          </ng-template>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="key$.templateName=='modifyTiming' && modifyTimingData?.length >0">
+        <span class="mt-5"> <span class="text-muted">Modify Timing</span> <button
+            class="bg-white border-gray-600 btn-light  p-0 ms-1" id="kt_drawer_form_toggle"
+            (click)="getFormTemplate(modifyTimingsTemplate,'Modify Timing' );">
+            <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+              class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+          </button> </span>
+      </ng-container>
+      <ng-container *ngIf="key$.templateName=='toleranceMargin' && data?.toleranceMarginFrom && data?.toleranceMarginTo">
+        <span class="mt-5"> <span class="text-muted">Tolerance Margin</span> <button
+            class="bg-white border-gray-600 btn-light  p-0 ms-1" id="kt_drawer_form_toggle"
+            (click)="getFormTemplate(toleranceModaTemplate,'Tolerance Margin' );">
+            <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+              class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+          </button> </span>
+      </ng-container>
+      <ng-container *ngIf="key$.templateName == 'appliesTo'">
+        <span class="mt-5" *ngIf="calendarData?.length>0">
+          <span class="text-muted">Applies To</span>
+          <button class="bg-white border-gray-600 btn-light p-0 ms-1" id="kt_drawer_form_toggle"
+            (click)=" getFormTemplate( appliesToTemplate,'Applies To');">
+            <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+              class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+          </button>
+        </span>
+      </ng-container>
+
+      <ng-container *ngIf="key$.templateName == 'enableAdditionalBreak'">
+        <div class="row form-check-color-{{ theme }}">
+          <div class="col-12 mt-1 form-check-color-{{ theme }}">
+            <input type="checkbox" [disabled]="true" [checked]="data?.isAdditionalBreak"
+              class="form-check-input form-check-input-sm h-20px rounded-half w-20px">
+              <span class="mx-3">Include Additional Break</span>
+          </div>
+        </div>
+      </ng-container>
+
+
+      <ng-container *ngIf="key$.templateName == 'excludedFromStandardHours'">
+        <div class="row form-check-color-{{ theme }}">
+          <div class="col-1 mt-1 form-check-color-{{ theme }}"> <input type="checkbox" [checked]="data?.excludeBreak"
+              [disabled]="true" class="form-check-input form-check-input-sm h-20px rounded-half w-20px">
+          </div>
+          <div class="col-11"> <span >Exclude from Standard
+              Hour</span></div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="key$.templateName == 'excludeAdditionalBreakFromStandardHours'">
+        <div class="row form-check-color-{{ theme }}">
+          <div class="col-1 mt-1 form-check-color-{{ theme }}"> <input type="checkbox" [checked]="data?.excludeAdditionalBreak"
+              [disabled]="true" class="form-check-input form-check-input-sm h-20px rounded-half w-20px">
+          </div>
+          <div class="col-11"> <span >Exclude from Standard
+              Hour</span></div>
+        </div>
+      </ng-container>
+
+
+
+
+
+
+      <ng-container *ngIf="key$.templateName == 'totalBreakTime'">
+        <div class=" w-50px h-40px border-2 border-{{theme}} rounded-1 align-items-center pt-2 ps-1 fs-6">
+          {{totalBreakTime ? totalBreakTime:'00:00' }}
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="key$.templateName == 'totalAdditionalBreakTime'">
+          <div class=" w-50px h-40px border-2 border-{{theme}} rounded-1 align-items-center pt-2 ps-1 fs-6">
+            {{totalAdditionalBreak ?totalAdditionalBreak :'00:00' }}
+          </div>
+      </ng-container>
+
+      <ng-container *ngIf="key$.templateName == 'additional-view-temp'">
+        <div class="card mt-n3 rounded-top-0 box-shadow-none pt-3">
+          <h5 class="text-muted">Weekends</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <div class=" d-flex justify-content-start align-items-center gap-6 form-check-color-{{ theme }}">
+                <span *ngFor="let day of daysOfWeek; let i = index">
+                  <label class="d-flex align-items-center">
+                    <input
+                      class="form-check-input form-check-input-sm h-20px rounded-half w-20px" type="checkbox"
+                      [checked]="day.isChecked" [disabled]="true" />
+                    <span class="mx-2">{{ day.name }}</span>
+                  </label>
+                </span>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="  d-flex justify-content-center align-items-center gap-2 mt-1 form-check-color-{{ theme }}">
+                <label >
+                  <input type="checkbox"
+                    class="form-check-input form-check-input-sm h-20px rounded-half w-20px form-check-color-{{ theme }}"
+                    [(ngModel)]="enableHalf" [disabled]="true" />
+                  <span></span>
+                </label>
+                <span class="toggle-label">Enable Half Weekend / Weekday</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div *ngIf="weekDefinedStatus" class=" form-table-card  mt-5 mb-4">
+            <table class="table m-0 border table-bordered table-rounded mt-4">
+              <thead class="bg-{{ theme }}-bright rounded-3 rounded-top">
+                <tr class="fw-bold h-40px">
+                  <th class="fs-7 vertical-middle">
+                    Week / Days
+                  </th>
+                  <ng-container *ngFor="let right of listOfDays; let i = index">
+                    <th *ngIf="columnVisibility[i]" class="fs-7 vertical-middle min-w-125px border-bottom border-light">
+                      <div class="d-flex justify-content-center align-items-center form-check-color-{{ theme }} mt-1 mb-1">
+                        <div class="col-md-3 justify-content-end d-flex">
+                          <div >
+                            <input class="check-margin form-check-input form-check-input-sm h-20px rounded-half w-20px mt-1"
+                              type="checkbox" [checked]="right.checked" [disabled]="true" />
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <span class="text-end mt-1 mx-2 ng-star-inserted">{{ right.day | changeCase : 'capital'
+                            }}</span>
+                        </div>
+                      </div>
+                    </th>
+                  </ng-container>
+                </tr>
+              </thead>
+              <tbody *ngFor="let config of weekendConfig; let i=index">
+                <tr class="bg-white">
+                  <td>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <p class="m-0 w-content fs-7 py-1">{{ config.week }}</p>
+                    </div>
+                  </td>
+                  <ng-container *ngFor="let day of config.day; let j = index">
+                    <td *ngIf="columnVisibility[j]">
+                      <div class="d-flex justify-content-center align-items-center form-check-color-{{ theme }} mt-1 mb-1">
+                        <div class="col-md-3 justify-content-end d-flex">
+                          <div >
+                            <input  [checked]="day.status"
+                              class="check-margin form-check-input form-check-input-sm h-20px rounded-half w-20px mt-1"
+                              type="checkbox" [disabled]="true" />
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <span *ngIf="day.selectedHalf" class="text-end mt-1 mx-2">
+                            {{ day.selectedHalf === '1st Half' ? '1st Half' : '2nd
+                            Half' }}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </ng-container>
+                </tr>
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+    </ng-container>
+
+
+    </ng-template>
+  </details-card>
+</div>
+<div *ngIf="isLoading">
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+</div>
+
+<ng-template #toleranceModaTemplate>
+  <div class="modal-body p-4">
+    <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label class="form-label fs-6 mb-0 text-muted">Tolerance Margin From</label>
+        <label class="form-label fs-6 mb-0 text-muted">Tolerance Margin To</label>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center text-center">
+        <span>{{ data?.toleranceMarginFrom || 'No data available' }}</span>
+        <span>{{ data?.toleranceMarginTo || 'No data available' }}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<!-- Calendar -->
+<ng-template #appliesToTemplate (isCanceled)="cancelFormSave($event)">
+  <div *ngFor="let data of calendarData" class="d-flex flex-row mt-2">
+    <div class="card card-body p-5 border border-1 border-gray rounded-1">
+      <div class="d-flex flex-row">
+        <span [inlineSVG]="'./assets/media/icons/calendar-outline.svg'"
+          class="svg-icon svg-icon-3 svg-icon-{{ theme }}"></span>
+        <div class="ms-5">
+          {{ data.name }}
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" [viewMode]="true"></app-form-drawer>
+
+<ng-template #modifyTimingsTemplate>
+  <div *ngFor="let day of modifyTimingData; let index = index" class="day-box mt-5" [ngClass]="[day.isChecked ? 'bg-' + theme + '-bright border-' + theme : '']"
+  >
+
+    <div class="data-item">
+      <div class="row mb-3">
+        <div class="col-5">
+          <div class="float-start me-3">
+            <div class="toggle-container me-1">
+
+            </div>
+          </div>
+          <div class="day-container me-1 fw-bolder">
+            <label>{{ day.name }}</label>
+          </div>
+        </div>
+
+        <div class="col-5">
+          <div class="time-container me-1 text-muted">
+            {{ day.startTime }} - {{ day.endTime }}
+          </div>
+        </div>
+
+        <div class="col-2">
+          <div class="dropdown-arrow float-end">
+            <span class="fas fa-angle-down" data-bs-toggle="collapse"
+              [attr.data-bs-target]="'#collapse_' + index"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div id="{{ 'collapse_' + index }}" class="accordion-collapse collapse"
+            [attr.aria-labelledby]="'heading_' + index">
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</ng-template>

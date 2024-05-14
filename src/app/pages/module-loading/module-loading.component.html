@@ -1,0 +1,26 @@
+<div class="h-100 w-100 d-flex justify-content-center align-items-center">
+  <!-- <div class="position-relative">
+      <div  class="progress-bar circular">
+          <span class="inner-circle" [attr.data-value]="progress"></span>
+          <div class="d-flex flex-column gap-2 h-100 justify-content-center position-absolute w-100">
+              <span [inlineSVG]="'./assets/media/logos/default-small.svg'" class="svg-icon svg-icon-3hx" ></span>
+          </div>
+          <svg height="120" width="120" class="circle" [style.stroke-dashoffset]="346 - (progress * 3.46)">
+              <circle cx="60" cy="60" r="55" stroke="url(#gradient)"
+              stroke-width="10" fill="none"/>
+              <defs>
+                  <linearGradient id="gradient" gradientTransform="rotate(90)">
+                      <stop offset="0%" stop-color="#fc1777" />
+                      <stop offset="25%" stop-color="#fc1f6e" />
+                      <stop offset="50%" stop-color="#fd3c4e" />
+                      <stop offset="75%" stop-color="#fd5340" />
+                      <stop offset="100%" stop-color="#ff8100" />
+                  </linearGradient>
+              </defs>
+          </svg>
+      </div>
+  </div> -->
+  <div class="image-loader" [innerHTML]="currentImage">
+  </div>
+  <div class="loader"></div>
+</div>

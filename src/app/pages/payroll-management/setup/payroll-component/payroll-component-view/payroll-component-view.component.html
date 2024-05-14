@@ -1,0 +1,76 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+<details-card [detailsCardData]="detailsCardData">
+    <ng-template custom-element let-key="key$" let-data="data$">
+        <!-- Text -->
+        <ng-container *ngIf="key?.type==='text'">
+            <div class="fw-medium fs-6 text-dark px-0 mt-1">
+                <ng-container *ngIf="data?.[key?.labelName.defaultValue]; else noInfo">
+                    {{ data?.[key?.labelName.defaultValue] }}
+                </ng-container>
+                <ng-template #noInfo>
+                    <div class="fw-medium fs-6 text-gray-300 px-0 mt-1">
+                        Not Availaible
+                    </div>
+                </ng-template>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="key?.type==='time'">
+            <div class="fw-medium fs-6 text-dark px-0 mt-1">
+                <ng-container *ngIf="data?.[key?.labelName.defaultValue]; else noInfo">
+                    <div class=" w-50px h-40px border-2 border-{{theme}} rounded-1 align-items-center pt-2 ps-1 fs-6">
+                        <div> {{ data?.[key?.labelName.defaultValue] }}</div>
+                    </div>
+                </ng-container>
+                <ng-template #noInfo>
+                    <div class="fw-medium fs-6 text-gray-300 px-0 mt-1">
+                        Not Availaible
+                    </div>
+                </ng-template>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="key.templateName==='tagGLAccount'">
+            <span class="mt-5"> <span class="text-muted">Tag GL Account</span> <button
+                    class="bg-white border-gray-600 btn-light  p-0 ms-1" id="kt_drawer_form_toggle"
+                    (click)="tagGLAccountData = data ; assignTemplate('Tag GL Account',tagGLAccountTemp );">
+                    <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                        class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                </button> </span>
+        </ng-container>
+    </ng-template></details-card>
+
+<app-tab-data-table [tabsMeta]="payrollComponentTabsMeta"></app-tab-data-table>
+
+<app-form-drawer [headerText]="headerText" [formTemplate]="formTemplate" [viewMode]="true"></app-form-drawer>
+
+<ng-template #tagGLAccountTemp>
+    <table class="table table-bordered table-striped m-3 rounded-1 overflow-hidden">
+        <thead class="bg-{{theme}}-bright rounded-3 rounded-top ">
+            <tr>
+                <th class="bg-{{ theme }}-light border-{{theme}}-light left-0">Expense Type</th>
+                <th class="bg-{{ theme }}-light border-{{theme}}-light left-0">Debit Account</th>
+                <th class="bg-{{ theme }}-light border-{{ theme}}-light left-0">Credit Account</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of tagGLAccountData?.['tagAccount'] ; let i=index">
+                <td *ngIf="data; else noInfo">
+                    {{data?.['expenseType']?.name}}
+                </td>
+                <td *ngIf="data; else noInfo">
+                    {{data?.['debitAccount']?.name}}
+                </td>
+                <td *ngIf="data; else noInfo">
+                    {{data?.['creditAccount']?.name}}
+                </td>
+                <!-- <td>
+                    <ng-template #noInfo>
+                        <div class="fw-medium fs-6 text-gray-300 px-0 mt-1">
+                            Not Availaible
+                        </div>
+                    </ng-template>
+                </td> -->
+            </tr>
+        </tbody>
+    </table>
+</ng-template>

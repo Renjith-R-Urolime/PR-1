@@ -1,0 +1,109 @@
+
+<app-settings-list [formData]="empSettingFormData" [cardJsonData]="cardJsonData"></app-settings-list>
+<!-- <app-page-title [isNewButton]="true">
+  <ng-template create-btn-temp >
+    <button  class="btn btn-lg btn-{{theme}}" (click)="newModel(createModal , 'Create',id)"> Create
+      {{title | renameValue}}</button>
+  </ng-template>
+</app-page-title>
+<div class="card" [ngClass]="{ 'bg-transparent bs-none' : view==='card' }">
+  <div class="d-flex flex-row justify-content-between align-items-center">
+    <app-breadcrumb [breadcrumbs]="['List']"></app-breadcrumb>
+    <div>
+      <search-and-filter (viewSelected)="changeView($event)" [multipleViewOptions]="true"></search-and-filter>
+    </div>
+  </div>
+  <div *ngIf="view==='table'">
+    <data-table-list #dataTable>
+      <ng-template action-btn-temp let-id="id" let-item="item$">
+          <a class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0" (click)="newModel(createModal,'Modify',id)">
+            <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+              class="svg-icon svg-icon-2"></span>
+          </a>
+      </ng-template>
+    </data-table-list>
+  </div>
+
+</div>
+<div *ngIf="view==='card'" class="mt-1">
+  <app-card-view-list [cardMetaData]="cardJsonData"></app-card-view-list>
+  </div>
+
+<ng-template #createModal let-modal>
+  <div class="modal-header py-4">
+      <h4 class="modal-title" id="modal-basic-title">{{action}} {{title | renameValue}}</h4>
+		<button type="button" class="btn-close text-hover-{{theme}}" aria-label="Close" (click)="handleCancelClick()"></button>
+	</div>
+  <div class="modal-body p-0">
+    <form [formGroup]="empSettingForm">
+      <div class="me-4 ms-4 mt-2 mb-2">
+        <ng-container *ngFor="let label of empSettingFormData.labels">
+          <div class="position-relative mb-2">
+            <label class="form-label fs-6 mb-0" [ngClass]="{
+                'required': label?.required,
+                'invalid': sharedService.hasValidationErrors(label, submit, empSettingForm) }">
+              {{label.labelName.alias  | changeCase : 'capital'}}
+            </label>
+              <input *ngIf="
+              [
+                'text',
+                'password',
+                'email',
+                'number',
+                'tel',
+                'url',
+                'date'
+              ].includes(label.type)
+            " class="form-control form-control-sm" [formControlName]="label.labelName.defaultValue" placeholder="Placeholder Text"
+                [ngClass]="{
+                    'invalid': sharedService.hasValidationErrors(label, submit, empSettingForm)
+                  }" />
+                  <ng-container *ngIf="label.type === 'designation'">
+                    <custom-ng-select
+                      [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, empSettingForm) }"
+                      [apiLink]="label.apiLink"
+                      [patchData]="designationList"
+                      [formControlName]="label.labelName.defaultValue!"
+                      [controlName]="label.labelName.defaultValue!"
+                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                      [multiple]="true">
+                    </custom-ng-select>
+                  </ng-container>
+              <ng-container *ngFor="let validation of label.validations;">
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                    validation: validation.name,
+                    message: validation.message,
+                    control: empSettingForm.get(label.labelName.alias)
+                  }"></ng-container>
+              </ng-container>
+          </div>
+        </ng-container>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer py-3">
+    <button type="button" class=" fw-bold btn btn-{{theme}}-bright"
+      (click)="handleCancelClick()">Cancel</button>
+      <button type="submit" *ngIf="empRoute !== 'employeeSettings'"
+      class="fw-bold btn btn-{{theme}} ms-5S cursor-pointer"   [disabled]="isProcessing" (click)="onEmpSubmit()">
+      <ng-container *ngIf="!isProcessing">
+        Save
+      </ng-container>
+      <ng-container *ngIf="isProcessing">
+        <div class="d-flex gap-3">
+          Please wait
+          <div class="spinner"></div>
+        </div>
+      </ng-container>
+    </button>
+  </div>
+  <ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+      <div class="fv-plugins-message-container top-55px ">
+        <span role="alert" class="fv-help-block fs-9">
+          {{ message }}
+        </span>
+      </div>
+    </ng-container>
+  </ng-template>
+</ng-template> -->

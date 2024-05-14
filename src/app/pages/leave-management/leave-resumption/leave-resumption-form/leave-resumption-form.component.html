@@ -1,0 +1,146 @@
+<app-page-title></app-page-title>
+
+<div class="card">
+    <div class="card bs-none p-4">
+        <app-breadcrumb></app-breadcrumb>
+        <ng-container *ngIf="!isLoading ; else skeleton">
+            <ng-container *ngIf="formSections.length>0">
+                <ng-container *ngFor="let section of formSections; let i=index">
+                    <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                        <div class="ps-9 mt-2">
+                            <div class="d-flex">
+                                <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                <div class="hr-side me-8 ms-2">
+                                    <hr class="mx-1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body py-0">
+                            <form [formGroup]="leaveResumptionForm">
+                                <div class="row">
+                                    <ng-container *ngFor="let label of leaveResumptionFormData.labels">
+                                            <ng-container *ngIf="section.sectionName === label.sectionName  && !label?.hide">
+                                                <div
+                                                    class="col-lg-{{ label.col ? label.col : col }} mb-2  position-relative">
+                                                    <div class="max-w-90">
+                                                        <ng-container *ngIf="label.type !== 'checkbox'">
+                                                            <label class="form-label fs-6 mb-0" *ngIf="label.labelName.defaultValue!=='status'"
+                                                                [ngClass]="{ 'required': label?.required,'invalid': sharedService.hasValidationErrors(label, submit, leaveResumptionForm) }">{{
+                                                                label.labelName.alias.replace('Id','') | changeCase :
+                                                                "capital" }}</label>
+                                                                <label class="form-label fs-6 mb-0"  *ngIf="label.labelName.defaultValue==='status' && id"
+                                                                [ngClass]="{ 'required': label?.required,'invalid': sharedService.hasValidationErrors(label, submit, leaveResumptionForm) }">{{
+                                                                label.labelName.alias.replace('Id','') | changeCase :
+                                                                "capital" }}</label>
+                                                        </ng-container>
+
+                                                        <app-input-text-field [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label, submit, leaveResumptionForm) }"
+                                                            [isFieldDisabled]="(label.labelName.defaultValue === 'leaveDays' || label.labelName.defaultValue === 'leaveStartDate' || label.labelName.defaultValue === 'leaveEndDate') ? true: false"
+                                                            [patchValue]="leaveResumptionForm?.value[label.labelName.defaultValue!]"
+                                                            [formControlName]="label.labelName.defaultValue!"
+                                                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                            [type]="label.type"
+                                                            [name]="label.labelName.alias!"></app-input-text-field>
+
+                                                            <ng-container *ngIf="label.labelName.defaultValue === 'status' && id" >
+                                                                <custom-ng-select  [multiple]="label.multiple"
+                                                                  [jsonListName]="label.jsonListName"
+                                                                  [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, leaveResumptionForm) }"
+                                                                  [formControlName]="label.labelName.defaultValue!"
+                                                                  [controlName]="label.labelName.defaultValue!"
+                                                                  [patchData]="leaveResumptionForm.value[label.labelName.defaultValue!] ? leaveResumptionForm.value[label.labelName.defaultValue!] : undefined"
+                                                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                              </ng-container>
+
+                                                        <ng-container [formControlName]="label.labelName.defaultValue!"
+                                                            class="align-items-center" *ngIf="label.type === 'custom'">
+                                                            <employee-select (onchange)="onEmployeeChange($event)"
+                                                                [scope]="'leaveResumption'"
+                                                                [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label, submit, leaveResumptionForm) }"
+                                                                [isDisabled]="id ? true : false"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital') "
+                                                                >
+                                                            </employee-select>
+                                                        </ng-container>
+                                                        <ng-container class="align-items-center"
+                                                            *ngIf="label.type === 'date'">
+                                                            <!-- ngb-bootstrap datepicker -->
+                                                            <input-date-picker [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label, submit, leaveResumptionForm) }"
+                                                                *ngIf="label.labelName.defaultValue !=='resumeDay'"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [isDisabled]="'true'"></input-date-picker>
+                                                            <input-date-picker [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label, submit, leaveResumptionForm) }"
+                                                                *ngIf="label.labelName.defaultValue ==='resumeDay'"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [isDisabled]="'true'"
+                                                                [minDate]="resumeDateMin"></input-date-picker>
+                                                            <!-- -- -->
+                                                        </ng-container>
+                                                        <ng-container class="align-items-center"
+                                                            *ngIf="label.type === 'leaveType'">
+                                                            <custom-ng-select [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label, submit, leaveResumptionForm) }"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                [items]="leaveTypeList" [multiple]="label.multiple"
+                                                                [patchData]="patchData?.leaveType"
+                                                                (onchange)="onLeaveTypeChange($event)">
+                                                            </custom-ng-select>
+                                                        </ng-container>
+                                                        <ng-container class="align-items-center"
+                                                            *ngIf="label.type === 'resumeType'">
+                                                            <custom-ng-select [items]="resumeTypeList" [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label, submit, leaveResumptionForm) }"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                [jsonListName]="label.jsonListName"
+                                                                [multiple]="label.multiple"
+                                                                [patchData]="patchData?.resumeType">
+                                                            </custom-ng-select>
+                                                        </ng-container>
+                                                        <ng-container
+                                                            *ngIf="label.labelName.defaultValue === 'attachment'">
+                                                            <input-file-upload [allowPdf]="true" theme="light"
+                                                                fieldStyle="compact"
+                                                                [formControlName]="label.labelName.defaultValue!"></input-file-upload>
+                                                        </ng-container>
+                                                        <ng-container *ngFor="let validation of label.validations;">
+                                                            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                                        validation: validation.name,
+                                                        message: validation.message,
+                                                        control: leaveResumptionForm.get(label.labelName.defaultValue)
+                                                      }"></ng-container>
+                                                          </ng-container>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                    </ng-container>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+            <ng-container>
+                <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+            </ng-container>
+        </ng-container>
+    </div>
+</div>
+
+
+
+<ng-template #skeleton>
+    <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+      <div class="fv-plugins-message-container ">
+        <span role="alert" class="fv-help-block fs-9">
+          {{ message }}
+        </span>
+      </div>
+    </ng-container>
+  </ng-template>

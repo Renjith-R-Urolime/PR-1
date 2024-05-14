@@ -1,0 +1,849 @@
+<app-page-title ></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+ <!-- begin::Draft Success-->
+ <ng-container *ngIf="draftSuccessMsg">
+  <div class="mb-5 alert alert-success">
+    <div class="alert-text font-weight-bold">
+      {{draftSuccessMsg}}
+    </div>
+  </div>
+</ng-container>
+<!-- end::Draft Success-->
+<!-- begin::Draft Success-->
+<ng-container *ngIf="validationMsg">
+  <div class="mb-5 alert alert-danger">
+    <div class="alert-text font-weight-bold">
+      {{validationMsg}}
+    </div>
+  </div>
+</ng-container>
+<!-- end::Draft Success-->
+
+<div class="card bs-none p-4">
+  <app-breadcrumb></app-breadcrumb>
+  <div class="d-flex gap-6 mt-3" *ngIf="!isLoading ; else skeleton">
+    <div class="min-w-250px w-250px max-w-250px">
+      <div class="d-flex flex-column justify-content-between bg-page rounded-1 p-4 h-100">
+        <div class="mb-3">
+          <div class="d-flex gap-2 rounded-1 btn-active-{{theme}}-bright mb-1 px-4 py-2 overflow-hidden text-wrap text-truncate" [ngClass]="{ 'active' : leaveFormData.formName === 'leavePlanForm' }" (click)="enabledFormArray('leavePlanForm')">
+            <span [inlineSVG]="'./assets/media/icons/calendar-outline.svg'" class="svg-icon svg-icon-2"></span>
+            <ng-container *ngIf="leaveForm.get('leavePlanForm').get('name').value !== '' && leaveForm.get('leavePlanForm').get('name').value !== null && leaveForm.get('leavePlanForm').get('name').value !== undefined; else blankPlanText">
+              <p class="fw-medium fs-7 m-0 cursor-pointer">{{leaveForm.get('leavePlanForm').get('name').value}}</p>
+            </ng-container>
+            <ng-template #blankPlanText>
+              <p class="fw-medium fs-7 m-0 text-muted">Leave PLan Name</p>
+            </ng-template>
+          </div>
+          <ul class="wtree" *ngIf="leaveTypeData.controls.length !== 0">
+            <li *ngFor="let type of leaveTypeData.controls; let s=index ">
+              <div (click)="enabledFormArray('leaveTypeForm',s)" [ngClass]="{ 'active' : leaveFormData.formName === 'leaveTypeForm' && formArrayIndex === s }" class="rounded-1 btn-active-{{theme}}-bright px-4 py-2 m-0 mb-1 cursor-pointer">
+                <ng-container *ngIf="type.get('name').value !== '' && type.get('name').value !== null && type.get('name').value !== undefined; else blankTypeText">
+                  <span class="fw-medium fs-7">{{type.get('name').value}}</span>
+                </ng-container>
+                <ng-template #blankTypeText>
+                  <span class=" fw-medium fs-7 text-muted">Leave Type Name</span>
+                </ng-template>
+              </div>
+              <ul>
+                <li>
+                  <div (click)="enabledFormArray('leaveRule1Form',s)" [ngClass]="{ '
+                  active text-dark' : leaveFormData.formName === 'leaveRule1Form' && formArrayIndex === s
+                }" class="d-flex gap-2 rounded-1 btn-active-{{theme}}-bright px-4 py-2 m-0 mb-1 cursor-pointer text-gray-500">
+                    <span class="fw-medium fs-7">Rule 1</span>
+                    <span *ngIf="leaveRule1Data(s).status === 'VALID'" [inlineSVG]="'./assets/media/icons/checkmark-circle-outline.svg'" class="svg-icon svg-icon-5 svg-icon-success"></span>
+                  </div>
+                </li>
+                <li>
+                  <div (click)="enabledFormArray('leaveRule2Form',s)" [ngClass]="{
+                    'active text-dark' : leaveFormData.formName === 'leaveRule2Form' && formArrayIndex === s
+                    }" class="d-flex gap-2 rounded-1 btn-active-{{theme}}-bright px-4 py-2 m-0 mb-1 cursor-pointer text-gray-500">
+                    <span class="fw-medium fs-7">Rule 2</span>
+                    <span *ngIf="leaveRule2Data(s).status === 'VALID' && entitlementData(s).status === 'VALID'"  [inlineSVG]="'./assets/media/icons/checkmark-circle-outline.svg'" class="svg-icon svg-icon-5 svg-icon-success"></span>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+
+          <button class="btn compact btn-{{theme}}-outline mt-1" [disabled]="leaveForm.get('leavePlanForm').invalid"  (click)="addLeaveType()">Add Leave Type</button>
+        </div>
+        <div>
+          <p class="fw-medium fs-7 m-0 mb-1">{{formPercentage}}% Completed</p>
+          <div class="progress" style="height: 6px;">
+            <div class="progress-bar bg-{{theme}}" role="progressbar" [style.width.%]="formPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex flex-column flex-grow-1">
+      <ng-container *ngIf="formSections.length>0">
+        <ng-container *ngFor="let section of formSections; let i=index">
+          <ng-container *ngIf="section.tabName === leaveFormData.tabName">
+            <div class="d-flex flex-column flex-md-row">
+              <!--begin::Col-->
+              <div class="card-body p-0">
+                <div class="d-flex">
+                  <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                  <div class="hr-side ms-2">
+                    <hr class="mx-1">
+                  </div>
+                </div>
+                <form [formGroup]="leaveForm">
+                  <ng-container *ngIf="leaveFormData.formName === 'leavePlanForm'">
+                    <div class="row" [formGroupName]="'leavePlanForm'">
+                      <ng-container *ngFor="let label of leaveFormData.labels; let i = index">
+                        <ng-container *ngIf="label.sectionName === section.sectionName">
+                          <div class="col-lg-{{ label.col ? label.col : col }} mb-2 position-relative">
+                            <div class="w-100 mb-3" >
+                            <label class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required! ? label?.required! : false}">{{
+                              label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                            <ng-container class="align-items-center" *ngIf="
+                                  [
+                                    'text',
+                                    'password',
+                                    'email',
+                                    'number',
+                                    'tel',
+                                    'url'
+                                  ].includes(label.type)
+                                ">
+                              <input [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                                class="form-control form-control-sm"
+                                [ngClass]="{ 'invalid' : submit &&  leaveForm.get(leaveFormData.formName).get(label.labelName.defaultValue).invalid }"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " />
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'jurisdiction'">
+                              <custom-ng-select
+                                (onchange)="onJurisdictionChange($event)"
+                                [apiLink]="label.apiLink"
+                                [fetchCondition]="label.fetchCondition"
+                                [ngClass]="{ 'invalid' : submit &&  leaveForm.get(leaveFormData.formName).get(label.labelName.defaultValue).invalid }"
+                                [patchData]="patchDataList && patchDataList[label.type] ? patchDataList[label.type] : leaveData && leaveData[label.type] ? leaveData[label.type] : undefined"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [controlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                              </custom-ng-select>
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'subsidiary'">
+                              <custom-ng-select
+                              (onchange)="onSubsidiaryChange($event)"
+                              [multiple]="true"
+                              [items]="subsidiaryList"
+                              [ngClass]="{ 'invalid' : submit &&  leaveForm.get(leaveFormData.formName).get(label.labelName.defaultValue).invalid }"
+                              [formControlName]="label.labelName.defaultValue!"
+                              [controlName]="label.labelName.defaultValue!"
+                              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                            </custom-ng-select>
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'location' || label.type === 'department' || label.type === 'class'">
+                              <custom-ng-select
+                                [multiple]="true"
+                                [apiLink]="filterCondition.length > 0 ? label.apiLink : ''"
+                                [fetchCondition]="filterCondition"
+                                (onchange)="savePatchDataList($event, label.type)"
+                                [patchData]="patchDataList && patchDataList[label.type] ? patchDataList[label.type] : leaveData && leaveData[label.type] ? leaveData[label.type] : undefined"
+                                [ngClass]="{ 'invalid' : submit &&  leaveForm.get(leaveFormData.formName).get(label.labelName.defaultValue).invalid }"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [controlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                              </custom-ng-select>
+                            </ng-container>
+                            <ng-container *ngFor="let validation of label?.validations;">
+                              <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                              validation: validation.name,
+                              message: validation.message,
+                              control:  leaveForm.get(leaveFormData.formName).get(label.labelName.defaultValue)
+                            }"></ng-container>
+                            </ng-container>
+                          </div>
+                        </div>
+                        </ng-container>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="leaveFormData.formName === 'leaveTypeForm' || leaveFormData.formName ===  'leaveRule1Form' || leaveFormData.formName ===  'leaveRule2Form'">
+                    <div [formArrayName]="'leaveTypeForm'">
+                      <ng-container *ngFor="let control of leaveTypeData.controls; let i=index">
+                        <div class="row" [formGroupName]="i">
+                          <ng-container *ngIf="(leaveTypeData.controls.length === i+1 && sideClick === false && editMode === false && nextClick === false) || (leaveTypeData.controls.length === 1 && sideClick === false) || (sideClick === true && showIndex === i) || (showIndex === i && editMode) || (i === 0 && nextClick)">
+                           <ng-container *ngIf="leaveFormData.formName === 'leaveTypeForm'">
+                            <ng-container *ngFor="let label of leaveFormData.labels">
+                              <ng-container *ngIf="label.sectionName === section.sectionName">
+                                <div class="col-lg-{{ label.col ? label.col : col }} mb-2 position-relative">
+                                  <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                  <label class="form-label fs-6 mb-0 line-clamp-1" [ngClass]="{'required': label?.required! ? label?.required! : false}">{{
+                                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                  <ng-container class="align-items-center" *ngIf="
+                                        [
+                                          'text',
+                                          'password',
+                                          'email',
+                                          'number',
+                                          'tel',
+                                          'url'
+                                        ].includes(label.type)
+                                      ">
+                                      <input *ngIf="label.type !== 'number'"
+                                      [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                                      class="form-control form-control-sm" [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }" [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "/>
+
+                                      <input [readonly]="label.labelName.defaultValue === 'value' && leaveTypeData.at(i).value?.leavePayType !== '6'" (change)="onValueChange($event,label.labelName.defaultValue,i)" *ngIf="label.type === 'number'" (keydown)="onKeyDown($event)"  (input)="onInput($event,label.labelName.defaultValue,label?.minimum,label?.maximum)" [min]="label.minimum ? label.minimum : 0" [max]="label.maximum ? label.maximum : 9999" [step]="label.step ? label.step : 1"
+                                      [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                                      class="form-control form-control-sm"  [ngClass]="{ 'invalid' : submit && leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }" [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "/>
+                                      <ng-container *ngIf="showValueError && label.labelName.defaultValue === 'value'">
+                                        <div class="fv-plugins-message-container">
+                                          <span role="alert" class="fv-help-block fs-9">
+                                           Value required
+                                          </span>
+                                        </div>
+                                      </ng-container>
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'leaveItemType'">
+                                    <custom-ng-select
+                                      [multiple]="label.multiple"
+                                      (onchange)="onItemTypeChange($event,i)"
+                                      [jsonListName]="label.jsonListName"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [patchData]="leaveTypeData.at(i).value.leaveItemType"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                  </custom-ng-select>
+                                    <!-- <ng-select (change)="onItemTypeChange($event,i)"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!" class="mb-3"
+                                      [clearable]="true" [loadingText]="'Loading....'"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                                      <ng-option *ngFor="let itemType of itemTypeList" [value]="itemType.id">{{
+                                        itemType.name
+                                        }}</ng-option>
+                                    </ng-select> -->
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'leavePayType'">
+                                    <custom-ng-select
+                                      [multiple]="label.multiple"
+                                      (onchange)="onPayTypeChange($event,i)"
+                                      [jsonListName]="label.jsonListName"
+                                      [fetchCondition]="leaveTypeData.at(i).value?.leaveItemType?.toString() === '2' ? ['id!=1']: []"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                  </custom-ng-select>
+                                    <!-- <ng-select (change)="onPayTypeChange($event,i)"
+                                      [ngClass]="{ 'invalid' : submit && leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid}"
+                                      [formControlName]="label.labelName.defaultValue!" class="mb-3"
+                                      [clearable]="true"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                                      <ng-option *ngFor="let payType of leavePayTypeList" [value]="payType.id">{{
+                                        payType.name
+                                        }}</ng-option>
+                                    </ng-select> -->
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'entitlementUnit'">
+                                    <custom-ng-select
+                                      [multiple]="label.multiple"
+                                      [jsonListName]="label.jsonListName"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      (onchange)="onEntitlementChange($event,i)"
+                                      [patchData]="leaveTypeData.at(i).getRawValue().entitlementUnit"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                    <!-- <ng-select
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!" class="mb-3"
+                                      [clearable]="true"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                                      <ng-option *ngFor="let entitlementUnit of entitlementUnitList" [value]="entitlementUnit.id">{{
+                                        entitlementUnit.name
+                                        }}</ng-option>
+                                    </ng-select> -->
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'component'">
+                                    <custom-ng-select
+                                      [multiple]="label.multiple"
+                                      [apiLink]="componentFetch?.[i]?.length > 0 ? label.apiLink : ''"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }"
+                                      [fetchCondition]="componentFetch[i]"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      (onchange)="savePatchDataList($event, label.type+'_'+i)"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [patchData]="patchDataList && patchDataList[label.type+'_'+i] ? patchDataList[label.type+'_'+i] : undefined"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'encashmentComponent'">
+                                    <custom-ng-select
+                                      [multiple]="label.multiple"
+                                      [apiLink]="label.apiLink"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get(label.labelName.defaultValue).invalid }"
+                                      [fetchCondition]="label.fetchCondition"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      (onchange)="savePatchDataList($event, label.type+'_'+i)"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [patchData]="patchDataList && patchDataList[label.type+'_'+i] ? patchDataList[label.type+'_'+i] : ( leaveData && leaveData?.leaveTypes && leaveData?.leaveTypes?.[i]?.[label.type] ) ? leaveData?.leaveTypes && leaveData?.leaveTypes?.[i]?.[label.type] : undefined"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <!-- <ng-container *ngIf="label.type === 'encashment'">
+                                    <custom-ng-select
+                                      [multiple]="true"
+                                      [apiLink]="label.apiLink"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveForm.get(leaveFormData.formName).get(label.labelName.defaultValue).invalid }"
+                                      [formGroupRef]="leaveForm"
+                                      formArrayRef="leaveTypeForm"
+                                      [formArrayIndex]="i"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                  </ng-container> -->
+                                  <ng-container *ngFor="let validation of label?.validations;">
+                                    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                    validation: validation.name,
+                                    message: validation.message,
+                                    control: leaveTypeData.controls[i].get(label.labelName.defaultValue)
+                                  }"></ng-container>
+                                  </ng-container>
+                                </div>
+                                </div>
+                              </ng-container>
+                            </ng-container>
+                           </ng-container>
+                           <ng-container *ngIf="leaveFormData.formName === 'leaveRule1Form'">
+                            <div class="row" [formGroup]="leaveRule1Data(i)">
+                              <ng-container *ngFor="let label of leaveFormData.labels">
+                                <ng-container *ngIf="label.sectionName === section.sectionName">
+                                  <div class="col-lg-{{ label.col ? label.col : col }} mb-2 position-relative">
+                                    <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                    <ng-container *ngIf="label.type !== 'checkbox'">
+                                    <label class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required! ? label?.required! : false}">{{
+                                      label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                    </ng-container>
+                                    <ng-container class="align-items-center" *ngIf="
+                                          [
+                                            'text',
+                                            'password',
+                                            'email',
+                                            'number',
+                                            'tel',
+                                            'url'
+                                          ].includes(label.type)
+                                        ">
+                                      <input (input)="onInput($event,label.labelName.defaultValue,label?.minimum,label?.maximum)" [min]="label.minimum ? label.minimum : 0" [max]="label.maximum ? label.maximum : 9999"  [readonly]="label.labelName.defaultValue === 'thresholdDays' ? leaveTypeData.at(i).get('leaveRule1Form').value?.documentMandatory !== true : label.labelName.defaultValue === 'negativeLeaveLimit' ? leaveTypeData.at(i).get('leaveRule1Form').value?.allowNegativeLeaves !== true : false" [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                                        class="form-control form-control-sm"
+                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " />
+
+                                    </ng-container>
+                                    <ng-container *ngIf="label.type === 'checkbox'">
+                                      <div class="form-check  form-check-color-{{theme}}">
+                                        <input (change)="checkboxChange($event,label.labelName.defaultValue,i)" [formControlName]="label.labelName.defaultValue!" class="form-check-input mt-2 mb-3" type="checkbox" [id]="label.labelName.alias!" />
+                                        <label class="form-label fs-6 mt-2 mb-1" for="flexCheckDefault">
+                                            {{ label.labelName.alias | changeCase : "capital" }}
+                                        </label>
+                                    </div>
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'leaveReason'">
+                                    <custom-ng-select
+                                      [multiple]="label.multiple"
+                                      [apiLink]="label.apiLink"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      (onchange)="savePatchDataList($event, label.type+'_'+i)"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [patchData]="patchDataList && patchDataList[label.type+'_'+i] ? patchDataList[label.type+'_'+i] : ( leaveData && leaveData?.leaveTypes && leaveData?.leaveTypes?.[i]?.leaveRule && leaveData?.leaveTypes?.[i]?.leaveRule[label.type] ) ?  leaveData?.leaveTypes?.[i]?.leaveRule[label.type] : undefined"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'genderRestrictions' || label.type === 'nationalityRestrictions' || label.type === 'religionRestrictions' ">
+                                      <custom-ng-select
+                                        [multiple]="label.multiple"
+                                        [jsonListName]="label?.jsonListName"
+                                        [formControlName]="label.labelName.defaultValue!"
+                                        [controlName]="label.labelName.defaultValue!"
+                                        (onchange)="savePatchDataList($event, label.type+'_'+i)"
+                                        [patchData]="patchDataList && patchDataList[label.type+'_'+i] ? patchDataList[label.type+'_'+i] : ( leaveData && leaveData?.leaveTypes && leaveData?.leaveTypes?.[i]?.leaveRule && leaveData?.leaveTypes?.[i]?.leaveRule[label.type] ) ?  leaveData?.leaveTypes?.[i]?.leaveRule[label.type] : undefined"
+                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                      </custom-ng-select>
+                                    </ng-container>
+                                    <ng-container *ngIf="label.type === 'textarea'">
+                                      <textarea [formControlName]="label.labelName.defaultValue!"
+                                      class="form-control"
+                                    ></textarea>
+                                    </ng-container>
+                                    <ng-container *ngFor="let validation of label?.validations;">
+                                      <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                      validation: validation.name,
+                                      message: validation.message,
+                                      control: leaveTypeData.controls[i].get('leaveRule1Form').get(label.labelName.defaultValue)
+                                    }"></ng-container>
+                                    </ng-container>
+                                  </div>
+                                  </div>
+                                </ng-container>
+                              </ng-container>
+                            </div>
+
+                           </ng-container>
+                           <ng-container *ngIf="leaveFormData.formName === 'leaveRule2Form'">
+                            <div class="row" [formGroup]="leaveRule2Data(i)">
+                            <ng-container *ngFor="let label of leaveFormData.labels; let fd = index">
+                              <ng-container *ngIf="label.sectionName === section.sectionName">
+                                <div class="col-lg-{{ label.col ? label.col : col }} mb-2 position-relative">
+                                  <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                  <ng-container *ngIf="label.type !== 'checkbox'">
+                                  <label class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required! ? label?.required! : false}">{{
+                                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="
+                                        [
+                                          'text',
+                                          'password',
+                                          'email',
+                                          'number',
+                                          'tel',
+                                          'url',
+                                        ].includes(label.type)
+                                      ">
+                                    <input  (input)="onInput($event,label.labelName.defaultValue,label?.minimum,label?.maximum)" [min]="label.minimum ? label.minimum : 0" [max]="label.maximum ? label.maximum : 9999"  [readonly]="label.labelName.defaultValue === 'resumptionThresholdDays' && leaveTypeData.at(i).get('leaveRule2Form').value?.applicableForResumption !== true " [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                                      class="form-control form-control-sm"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get('leaveRule2Form').get(label.labelName.defaultValue).invalid }"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " />
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'accrualDays' || label.type === 'quotaDays'">
+                                    <!-- ngb-bootstrap datepicker -->
+                                   <!--  <div class="position-relative">
+                                      <input class="form-control form-control-sm" data-year="false" [minDate]="{'year': currentYear,'month': 1,'day': 1}"
+                                      [maxDate]="{'year': currentYear,'month': 12,'day': 31}"
+                                        [weekdays]="false"
+
+                                        [outsideDays]="'hidden'"data-type="date" formControlName="{{ label.labelName.defaultValue! }}" placeholder="DD/MM/YYYY" name="dp" ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"  (click)="d.toggle()"/>
+                                      <span class="date-icon" (click)="d.toggle()"></span>
+                                    </div> -->
+                                    <!-- -- -->
+                                    <custom-ng-select [onOrder]="false" [isSelectDisabled]="label.type === 'accrualDays' ? leaveTypeData.at(i).get('leaveRule2Form').value?.accrualType?.toString() !== '5' :  leaveTypeData.at(i).get('leaveRule2Form').value?.quotaResetType?.toString() !== '5'"
+                                      [multiple]="false"
+                                      [items]="days" [formControlName]="label.labelName.defaultValue!"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      (onchange)="savePatchDataList($event, label.type+'_'+i)"
+                                      [patchData]="leaveTypeData.at(i).get('leaveRule2Form').value?.[label.labelName.defaultValue]"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                </ng-container>
+
+                                  <ng-container *ngIf="label.type === 'accrualType'">
+                                    <custom-ng-select
+                                    [multiple]="label.multiple"
+                                    (onchange)="onAccrualChange($event,i)"
+                                    [isSelectDisabled] = "leaveTypeData.at(i).get('leaveRule2Form').value?.accrualFrequency && leaveTypeData.at(i).get('leaveRule2Form').value?.accrualFrequency !== '1' ? false : true"
+                                    [jsonListName]="label.jsonListName"
+                                    [controlName]="label.labelName.defaultValue!"
+                                    [ngClass]="{ 'invalid' : submit &&  leaveRule2Data(i).get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [controlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                  </custom-ng-select>
+                                    <!-- <ng-select  (change)="onAccrualChange($event,i)"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveRule2Data(i).get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!" class="mb-3"
+                                      [clearable]="true" [loadingText]="'Loading....'"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                                      <ng-option *ngFor="let accrualType of accrualTypeList" [value]="accrualType.id">{{
+                                        accrualType.name
+                                        }}</ng-option>
+                                    </ng-select> -->
+                                  </ng-container>
+                                  <ng-container [ngSwitch]="label.type">
+                                    <ng-container *ngSwitchCase="'applicableForEncashment'">
+                                      <button (click)="getFormTemplate(encashment, label.labelName.defaultValue,i)" class="btn form-btn-icon btn-light mb-1 border border-1 ms-1" [id]="'kt_drawer_form_toggle'">
+                                        <span [inlineSVG]="encashmentData(i)?.value?.encashmentSaved ? './assets/media/icons/create-outline.svg' : './assets/media/icons/add-outline.svg'" class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                      </button>
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'entitlementPerPeriod'">
+                                      <button (click)="getFormTemplate(entitlementPerPeriod, label.labelName.defaultValue,i)" class="btn form-btn-icon btn-light mb-1 border border-1 ms-1" [id]="'kt_drawer_form_toggle'">
+                                        <span [inlineSVG]="leaveEntitlement(i)?.value?.perPeriodSaved ? './assets/media/icons/create-outline.svg' :'./assets/media/icons/add-outline.svg'" class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                      </button>
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'applicableForFullFinal'">
+                                      <button (click)="getFormTemplate(fullNFinal, label.labelName.defaultValue,i)" class="btn form-btn-icon btn-light mb-1 border border-1 ms-1" [id]="'kt_drawer_form_toggle'">
+                                        <span [inlineSVG]=" fullFinalData(i)?.value?.fullNFinalSaved ? './assets/media/icons/create-outline.svg' : './assets/media/icons/add-outline.svg'" class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                      </button>
+                                    </ng-container>
+                                  </ng-container>
+
+                                  <ng-container *ngIf="label.type === 'checkbox'">
+                                    <div class="form-check  form-check-color-{{theme}}">
+                                      <input (change)="checkboxChange($event,label.labelName.defaultValue,i)" [formControlName]="label.labelName.defaultValue!" class="form-check-input mt-2 mb-3" type="checkbox" [id]="label.labelName.alias!" />
+                                      <label class="form-label fs-6 mt-2 mb-1" for="flexCheckDefault">
+                                          {{ label.labelName.alias | changeCase : "capital" }}
+                                      </label>
+                                  </div>
+                                  </ng-container>
+                                  <ng-container *ngIf="label.type === 'quotaResetType'">
+                                    <custom-ng-select
+                                      (onchange)="onQuotaChange($event,i)"
+                                      [isSelectDisabled] = "leaveTypeData.at(i).get('leaveRule2Form').value?.quotaResetFrequency ? false : true"
+                                      [multiple]="label.multiple"
+                                      [jsonListName]="label.jsonListName"
+                                      [ngClass]="{ 'invalid' : submit &&  leaveRule2Data(i).get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      (onchange)="savePatchDataList($event, label.type+'_'+i)"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [patchData]="patchDataList && patchDataList[label.type+'_'+i] ? patchDataList[label.type+'_'+i] : ( leaveData && leaveData?.leaveTypes && leaveData?.leaveTypes[i]?.leaveRule && leaveData?.leaveTypes[i]?.leaveRule[label.type] ) ?  leaveData?.leaveTypes[i]?.leaveRule[label.type] : undefined"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                    </ng-container>
+                                  <ng-container *ngIf="label.type === 'accrualFrequency' || label.type === 'quotaResetFrequency'">
+                                      <custom-ng-select
+                                        [multiple]="label.multiple"
+                                        [fetchCondition]="label.fetchCondition"
+                                        (onchange)="onFrequencyChange($event,i,label.type)"
+                                        [jsonListName]="label.jsonListName"
+                                        [ngClass]="{ 'invalid' : submit &&  leaveRule2Data(i).get(label.labelName.defaultValue).invalid }"
+                                        [formControlName]="label.labelName.defaultValue!"
+                                        [controlName]="label.labelName.defaultValue!"
+                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                      </custom-ng-select>
+                                    <!-- <ng-select
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get('leaveRule2Form').get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!" class="mb-3"
+                                      [clearable]="true"  [loadingText]="'Loading....'"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                                      <ng-option *ngFor="let freq of accrualFrequencyList" [value]="freq.id">{{
+                                        freq.name
+                                        }}</ng-option>
+                                    </ng-select> -->
+                                  </ng-container>
+                                  <!-- <ng-container *ngIf="label.type === 'quotaResetType'">
+                                    <ng-select
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get('leaveRule2Form').get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!" class="mb-3"
+                                      [clearable]="true"  [loadingText]="'Loading....'"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                                      <ng-option *ngFor="let quota of quotaResetTypeList" [value]="quota.id">{{
+                                        quota.name
+                                        }}</ng-option>
+                                    </ng-select>
+                                  </ng-container> -->
+                                  <!-- <ng-container *ngIf="label.type === 'quotaResetFrequency'">
+                                    <ng-select
+                                      [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[i].get('leaveRule2Form').get(label.labelName.defaultValue).invalid }"
+                                      [formControlName]="label.labelName.defaultValue!" class="mb-3"
+                                      [clearable]="true"  [loadingText]="'Loading....'"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                                      <ng-option *ngFor="let quotaFrequency of quotaResetFrequencyList" [value]="quotaFrequency.id">{{
+                                        quotaFrequency.name
+                                        }}</ng-option>
+                                    </ng-select>
+                                  </ng-container> -->
+                                  <ng-container *ngFor="let validation of label?.validations;">
+                                    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                    validation: validation.name,
+                                    message: validation.message,
+                                    control: leaveTypeData.controls[i].get('leaveRule2Form').get(label.labelName.defaultValue)
+                                  }"></ng-container>
+                                  </ng-container>
+                                </div>
+                                </div>
+                              </ng-container>
+                            </ng-container>
+                            </div>
+                           </ng-container>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </form>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      <div class="p-md-0 ">
+        <div class="d-flex  flex-column flex-md-row justify-content-end gap-4">
+          <button *ngIf="!editMode" type="button" class="btn btn-{{theme}}-outline" (click)="onSaveDraft()">
+            <ng-container *ngIf="!isDraftProcessing">
+            Save as Draft
+          </ng-container>
+          <ng-container *ngIf="isDraftProcessing">
+            <div class="d-flex gap-3">
+              Please wait
+              <div class="spinner"></div>
+            </div>
+          </ng-container></button>
+          <button (click)="onCancel()" type="button" class="btn btn-sm cursor-pointer btn-{{theme}}-bright">
+            <!-- <ng-container *ngIf="currentStep$ === 1">Cancel</ng-container> -->
+            Cancel
+          </button>
+          <button *ngIf="leaveFormData.formName !== 'leaveRule2Form'" type="submit" class="btn btn-{{theme}} btn-sm cursor-pointer"
+            (click)="onNext(leaveFormData.index)">
+            <ng-container *ngIf="!planCheckLoader">
+              Next
+          </ng-container>
+          <ng-container *ngIf="planCheckLoader">
+              <div class="d-flex gap-3">
+                  Please wait
+                  <div class="spinner"></div>
+              </div>
+          </ng-container>
+          </button>
+          <button *ngIf="leaveFormData.formName === 'leaveRule2Form'" type="submit" class="btn btn-{{theme}} btn-sm cursor-pointer" (click)="onSubmit()" [disabled]="isProcessing">
+            <ng-container *ngIf="!isProcessing">
+              Submit
+            </ng-container>
+            <ng-container *ngIf="isProcessing">
+              <div class="d-flex gap-3">
+                Please wait
+                <div class="spinner"></div>
+              </div>
+            </ng-container>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control?.hasError(validation)">
+    <div class="fv-plugins-message-container">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
+
+<!-- <button class="btn btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1" [id]="'kt_drawer_form_toggle_'+3"><span span
+  [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+  class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+  <app-form-drawer [id]="3" [headerText]="'applicableForFullNFinal'" [formTemplate]="fullNFinal"></app-form-drawer> -->
+
+<app-form-drawer drawerWidth="580" [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" (isSaved)="onDrawerSave($event)" (isCanceled)="onDrawerCancel($event)" [buttonDisable]="saveButtonDisable"></app-form-drawer>
+
+
+<ng-template #fullNFinal>
+  <form [formGroup]="leaveForm">
+    <div [formArrayName]="'leaveTypeForm'">
+      <div [formGroupName]="formArrayIndex">
+        <div [formGroup]="fullFinalData(formArrayIndex)">
+          <div class="d-flex flex-column mt-5 gap-5">
+            <div class="d-flex gap-2 align-items-center position-relative" *ngFor="let label of encashmentFormMeta[1].labels">
+              <!-- {{label | json}} -->
+              <label class="form-label fs-6 mb-0 min-w-50"
+                [ngClass]="{'required': label?.required! ? label?.required! : false}">{{
+                label.labelName.alias | changeCase : "capital" }}</label>
+
+              <input *ngIf="label.type === 'number'" (input)="onInput($event,label.labelName.defaultValue,label.minimum,label.maximum)" [min]="label.minimum ? label.minimum : 0" [max]="label.maximum ? label.maximum : 9999"
+                [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                class="form-control form-control-sm"
+                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " />
+
+                <ng-container *ngIf="label.type === 'component' || label.type === 'encashmentComponent'">
+                  <custom-ng-select
+                    class="w-100"
+                    [multiple]="label.multiple"
+                    [apiLink]="label.apiLink"
+                    [fetchCondition]="label.fetchCondition"
+                    [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[formArrayIndex].get('fullAndFinal').get(label.labelName.defaultValue).invalid }"
+                    [formControlName]="label.labelName.defaultValue!"
+                    [controlName]="label.labelName.defaultValue!"
+                    (onchange)="savePatchDataList($event,'fullNFinal_'+label.type+'_'+formArrayIndex)"
+                    [patchData]="patchDataList && patchDataList['fullNFinal_'+label.type+'_'+formArrayIndex] ? patchDataList['fullNFinal_'+label.type+'_'+formArrayIndex] : ( applicableFullNFinal && applicableFullNFinal?.[formArrayIndex]?.[label.type] ) ? applicableFullNFinal?.[formArrayIndex]?.[label.type] : undefined"
+                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                  </custom-ng-select>
+                </ng-container>
+
+               <!--  <ng-select
+                  [formControlName]="label.labelName.defaultValue!"
+                  *ngIf="label.type === 'payCalculation'"
+                  class="max-w-90 mb-3"
+                  [multiple]="label.multiple"
+                  [clearable]="true" [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[formArrayIndex].get('fullAndFinal').get(label.labelName.defaultValue).invalid }"
+                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                  <ng-option *ngFor="let comp of payCalculationList" [value]="comp.id">{{
+                    comp.name
+                    }}</ng-option>
+                </ng-select> -->
+                <ng-container *ngIf="label.type === 'payCalculation'">
+                  <custom-ng-select class="w-100" [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                    [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[formArrayIndex].get('fullAndFinal').get(label.labelName.defaultValue).invalid }"
+                    [formControlName]="label.labelName.defaultValue!" (onchange)="savePatchDataList($event,'fullNFinal_'+label.type+'_'+formArrayIndex)"
+                    [controlName]="label.labelName.defaultValue!"
+                    [patchData]="patchDataList && patchDataList['fullNFinal_'+label.type+'_'+formArrayIndex] ? patchDataList['fullNFinal_'+label.type+'_'+formArrayIndex] : ( applicableFullNFinal && applicableFullNFinal?.[formArrayIndex]?.[label.type] ) ? applicableFullNFinal?.[formArrayIndex]?.[label.type] : undefined"
+                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                  </custom-ng-select>
+                </ng-container>
+              <div *ngIf="label.type === 'checkbox'" class="form-check  form-check-color-{{theme}}">
+                <input [formControlName]="label.labelName.defaultValue!" class="form-check-input" type="checkbox"
+                  [id]="label.labelName.alias!" />
+              </div>
+              <ng-container *ngFor="let validation of label?.validations;">
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                validation: validation.name,
+                message: validation.message,
+                control: leaveTypeData.controls[formArrayIndex].get('fullAndFinal').get(label.labelName.defaultValue)
+              }"></ng-container>
+              </ng-container>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>
+<ng-template #entitlementPerPeriod>
+  <form [formGroup]="leaveForm">
+    <div [formArrayName]="'leaveTypeForm'">
+      <div [formGroupName]="formArrayIndex">
+        <div [formGroup]="leaveEntitlement(formArrayIndex)">
+          <div class="row mt-5">
+            <div class="col-12 mb-2 position-relative">
+              <div class="align-items-center d-flex justify-content-between mb-3">
+                <label class="form-label fs-7 mb-0">Applicable after Employment Days</label>
+                <input [formControlName]="'applicableAfterEmploymentDays'" type="number"
+                  class="form-control form-control-sm max-w-200px mb-3" placeholder="Enter days"    (input)="onInput($event,'minimumYear',0,365)" [min]="0" [max]="365" />
+              </div>
+            </div>
+            <div class="hr-full col-12">
+              <hr class="m-0">
+            </div>
+          </div>
+          <div [formArrayName]="'perPeriodForm'">
+
+            <ng-container *ngFor="let control of entitlementData(formArrayIndex).controls; let k=index">
+
+              <div class="d-flex gap-3 mt-5" [formGroupName]="k">
+                <div class="flex-grow-1 mb-2 position-relative">
+                  <label class="form-label fs-6 mb-1 required">Minimum(Years)</label>
+                  <input [ngClass]="{ 'invalid' : submit &&  entitlementPerPeriodData.controls[k].get('minimumYear').invalid }" [formControlName]="'minimumYear'" type="number" class="form-control form-control-sm" placeholder="Enter Years"   (input)="onInput($event,'minimumYear',0,999)" [min]="0" [max]="999" />
+                    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                    validation: 'required',
+                    message: 'Minimum Years Required',
+                    control: entitlementPerPeriodData.controls[k].get('minimumYear')
+                  }"></ng-container>
+                </div>
+                <div class="flex-grow-1 mb-2 position-relative ">
+                  <label class="form-label fs-6 mb-1 required">Maximum(Years)</label>
+                  <input [ngClass]="{ 'invalid' : submit &&  entitlementPerPeriodData.controls[k].get('maximumYear').invalid }" [formControlName]="'maximumYear'" type="number" class="form-control form-control-sm" placeholder="Enter Years" (input)="onInput($event,'maximumYear',0,999)" [min]="0" [max]="999" />
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                    validation: 'required',
+                    message: 'Maximum Years Required',
+                    control: entitlementPerPeriodData.controls[k].get('maximumYear')
+                  }"></ng-container>
+                </div>
+                <div class="flex-grow-1 mb-2 position-relative">
+                  <label class="form-label fs-6 mb-1 required">Entitlement</label>
+                  <input [ngClass]="{ 'invalid' : submit &&  entitlementPerPeriodData.controls[k].get('entitlement').invalid }" [formControlName]="'entitlement'" type="number" class="form-control form-control-sm"
+                    placeholder="Enter Entitlement" (input)="onInput($event,'entitlement',0,365)" [min]="0" [max]="365"  />
+
+                    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                      validation: 'required',
+                      message: 'Entitlement Required',
+                      control: entitlementPerPeriodData.controls[k].get('entitlement')
+                    }"></ng-container>
+
+                </div>
+                <ng-container *ngIf="k!==0">
+                  <div class="mb-2 position-relative">
+                    <button (click)="removeEntitlementPerPeriod(k)" class="btn btn-icon btn-36px border-gray-500 ms-1 mt-7">
+                      <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                          class="svg-icon svg-icon-2 svg-icon-danger py-1"></span>
+                  </button>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+            <button (click)="addEntitlementPerPeriod()"
+              class="align-items-center btn  btn-{{theme}}-bright d-flex justify-content-center mt-3 ">
+              <span [inlineSVG]="'./assets/media/icons/add.svg'" class="svg-icon svg-icon-3 svg-icon-dark"></span>
+              Add More
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>
+<ng-template #encashment>
+  <form [formGroup]="leaveForm">
+    <div [formArrayName]="'leaveTypeForm'">
+      <div [formGroupName]="formArrayIndex">
+        <div [formGroup]="encashmentData(formArrayIndex)">
+          <div class="d-flex flex-column mt-5 gap-5">
+            <div class="d-flex gap-2 align-items-center position-relative" *ngFor="let label of encashmentFormMeta[2].labels">
+              <!-- {{label | json}} -->
+              <label class="form-label fs-6 mb-0 min-w-50"
+                [ngClass]="{'required': label?.required! ? label?.required! : false}">{{
+                label.labelName.alias | changeCase : "capital" }}</label>
+
+              <input *ngIf="label.type === 'number'" (input)="onInput($event,label.labelName.defaultValue,label?.minimum,label?.maximum)" [min]="label?.minimum ? label?.minimum : 0" [max]="label?.maximum ? label?.maximum : 9999"
+                [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                class="form-control form-control-sm"
+                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " />
+
+                <ng-container *ngIf="label.type === 'component' || label.type === 'encashmentComponent'">
+                  <custom-ng-select
+                    class="w-100"
+                    [multiple]="label.multiple"
+                    [apiLink]="label.apiLink"
+                    [fetchCondition]="label.fetchCondition"
+                    [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[formArrayIndex].get('encashment').get(label.labelName.defaultValue).invalid }"
+                    [formControlName]="label.labelName.defaultValue!"
+                    [controlName]="label.labelName.defaultValue!"
+                    (onchange)="savePatchDataList($event, 'encashment_'+label.type+'_'+formArrayIndex)"
+                    [patchData]="patchDataList && patchDataList['encashment_'+label.type+'_'+formArrayIndex] ? patchDataList['encashment_'+label.type+'_'+formArrayIndex] : ( applicableEncashment && applicableEncashment?.[formArrayIndex]?.[label.type] ) ? applicableEncashment?.[formArrayIndex]?.[label.type] : undefined"
+                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                  </custom-ng-select>
+                </ng-container>
+            <!--   <ng-select [formControlName]="label.labelName.defaultValue!" *ngIf="label.type === 'payCalculation'"
+                class="max-w-90 mb-3" [multiple]="label.multiple" [clearable]="true" [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[formArrayIndex].get('encashment').get(label.labelName.defaultValue).invalid }"
+                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                <ng-option *ngFor="let comp of payCalculationList" [value]="comp.id">{{
+                  comp.name
+                  }}</ng-option>
+              </ng-select> -->
+              <ng-container *ngIf="label.type === 'payCalculation'">
+                <custom-ng-select class="w-100" [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                [ngClass]="{ 'invalid' : submit &&  leaveTypeData.controls[formArrayIndex].get('encashment').get(label.labelName.defaultValue).invalid }"
+                  [formControlName]="label.labelName.defaultValue!" (onchange)="savePatchDataList($event, 'encashment_'+label.type+'_'+formArrayIndex)"
+                  [controlName]="label.labelName.defaultValue!"
+                  [patchData]="patchDataList && patchDataList['encashment_'+label.type+'_'+formArrayIndex] ? patchDataList['encashment_'+label.type+'_'+formArrayIndex] : ( applicableEncashment && applicableEncashment?.[formArrayIndex]?.[label.type] ) ? applicableEncashment?.[formArrayIndex]?.[label.type] : undefined"
+                  [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                </custom-ng-select>
+              </ng-container>
+              <div *ngIf="label.type === 'checkbox'" class="form-check  form-check-color-{{theme}}">
+                <input [formControlName]="label.labelName.defaultValue!" class="form-check-input" type="checkbox"
+                  [id]="label.labelName.alias!" />
+              </div>
+              <ng-container *ngFor="let validation of label?.validations;">
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                validation: validation.name,
+                message: validation.message,
+                control: leaveTypeData.controls[formArrayIndex].get('encashment').get(label.labelName.defaultValue)
+              }"></ng-container>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #skeleton>
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+
+<ng-template #customTemplate >
+  <div class="mb-2 d-flex gap-6 justify-content-center">
+    <button class="btn btn-{{theme}} btn-sm"  [routerLink]="[currentURL, 'view', pathId]"
+    (click)="onModelCancel()" >View</button>
+    <button class="btn border border-2 border-secondary text-dark btn-sm" (click)="onModelCancel(); onAddMore()"
+   >Add New Leave Type</button>
+</div>
+</ng-template>

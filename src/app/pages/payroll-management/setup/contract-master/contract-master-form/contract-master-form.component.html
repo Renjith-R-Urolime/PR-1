@@ -1,0 +1,414 @@
+<app-page-title></app-page-title>
+<app-error-popup *ngIf="detectedError"></app-error-popup>
+<div class="card">
+    <ng-container>
+        <div class="card bs-none p-4">
+            <app-breadcrumb></app-breadcrumb>
+            <ng-container *ngIf="!isLoading; else skeleton">
+                <ng-container *ngIf="formSections.length>0">
+                    <ng-container *ngFor="let section of formSections; let i=index">
+                        <ng-container *ngIf="section.tabName === formData.tabName">
+                            <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                                <!--begin::Col-->
+                                <div class="ps-9">
+                                    <ng-container *ngIf="!isLoading;">
+                                        <div class="d-flex">
+                                            <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                            <div class="hr-side me-8 ms-2">
+                                                <hr class="mx-1">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <div class="card-body py-0">
+                                    <form [formGroup]="contractMasterForm">
+                                        <div class="row">
+                                            <ng-container *ngFor="let label of formData.labels;let k=index">
+                                                <ng-container *ngIf="!label?.hide">
+                                                    <div
+                                                        class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                                                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                                            <ng-container
+                                                                *ngIf="label.type !== 'toggle' &&  label.type !== 'maximumCap' && label.type !== 'classificationApplicability' && label.type !== 'entitlement'  && label.type !== 'eosType' && label?.labelName?.defaultValue!=='standardDays'">
+                                                                <label class="form-label fs-6 mb-0"
+                                                                    [ngClass]="{'required': label?.required,'invalid': sharedService.hasValidationErrors(label, submit, contractMasterForm) }">{{label.labelTransformationCancelled
+                                                                    ? label.labelName.alias.replace('Id','') :
+                                                                    label.labelName.alias.replace('Id','') | changeCase
+                                                                    : "capital" }}</label>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type==='eosType'">
+                                                                <label class="form-label fs-6 mb-0" [ngClass]="{
+'required': label?.required,
+'invalid': sharedService.hasValidationErrors(label, submit, contractMasterForm)
+}">EOS Type</label>
+                                                            </ng-container>
+                                                            <ng-container
+                                                                *ngIf="label?.labelName?.defaultValue==='standardDays'">
+                                                                <label class="form-label fs-6 mb-0" [ngClass]="{
+'required': label?.required,
+'invalid': sharedService.hasValidationErrors(label, submit, contractMasterForm)
+}">Standard Days</label>
+                                                            </ng-container>
+                                                            <ng-container
+                                                                *ngIf="label.type === 'classificationApplicability' || label.type === 'entitlement'">
+                                                                <label class="form-label fs-6 mt-7" [ngClass]="{
+    'required': label?.required,
+    'invalid': sharedService.hasValidationErrors(label, submit, contractMasterForm)
+    }">{{
+                                                                    label.labelName.alias.replace('Id','') |
+                                                                    changeCase : "capital" }}</label>
+                                                                <ng-container class="align-items-center "
+                                                                    *ngIf="label.type === 'classificationApplicability'">
+                                                                    <ng-container
+                                                                        *ngIf="label.labelName.defaultValue === 'classificationApplicability'">
+                                                                        <!-- <button
+                                                                            class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                                            (click)="getFormTemplate(classificationApplicabilityTemplate,label.labelName.defaultValue,'classificationApplicability')"
+                                                                            [id]="'kt_drawer_form_toggle'">
+                                                                            <span span
+                                                                                *ngIf="!classificationApplicabilityFormSaved"
+                                                                                [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                                class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                            <span span
+                                                                                *ngIf="classificationApplicabilityFormSaved"
+                                                                                [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                                class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                        </button> -->
+                                                                        <app-classification-applicability (onSubmit)="emittedEvent($event)" [patchData]="classificationPatchData" ></app-classification-applicability>
+                                                                    </ng-container>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                            <ng-container class="align-items-center"
+                                                                *ngIf="label.type === 'text'||label.type === 'number' || label.type==='days'">
+                                                                <app-input-text-field [isFieldDisabled]="label?.disable"
+                                                                    [max]="label?.max" [maxLength]="label?.maxLength"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, contractMasterForm) }"
+                                                                    [type]="label.type"></app-input-text-field>
+                                                            </ng-container>
+                                                            <ng-container class="form-check form-switch"
+                                                                *ngIf="label.type === 'toggle'">
+                                                                <app-input-text-field
+                                                                    [patchValue]="contractMasterData[label.labelName.defaultValue!] ? contractMasterData[label.labelName.defaultValue!] : undefined"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, contractMasterForm) }"
+                                                                    [type]="label.type"
+                                                                    [name]="label.labelName.alias!"></app-input-text-field>
+                                                            </ng-container>
+                                                            <!--  -->
+                                                            <!--  -->
+                                                            <ng-container *ngIf="label.type === 'nationality'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [patchData]="contractMasterData[label.labelName.defaultValue!] ? contractMasterData[label.labelName.defaultValue!] : undefined"
+                                                                    [jsonListName]="'nationality'"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, contractMasterForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'eosType'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [patchData]="contractMasterData[label.labelName.defaultValue!] ? contractMasterData[label.labelName.defaultValue!] : undefined"
+                                                                    [jsonListName]="'eosType'"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, contractMasterForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'baseComponent'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [apiLink]="label?.apiLink"
+                                                                    [patchData]="contractMasterData[label.labelName.defaultValue!] ? contractMasterData[label.labelName.defaultValue!] : undefined"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, contractMasterForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [fetchCondition]="label.fetchCondition"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'payrollComponent'">
+                                                                <custom-ng-select
+                                                                    [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, contractMasterForm) }"
+                                                                    [apiLink]="label.apiLink" [maxLimit]="2"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="contractMasterData['payrollComponent']"
+                                                                    [fetchCondition]="label.fetchCondition"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                    [multiple]="label.multiple">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'gratuityComponent'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [apiLink]="label?.apiLink"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="contractMasterData[label.labelName.defaultValue!] ? contractMasterData[label.labelName.defaultValue!] : undefined"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, contractMasterForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [fetchCondition]="label.fetchCondition"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container class="align-items-center "
+                                                                *ngIf="label.type === 'entitlement'">
+                                                                <ng-container
+                                                                    *ngIf="label.labelName.defaultValue === 'entitlement'">
+                                                                    <button
+                                                                        class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                                        (click)="newModel(entitlement ,'Entitlement')">
+                                                                        <span span *ngIf="!entitlementFormSaved"
+                                                                            [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                        <span span *ngIf="entitlementFormSaved"
+                                                                            [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                    </button>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                            <ng-container class="align-items-center "
+                                                                *ngIf="label.type === 'maximumCap'">
+                                                                <ng-container
+                                                                    *ngIf="label.labelName.defaultValue === 'maximumCap'">
+                                                                    <div class="input-button-container">
+                                                                        <app-input-text-field
+                                                                            [patchValue]="contractMasterData[label.labelName.defaultValue!] ? contractMasterData[label.labelName.defaultValue!] : undefined"
+                                                                            [formControlName]="label.labelName.defaultValue!"
+                                                                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                            [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, contractMasterForm) }"
+                                                                            [type]="'toggle'"
+                                                                            (inputValueChange)="toggleOnChange($event)"
+                                                                            [name]="label.labelName.alias!">
+                                                                        </app-input-text-field>
+                                                                        <button appCustomTooltip
+                                                                            [backgroundColor]="'#FFC107'"
+                                                                            [fieldHelp]="'Maximum Cap'"
+                                                                            [dummyText]="maxCapTooltipString"
+                                                                            class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1 mt-8">
+                                                                            <span
+                                                                                [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                                                                                class="me-0 p-half svg-white-600 svg-icon svg-icon-4"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                            <ng-container
+                                                                *ngFor="let validation of label?.validations;">
+                                                                <div>
+                                                                    <ng-container [ngTemplateOutlet]="formError"
+                                                                        [ngTemplateOutletContext]="{
+                                                              validation: validation.name,
+                                                              message: validation.message,
+                                                              control: contractMasterForm.get(label.labelName.alias)
+                                                            }"></ng-container>
+                                                                </div>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <div class="me-9">
+                    <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+
+<ng-template #skeleton>
+    <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control && control.hasError(validation)">
+        <div class="fv-plugins-message-container">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #entitlement let-modal>
+    <div class="modal-header py-4">
+        <h3 class="modal-title" id="modal-basic-title">{{headerText}}</h3>
+        <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+            (click)="handleCancelModalClick()">
+            <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+        </div>
+    </div>
+    <form [formGroup]="contractMasterForm" class="px-7 py-4">
+        <ng-container>
+            <div class="col-6 d-flex">
+                <label class="form-label fs-6 mb-0 float-start mt-1 me-4">Applicable after Employment years</label>
+                <app-input-text-field [max]="8888" [maxLength]="4" [digitAfterDecimal]="1"
+                    [formControlName]="'applicableAfterEmployementYears'" [placeholder]="'Enter Years'"
+                    [type]="'decimal'"></app-input-text-field>
+            </div>
+        </ng-container>
+        <div [formArrayName]="'resignation'" *ngIf="resignationForm">
+            <div class="card-header d-flex align-items-center border-0" [ngClass]="{ 'mt-3' : i === 0 }">
+                <div class="fs-5 fw-bold">Resignation</div>
+                <div class="hr-side mt-3 ms-2">
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Minimum Year</label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Maximum Year </label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Gratuity Days</label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Standard Days</label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Gratuity Days Ratio </label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Provision Ratio</label>
+            </div>
+            <ng-container>
+                <ng-container
+                    *ngFor="let item of this.contractMasterForm.get('resignation')?.controls; let k=index">
+                    <div [formGroupName]="k" class="row mt-3">
+                        <div class="col-2 ">
+                            <app-input-text-field [max]="9999" [isFieldDisabled]="true"
+                                [formControlName]="'minimumYear'" [placeholder]="'Enter Years'"
+                                [type]="'number'"></app-input-text-field>
+                        </div>
+                        <div class="col-2 ">
+                            <app-input-text-field [max]="8888" [maxLength]="4" [digitAfterDecimal]="1"
+                                [formControlName]="'maximumYear'" [placeholder]="'Enter Years'"
+                                [type]="'decimal'"></app-input-text-field>
+                        </div>
+                        <div class="col-2 ">
+                            <app-input-text-field [max]="366" [formControlName]="'gratuityDays'"
+                                (inputValueChange)="onInputValueChange($event,k,'gratuityDays','resignation')"
+                                [placeholder]="'Enter Gratuity day'" [type]="'number'"></app-input-text-field>
+                        </div>
+                        <div class="col-2 ">
+                            <app-input-text-field type="number" [placeholder]="'Enter Standard days'"
+                                [formControlName]="'standardDays'" [max]="366"
+                                (inputValueChange)="onInputValueChange($event,k,'standardDays','resignation')"></app-input-text-field>
+                        </div>
+                        <div class="col-2 ">
+                            <app-input-text-field [patchValue]="calculatedGratuityRatioResignation" [max]="24"
+                                [formControlName]="'gratuityDaysRatio'" [isFieldDisabled]="true"
+                                [placeholder]="'Gratuity Ratio'" [type]="'number'"></app-input-text-field>
+                        </div>
+                        <div class="col-2 gap-2 d-flex align-items-center">
+                            <app-input-text-field [patchValue]="calculatedGratuityRatioResignation"
+                                [formControlName]="'provisionRatio'" [placeholder]="'Enter Provision Ratio'"
+                                [type]="'number'"></app-input-text-field>
+                                <button *ngIf="k === this.contractMasterForm.get('resignation')?.controls.length - 1"
+                                    class="border-gray-600 btn btn-36px h-100"
+                                    (click)="remove(k,'resignation')">
+                                    <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                                        class="mx-2 svg-icon svg-icon-2 svg-icon-danger"></span>
+                                </button>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+            <div *ngIf="!entitlementStatusResignation" class="warning_class">
+                <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                    class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Error-Ensure all fields are
+                entered and it satisfies the tiering model
+            </div>
+            <div class="row mt-3">
+                <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3 w-auto"
+                    (click)="addMoreEntitlementField('resignation')">Add
+                    More</button>
+            </div>
+        </div>
+        <!-- Termiantion -->
+        <div *ngIf="terminationForm">
+            <div class="card-header d-flex align-items-center border-0" [ngClass]="{ 'mt-3' : i === 0 }">
+                <div class="fs-5 fw-bold">Termination</div>
+                <div class="hr-side mt-3 ms-2">
+                    <hr>
+                </div>
+            </div>
+            <div class="form-check  form-check-color-{{theme}}">
+                <input [formControlName]="'sameAsResignation'" (change)="onCheckboxTypeChange($event)"
+                    class="form-check-input mt-7 mb-3" type="checkbox" />
+                <label class="form-label fs-6 mt-2 mt-7" for="flexCheckDefault">
+                    Same as resignation entitlement
+                </label>
+            </div>
+            <div class="row">
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Minimum Year</label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Maximum Year </label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Gratuity Days</label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Standard Days</label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Gratuity Days Ratio </label>
+                <label class="form-label fs-6 mb-0 mt-1 col-2">Provision Ratio</label>
+            </div>
+            <div [formArrayName]="'termination'">
+                <ng-container>
+                    <ng-container
+                        *ngFor="let item of this.contractMasterForm.get('termination')?.controls; let k=index">
+                        <div [formGroupName]="k" class="row mt-3">
+                            <div class="col-2 ">
+                                <app-input-text-field [max]="9999" [isFieldDisabled]="true"
+                                    [formControlName]="'minimumYear'" [placeholder]="'Enter Years'"
+                                    [type]="'number'"></app-input-text-field>
+                            </div>
+                            <div class="col-2 ">
+                                <app-input-text-field [max]="8888" [digitAfterDecimal]="1" [maxLength]="4"
+                                [isFieldDisabled]="contractMasterForm?.value?.sameAsResignation"
+                                    [formControlName]="'maximumYear'" [placeholder]="'Enter Years'"
+                                    [type]="'decimal'"></app-input-text-field>
+                            </div>
+                            <div class="col-2 ">
+                                <app-input-text-field [max]="366" [formControlName]="'gratuityDays'"
+                                [isFieldDisabled]="contractMasterForm?.value?.sameAsResignation"
+                                    (inputValueChange)="onInputValueChange($event,k,'gratuityDays','termination')"
+                                    [placeholder]="'Enter Gratuity day'" [type]="'number'"></app-input-text-field>
+                            </div>
+                            <div class="col-2 ">
+                                <app-input-text-field type="number" [placeholder]="'Enter Standard days'"
+                                    [formControlName]="'standardDays'" [max]="366"
+                                    [isFieldDisabled]="contractMasterForm?.value?.sameAsResignation"
+                                    (inputValueChange)="onInputValueChange($event,k,'standardDays','termination')"></app-input-text-field>
+                            </div>
+                            <div class="col-2 ">
+                                <app-input-text-field [patchValue]="calculatedGratuityRatioTermination" [max]="24"
+                                    [formControlName]="'gratuityDaysRatio'" [isFieldDisabled]="true"
+                                    [placeholder]="'Gratuity Ratio'" [type]="'number'"></app-input-text-field>
+                            </div>
+                            <div class="col-2 gap-2 d-flex align-items-center">
+                                <app-input-text-field [patchValue]="calculatedGratuityRatioTermination"
+                                [isFieldDisabled]="contractMasterForm?.value?.sameAsResignation"
+                                    [formControlName]="'provisionRatio'" [placeholder]="'Enter Provision Ratio'"
+                                    [type]="'number'"></app-input-text-field>
+                                    <button  *ngIf="k === this.contractMasterForm.get('termination')?.controls.length - 1 && !contractMasterForm?.value?.sameAsResignation"
+                                        class="border-gray-600 btn btn-36px h-100"
+                                        (click)="remove(k,'termination')">
+                                        <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                                            class="mx-2 svg-icon svg-icon-2 svg-icon-danger"></span>
+                                    </button>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div *ngIf="!entitlementStatusTermination" class="warning_class">
+                <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                    class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Error-Ensure all fields are
+                entered and it satisfies the tiering model
+            </div>
+            <div class="row mt-3" *ngIf="!contractMasterForm?.value?.sameAsResignation">
+                <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3 w-auto"
+                    (click)="addMoreEntitlementField('termination')">Add
+                    More</button>
+            </div>
+        </div>
+    </form>
+    <div class="modal-footer py-3">
+        <app-progress-button (submitEvent)="onModelSubmit()" [isProcessing]="isProcessing" [submitBtnText]="'Save'"
+            (cancelEvent)="handleCancelModalClick()" [modal]="true"></app-progress-button>
+    </div>
+</ng-template>

@@ -1,0 +1,149 @@
+<div >
+    <a
+    (click)="goBack()"
+    class=" d-flex align-items-center text-gray-500 text-hover-{{ theme }} me-5 cursor-pointer "
+   >
+    <span [inlineSVG]=" './assets/media/icons/arrow-back.svg' "
+      class="svg-icon svg-icon-4 me-1 svg-gray-500"></span>
+    Back to List
+  </a>
+  </div>
+  <app-page-title [isNewButton]="true">
+
+    <ng-template create-btn-temp >
+      <button  class="btn btn-lg btn-{{theme}}" (click)="newModel(createModal , 'Create',id)"> Create
+        {{title | renameValue}}</button>
+
+
+      <!-- <ng-container  *ngTemplateOutlet="createModal"></ng-container> -->
+    </ng-template>
+  </app-page-title>
+
+  <div class="card" [ngClass]="{ 'bg-transparent bs-none' : view==='card' }">
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      <app-breadcrumb [breadcrumbs]="['List']"></app-breadcrumb>
+      <div>
+        <search-and-filter (viewSelected)="changeView($event)" [multipleViewOptions]="true"></search-and-filter>
+      </div>
+    </div>
+    <div *ngIf="view==='table'">
+      <data-table-list  [metaData]="tableMetaData" #dataTable>
+        <ng-template action-btn-temp let-id="id" let-item="item$">
+            <a class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0" (click)="newModel(createModal,'Modify',id)">
+              <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                class="svg-icon svg-icon-2"></span>
+            </a>
+        </ng-template>
+      </data-table-list>
+    </div>
+
+  </div>
+  <div *ngIf="view==='card'" class="mt-1">
+    <app-card-view-list [cardMetaData]="cardJsonData" #cardView>
+      <ng-template card-button-temp let-id="id" let-data="data">
+        <div class="bg-white shadow rounded-1 ">
+          <div class="d-flex flex-column">
+            <button (click)="newModel(createModal,'Modify',id)" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+              <span [inlineSVG]="'./assets/media/icons/create-outline.svg'" class="svg-icon svg-icon-3 "></span>
+              Edit
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </app-card-view-list>
+    </div>
+
+  <ng-template #createModal let-modal>
+    <div class="modal-header py-4">
+      <!-- <div *ngIf="form == 'create' else edit"> -->
+        <h4 class="modal-title" id="modal-basic-title">{{action}} {{title | renameValue}}</h4>
+      <!-- </div>
+      <ng-template #edit >
+        <h4 class="modal-title" id="modal-basic-title">Modify {{title | renameValue}}</h4>
+      </ng-template> -->
+      <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}" (click)="handleCancelClick()">
+          <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+      </div>
+      </div>
+    <div class="modal-body p-0">
+      <form [formGroup]="settingForm">
+        <div class="me-4 ms-4 mt-2 mb-2">
+          <ng-container *ngFor="let label of formData.labels">
+            <div class="position-relative mb-2">
+              <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0" [ngClass]="{
+                  'required': label?.required,
+                  'invalid': sharedService.hasValidationErrors(label, submit, settingForm) }">
+                {{label.labelName.alias  | changeCase : 'capital'}}
+              </label>
+              <!-- <ng-container *ngFor="let label of empSettingFormData.labels" class="align-items-center"> -->
+                <input *ngIf="
+                [
+                  'text',
+                  'password',
+                  'email',
+                  'number',
+                  'tel',
+                  'url',
+                  'date'
+                ].includes(label.type)
+              " class="form-control form-control-sm" [formControlName]="label.labelName.defaultValue" placeholder="Placeholder Text"
+                  [ngClass]="{
+                      'invalid': sharedService.hasValidationErrors(label, submit, settingForm)
+                    }" />
+
+             <!--  </ng-container> -->
+             <ng-container *ngIf="label.type === 'checkbox' && action === 'Modify'">
+              <div class="form-check  form-check-color-{{theme}}">
+                <input  [formControlName]="label.labelName.defaultValue!" class="form-check-input mt-2 mb-3" type="checkbox" [id]="label.labelName.defaultValue" />
+                <label class="form-label fs-6 mt-2 mb-1" for="flexCheckDefault">
+                    {{ label.labelName.alias | changeCase : "capital" }}
+                </label>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="label.type === 'designation'">
+            <custom-ng-select
+              [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, settingForm) }"
+              [apiLink]="label.apiLink"
+              [patchData]="settingData.designation"
+              [formControlName]="label.labelName.defaultValue!"
+              [controlName]="label.labelName.defaultValue!"
+              [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital') "
+              [multiple]="true">
+            </custom-ng-select>
+          </ng-container>
+            </div>
+            <ng-container *ngFor="let validation of label.validations;">
+              <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                  validation: validation.name,
+                  message: validation.message,
+                  control: settingForm.get(label.labelName.alias)
+                }"></ng-container>
+            </ng-container>
+          </ng-container>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer py-3">
+      <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing" (cancelEvent)="handleCancelClick()" [modal]="true" ></app-progress-button>
+    </div>
+  </ng-template>
+
+  <ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+      <div class="fv-plugins-message-container ">
+        <span role="alert" class="fv-help-block fs-9">
+          {{ message }}
+        </span>
+      </div>
+    </ng-container>
+  </ng-template>
+  <ng-template #customTemplate>
+    <div class="mb-2 d-flex gap-6 justify-content-center">
+        <a (click)="sharedService.onModalClose();newModel(createModal , 'Create',id)  " class="btn btn-{{theme}} btn-sm"
+            >Add Another</a>
+        <a  (click)="sharedService.onModalClose()"
+            class="btn border border-2 border-secondary text-dark btn-sm">
+           List
+        </a>
+    </div>
+</ng-template>

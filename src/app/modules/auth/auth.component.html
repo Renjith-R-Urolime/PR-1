@@ -1,0 +1,62 @@
+<!-- <div class=" col-lg-12" [dir]="textStyle" style="background-image: url(./assets/media/login/login_bg_image.png);
+/* background-position: center center; */
+background-repeat: no-repeat;
+background-size: cover;">
+  <div class="p-8">
+    <div class="d-flex justify-content-center align-items-center" style="background: none;">
+      <div class="flex-grow-1 text-center">
+        <img src="./assets/media/login/infithra-login-logo.svg" alt="Image" class="img-fluid">
+      </div>
+      <div class="ms-auto">
+        <img (click)="convertor('ar')" *ngIf="enableArabic" src="./assets/media/login/language.svg" alt="">
+
+        <img (click)="convertor('en')" *ngIf="enableEnglish" src="./assets/media/login/language.svg" alt="">
+      </div>
+    </div>
+    <div class="row d-flex flex-column flex-md-row gap-lg-0 gap-9 max-h-575px min-h-575px">
+        <div class="col-md-4 col-12 card rounded-1 p-5">
+            <router-outlet></router-outlet>
+        </div>
+        <div class="col-md-8 col-12 p-0">
+            <div class="ms-lg-6 ms-0 d-flex flex-row flex-wrap flex-md-nowrap rounded-1 bg-login h-100 p-0">
+            <div class="p-5">
+                <div class="d-flex gap-2 ">
+                <div class="border-line-light w-40px pt-30" [ngClass]="{'selected': selectedContent.id === section.id}" (click)="selectedContent = section" *ngFor="let section of rightSectionData">
+                </div>
+                </div>
+ -->
+                <!-- <div *ngFor="let data of rightSectionData" > -->
+               <!--  <div class="d-flex flex-column gap-3 mt-8">
+                <h2 class="fs-2x fw-bolder pt-3 lh-lg">{{ selectedContent.title |
+                    translate }}<br></h2>
+                    <p class="fw-bolder d-flex align-items-center"> {{ selectedContent.subTitle | translate }}</p>
+                    <p class="fw-medium reg-sm-font">
+                    {{ selectedContent.description | translate }}
+                    </p>
+                    <button class="btn btn-purple-outline fw-bolder w-200px">{{ 'Register Now' | translate }}</button>
+                </div>
+            </div>
+            <div>
+                <img alt="banner" class=" h-100 img rounded-start-0" [src]="selectedContent.image">
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="row  justify-content-center pt-13">
+      <div class="col-md-10 col-12 d-flex flex-md-row flex-column">
+        <div class="row bg-login rounded" *ngFor="let data of updatesData">
+          <div class="col-md-4 col-12">
+            <img class="lap-img img-fluid" [src]="data.image" alt="">
+          </div>
+          <div class="col-md-8 col-12 py-5 pe-6 d-flex align-items-center ads-content" >
+            <div class="d-flex flex-column">
+              <h3 class="fs-2 fw-bolder">{{data.title | translate}}</h3>
+              <p>{{data.description | translate}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div> -->
+  <router-outlet></router-outlet>

@@ -1,0 +1,28 @@
+<app-page-title
+  [isEditDeleteBtn]="true"
+  [isGoBack]="true"
+  [customNewRecordURL]="'/employee/master/contribution-register/edit/'"
+></app-page-title>
+
+<div class="py-1">
+  <details-card
+    [detailsCardData]="detailsCardData"
+  >
+  <ng-template custom-element let-data="data$" let-key="key$">
+        <ng-container *ngIf="data?.contributionType?.contributionSetupDetails?.length>0; else noInfo">
+            <ng-container>
+                <div class="text-hover-{{ theme }} fw-medium fs-6 text-dark px-0 cursor-pointer">
+                    {{data?.contributionType?.contributionSetupDetails?.[0][key.labelName.defaultValue] }}
+                </div>
+            </ng-container>
+        </ng-container>
+    <ng-template #noInfo>
+        <div class="fw-medium fs-6 text-gray-400 px-0 mt-1">
+            Not Availaible
+        </div>
+    </ng-template>
+</ng-template>
+</details-card>
+</div>
+
+<app-tab-data-table  [tabsMeta]="contributionRegisterTabsMeta"></app-tab-data-table>

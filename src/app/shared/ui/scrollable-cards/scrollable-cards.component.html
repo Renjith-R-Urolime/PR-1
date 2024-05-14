@@ -1,0 +1,98 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+  <div class="scrollable-cards">
+    <div class="d-flex gap-4 w-fit min-h-275px">
+      <div
+        class="card border-4 border-transparent bgi-no-repeat bgi-size-contain bgi-position-x-75px min-w-175px max-w-175px px-4 py-3"
+        *ngFor="let card of apiCardData" [style.background-color]="card.backgroundColor"
+        [style.background-image]="'url(' + card.backgroundImage + ')'">
+        <div class="card-header p-0 border-0">
+          <div class="fw-bolder d-flex flex-column">
+            <ng-template #default>
+              <span class="text-white pt-1 fs-2tx">
+                {{card.content}}
+              </span>
+            </ng-template>
+            <ng-container *ngIf="card.id === 'employee-turn-over' ; else default">
+              <div class="d-flex flex-row">
+                <div class="text-white pt-1 fs-2tx me-1"> {{card.content}}</div>
+                <span class="text-white pt-4 fs-2x">%</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <div class="card-body p-0 d-flex flex-column justify-content-end flex-wrap pt-0">
+          <div class="fw-bold text-white fs-3 text-wrap">
+            <span>{{ card.name }}</span>
+          </div>
+        </div>
+      </div>
+      <ng-container *ngIf="apiCardData.length === metaData.length; else addCards">
+        <div class="bg-transparent border-dashed border-gray-500 w-175px d-flex rounded bw-4 cursor-pointer"
+          (click)="getFormTemplate(quickCardsTemplate,'editQuickCards')" [id]="'kt_drawer_form_toggle'"
+          *ngIf="isEditable">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center gap-5 p-0 ">
+            <span [inlineSVG]="'./assets/media/icons/create-outline.svg'" class="svg-icon svg-icon-3x svg-icon-gray-600"></span>
+            <span class="text-gray-600">Modify Cards</span>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #addCards>
+        <div class="bg-transparent border-dashed border-gray-500 d-flex rounded w-175px bw-4 cursor-pointer"
+          (click)="getFormTemplate(quickCardsTemplate,'AddMoreCards')" [id]="'kt_drawer_form_toggle'"
+          *ngIf="isEditable">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center gap-5 p-0">
+            <span [inlineSVG]="'./assets/media/icons/add-circle-outline.svg'"
+              class="svg-icon svg-icon-3x svg-icon-gray-600"></span>
+            <span class="text-gray-600">Add More Card</span>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</ng-container>
+<ng-template #quickCardsTemplate (isCanceled)="cancelFormSave($event)">
+  <div class="row mt-5">
+    <ng-container *ngFor="let card of metaData; let i = index;">
+      <div class="p-5 rounded-1 mb-5 border"
+        [ngStyle]="{ borderColor : card.selected ? card.backgroundColor : '#B5B5C3' }">
+        <div class="d-flex flex-row">
+          <div
+            class="form-check form-check-sm form-check-custom  form-check-solid form-check-color-{{card.backgroundColor}}">
+            <input class="form-check-input" type="checkbox" value="1" data-kt-check="true"
+              data-kt-check-target=".widget-9-check" [(ngModel)]="card.selected" (change)="toggleCardSelection(card)"
+              [ngStyle]="(card.selected ? { borderColor: card.backgroundColor, backgroundColor: card.backgroundColor } : {})">
+          </div>
+          <div class="ms-5 d-flex flex-column">
+            <div class="text-dark fw-bold ">
+              {{card.name}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+<app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" (isSaved)="onDrawerSave($event)"
+  (isCanceled)="onDrawerCancel($event)">
+</app-form-drawer>
+<ng-template #skeleton>
+  <div class="scrollable-cards">
+    <div class="d-flex gap-4 w-fit min-h-275px">
+      <div *ngFor="let index of [1, 2, 3, 4,5]"
+        class="card border-4 border-transparent bgi-no-repeat bgi-size-contain bgi-position-x-75px min-w-175px max-w-175px px-4 py-3">
+        <div class="card-header p-0 border-0">
+          <div class="fw-bolder d-flex flex-column">
+            <span class="text-white pt-1 fs-2tx">
+              <ngx-skeleton-loader [theme]="{ height: '2.2rem', width: '8rem' }"></ngx-skeleton-loader>
+            </span>
+          </div>
+        </div>
+        <div class="card-body p-0 d-flex flex-column justify-content-end flex-wrap pt-0">
+          <div class="fw-bold text-white fs-3 text-wrap">
+            <span><ngx-skeleton-loader [theme]="{ height: '2.2rem', width: '9rem' }"></ngx-skeleton-loader></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

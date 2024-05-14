@@ -1,0 +1,20 @@
+<ng-container *ngIf="errorStatus === 403 || errorStatus === 404; else errorAlert">
+    <div id="infi_error_container" class="px-4 h-80 flex-column gap-3 d-flex justify-content-center align-items-center" >
+        <div class="h-150px w-150px position-relative">
+            <img class="object-fit-contain h-100 w-100 opacity-25" [src]="icon || './assets/media/icons/lock-closed-outline.svg'" [alt]="pageName + '-icon'"/>
+        </div>
+        <p class="mb-0 fs-5 fw-bold text-center text-capitalize">{{errorMessage}}</p>
+        <div class="d-flex gap-4">
+            <button class="btn btn-sm btn-{{theme}}" (click)="onRefresh()">Refresh</button>
+            <button class="btn btn-sm btn-secondary" (click)="goBack()">Go Back</button>
+        </div>
+    </div>
+
+</ng-container>
+<ng-template #errorAlert>
+    <div class="error-message position-fixed z-index-9" [@errorMessageAnimation]="">
+        <div class="d-flex align-items-center gap-4">
+            <p class="mb-0 fs-5 fw-bold text-center text-capitalize">{{errorMessage | changeCase: "sentence"}}</p>
+        </div>
+    </div>
+</ng-template>

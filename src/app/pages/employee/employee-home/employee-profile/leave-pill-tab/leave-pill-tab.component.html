@@ -1,0 +1,149 @@
+<div class="d-flex overflow-auto" #cardContainer *ngIf="leaveChartData?.length>0 else applyLeaveTemplate">
+    <div class="me-3 cardStyle" *ngFor="let data of leaveChartMeta,let i = index"
+        [ngStyle]="{'border-color':'#00000066', 'border-radius': '8px', 'border-width': '1px', 'border-style': 'solid', 'background-color': '#FFF'}">
+        <div>
+            <div class="card-body cust-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="svg-icon svg-icon-2tx float-start" [inlineSVG]=data.icon> </div>
+
+                        </div>
+                        <div class="col-10 pt-3">
+                            <h6>{{data.label}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="d-flex">
+                        <div class="col-6">
+
+                            <div #chartRef class="mixed-widget-4-chart" [style.height]="chartHeight">
+                                <apx-chart [series]="chartOptions[i].series" [chart]="chartOptions[i].chart"
+                                    [xaxis]="chartOptions[i].xaxis" [yaxis]="chartOptions[i].yaxis"
+                                    [dataLabels]="chartOptions[i].dataLabels" [stroke]="chartOptions[i].stroke"
+                                    [legend]="chartOptions[i].legend" [fill]="chartOptions[i].fill"
+                                    [states]="chartOptions[i].states" [tooltip]="chartOptions[i].tooltip"
+                                    [colors]="chartOptions[i].colors" [markers]="chartOptions[i].markers"
+                                    [plotOptions]="chartOptions[i].plotOptions"></apx-chart>
+                            </div>
+
+                        </div>
+                        <div class="col-6 cusData p-3">
+
+                            <div>
+                                <h6>Total-{{data.total}}</h6>
+                                <h6>Used-{{data.used}}</h6>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-5 pt-1">
+    <div class="col-6 pt-2" *ngIf="leaveSetupData">
+        <details-card [detailsCardData]="leaveSetupMeta" [data]="leaveSetupData"
+            (editEvent)="getFormTemplate(leaveSetupTemplate,'heading','leaveSetup')"
+            [id]=" isLeaveDrawerOpen ?'kt_drawer_form_leave_setup' :''"
+            [inlineWithLabel]="true" [isEditBtn]="false" [col]="12"></details-card>
+    </div>
+    <div class="col-6" *ngIf="leaveChartData?.length>0">
+        <div class="d-flex justify-content-end">
+            <button (click)="scrollLeft()" class="arrow-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 14 15" fill="none"
+                    class="arrow-svg">
+                    <path d="M8.89062 11.439L5.11062 7.65896L8.89062 3.87896" stroke="#B5B5C3" stroke-linecap="round"
+                        fill="none" stroke-linejoin="round" />
+                </svg>
+            </button>
+            <button (click)="scrollRight()" class="arrow-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 14 15" fill="none"
+                    class="arrow-svg">
+                    <path d="M5.10938 3.88135L8.88938 7.66135L5.10938 11.4413" stroke="#B5B5C3" stroke-linecap="round"
+                        fill="none" stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<app-form-drawer [formTemplate]="leaveSetupTemplate" [headerText]="'Leave Setup'"
+    (isSaved)="onDrawerSaveLeaveSetupForm($event)" (isCanceled)="cancelLeaveSetupForm($event) " [drawerWidth]="550"
+    [formDrawerId]="'#kt_drawer_form_leave_setup'" [formDrawerCloseId]="'kt_drawer_form_leave_setup_close'"
+    [buttonDisable]="isleaveSetupFormSaveDisabled" [isProcessing]="isProcessing">
+</app-form-drawer>
+
+<div class="row pt-3">
+    <app-tab-data-table [tabsMeta]="leavePillTabsMeta" key="employee-leave"></app-tab-data-table>
+</div>
+
+
+
+<ng-template #applyLeaveTemplate>
+    <div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <a  class="svg-icon svg-icon-2tx" [inlineSVG]="'./assets/media/icons/add-circle-outline.svg'"
+                         ></a>
+                        <h6 class="card-title">Leave Request</h6>
+                        <button [disabled]="!isOnboarded" (click)="applyLeave()" class="btn btn-primary">Apply Leave</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #leaveSetupTemplate>
+
+    <form [formGroup]="leaveSetupForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of leaveSetupFormData.labels;let k=index">
+                <div class="col-4">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mt-1"
+                        [ngClass]="{'required': label?.required,'invalid': sharedService.hasValidationErrors(label, submit, leaveSetupForm) }">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4">
+                    <ng-container class="align-items-center" *ngIf="label.type === 'leavePlan'">
+                        <custom-ng-select [apiLink]="leavePlanCondition.length>0?label.apiLink:''"
+                          [fetchCondition]="leavePlanCondition"
+                          [formControlName]="label.labelName.defaultValue!"
+                          [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                          [multiple]="label.multiple">
+                        </custom-ng-select>
+                      </ng-container>
+                    <ng-container *ngFor="let validation of label?.validations;">
+                        <div>
+                            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                      validation: validation.name,
+                                      message: validation.message,
+                                      control: setUpForm.get(label.labelName.defaultValue)
+                                    }"></ng-container>
+                        </div>
+                    </ng-container>
+
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+
+<ng-template #customTemplate>
+
+    <div class="mb-2 d-flex gap-6 justify-content-center">
+        <a [routerLink]="['/employee-hub/profiles/employee/view', this.id]" class="btn btn-{{theme}} btn-sm"
+            (click)="onViewClicked()">View</a>
+    </div>
+</ng-template>

@@ -1,0 +1,56 @@
+<!--begin::Menu-->
+<div
+  class="menu menu-column menu-fit menu-rounded text-dark menu-icon-gray-400 menu-state-dark menu-state-icon-dark menu-state-bullet-dark menu-arrow-gray-500  fs-7 px-4 my-5 my-lg-0"
+  id="kt_aside_menu" data-kt-menu="true">
+
+  <div id="kt_aside_menu_wrapper" class="menu-fit pb-3">
+    <!-- SubMenu -->
+    <ng-container *ngFor="let menu of activeTab.subMenu; let i = index">
+      <div *ngIf="menu.isLink && menu.subMenu.length === 0" class="menu-item">
+        <a (click)="onClick(menu,false)"
+          class="menu-link without-sub bg-hover-{{activeTab.mainMenuColor}}-light animate-md"
+          [routerLink]="dynamicLinks[i]" routerLinkActive="active">
+          <div class="scale d-flex">
+            <span class="menu-icon">
+              <span [inlineSVG]="menu.subMenuIcon" class="svg-icon svg-icon-4"></span>
+            </span>
+            <span class="text-black" [translate]="menu.subMenuText | renameValue "></span>
+          </div>
+        </a>
+      </div>
+      <div *ngIf="menu.isLink && menu.subMenu.length > 0" class="menu-item">
+        <a (click)="onClick(menu,false)"
+          class="menu-link without-sub bg-hover-{{activeTab.mainMenuColor}}-light animate-md"
+          [routerLink]="dynamicLinks[i][0]" routerLinkActive="active">
+          <div class="scale d-flex">
+            <span class="menu-icon">
+              <span [inlineSVG]="menu.subMenuIcon" class="svg-icon svg-icon-4"></span>
+            </span>
+            <span class="text-black" [translate]="menu.subMenuText | renameValue "></span>
+          </div>
+        </a>
+      </div>
+      <!--dropdown menu-->
+      <div *ngIf="!menu.isLink" data-kt-menu-trigger="click" [attr.data-dropdown-id]="menu.id" class="menu-item rounded-2 overflow-hidden pb-0 menu-accordion here">
+        <span class="menu-link bg-hover-{{activeTab.mainMenuColor}}-light" [ngClass]="{ 'active': this.currentURL.includes(dynamicLinks[i][0])}">
+          <span class="menu-icon">
+            <span class="svg-icon svg-icon-2" [inlineSVG]="menu.subMenuIcon">
+            </span>
+          </span>
+          <span class="menu-title text-dark" data-link="">{{menu.subMenuText}}
+          </span>
+          <span class="menu-arrow">
+          </span>
+        </span>
+        <div class="menu-sub menu-sub-accordion bg-{{activeTab.mainMenuColor}}-bright ">
+          <ng-container *ngFor="let sub of menu.subMenu; let j = index">
+            <div class="menu-item p-0">
+              <a class="menu-link sub-menu without-sub rounded-0 bg-hover-{{activeTab.mainMenuColor}}-light" routerLinkActive="active" [routerLink]="dynamicLinks[i][j+1]" (click)="onClick(menu,true,sub)">
+                <span class="menu-title text-dark px-5 ms-5">{{sub.subMenuText }}</span></a>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+.card-border {
+    border-radius: 0px !important;
+}
+
+.border-right-card {
+    border-right: 0.5px solid rgba(0, 0, 0, 0.4);
+}
+.third-card {
+    background: #f4f4f4 !important;
+}
+// .scroll-container {
+//     height: 100%;
+//     overflow: auto;
+// }
+
+// .scroll-container::-webkit-scrollbar {
+//     width: 0;
+//     height: 0;
+// }
+.step-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #fff;
+    // color: #ffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500px;
+    margin-right: 10px;
+}
+
+
+.custom-div {
+    width: 200px;
+}

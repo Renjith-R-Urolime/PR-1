@@ -1,0 +1,96 @@
+<div class="p-0 pr-10">
+    <div class="card-body p-0 rounded-bottom-4 border-bottom">
+        <form [formGroup]="basicForm">
+            <!-- begin::Table container -->
+            <div class="table-responsive position-relative">
+                <!-- begin::Table -->
+                <table class="table align-middle gy-4 table-striped">
+                    <!-- begin::Table head -->
+                    <thead class="bg-{{ theme }}-bright">
+                        <tr class="fw-bold">
+                            <th class="min-w-200px ps-5 " *ngFor="let header of selectedTabData?.headers">
+                                <div class="d-flex align-items-center">
+                                    <p class="flex-grow-1 mb-0">{{header.labelName.alias | changeCase:'capital' }}</p>
+                                    <a data-kt-menu-trigger="{default: 'click'}" data-kt-menu-attach="parent"
+                                        data-kt-menu-placement="bottom-end">
+                                        <span [inlineSVG]="'./assets/media/icons/ellipsis-vertical.svg'"
+                                            class="svg-icon svg-icon-2"></span>
+                                    </a>
+                                    <!-- <app-action-model></app-action-model> -->
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody [formArrayName]="selectedTabData.tableName">
+
+
+                        <!-- <tr>
+                       <td *ngFor="let header of tableData?.headers" class="px-5 py-3">
+                        <form action="">
+                            <input [type]="header.type" *ngIf="header.type!='select'" class="form-control form-control-sm w-auto">
+                            <ng-select *ngIf="header.type=='select'" class="w-auto">
+                                <ng-option *ngFor="let opt of header.options" [value]="opt">{{opt}}</ng-option>
+                            </ng-select>
+                        </form>
+                       </td>
+                    </tr> -->
+                        <ng-container *ngIf="!viewMode">
+                            <tr *ngFor="let item of formFields.controls; let i = index" [formGroupName]="i">
+
+                                <ng-container *ngFor="let header of selectedTabData?.headers">
+                                    <td>
+                                        <ng-container [ngSwitch]="header.type">
+                                            <input *ngSwitchCase="'text'" type="text" class="form-control-sm"
+                                                formControlName="{{ header.labelName.alias }}">
+                                            <input *ngSwitchCase="'file'" type="file" class="form-control-sm"
+                                                formControlName="{{ header.labelName.alias }}">
+                                            <ng-select *ngSwitchCase="'select'" class="w-auto"
+                                                formControlName="{{ header.labelName.alias }}">
+                                                <ng-option *ngFor="let opt of header.options" [value]="opt">{{ opt
+                                                    }}</ng-option>
+                                            </ng-select>
+                                            <div *ngSwitchCase="'date'" class="input-group input-group-sm ">
+                                                <!-- ngb-bootstrap -->
+                                                <input (input)="sharedService.formatDate($event)"  class="form-control"  formControlName="{{ header.labelName.alias }}"placeholder="yyyy-mm-dd" name="dp"
+                                                    ngbDatepicker
+                                                    datepickerClass="calendar-{{theme}}" #d="ngbDatepicker" 
+                                                    [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate"/>
+                                                <button
+                                                    class="btn btn-{{theme}} px-3 d-flex-align-items-center bi bi-calendar3"
+                                                    (click)="d.toggle()" type="button"></button>
+                                                <!-- -- -->
+                                            </div>
+                                            <div class="d-flex justify-content-center"><input *ngSwitchCase="'checkbox'" class="form-check-input" type="checkbox" value="" id="flexCheckDefault" /></div>
+
+                                        </ng-container>
+                                    </td>
+                                </ng-container>
+                            </tr>
+
+                            <button class="btn btn-sm btn-{{theme}} mt-4" (click)="addMore()"><span span
+                                    [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                    class="svg-icon svg-icon-3 p-0"></span> Add More</button>
+
+                        </ng-container>
+
+                        <ng-container *ngIf="viewMode">
+                            <ng-container *ngFor="let header of selectedTabData?.headers"></ng-container>
+                            <tr *ngFor="let data of formArrayData[selectedTabData.tableName];">
+                                <ng-container *ngFor="let key of selectedTabData?.headers">
+                                    <td class="text-center">
+                                        <a class="text-dark fw-medium text-hover-primary d-block mb-1 fs-6">
+                                            {{ data[key.labelName.alias] }}
+                                        </a>
+                                    </td>
+                                </ng-container>
+
+                            </tr>
+                        </ng-container>
+                    </tbody>
+
+                </table>
+            </div>
+        </form>
+    </div>
+</div>

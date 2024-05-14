@@ -1,0 +1,82 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true">
+  <ng-template dropdown-btn-temp>
+    <!-- Your custom template content goes here -->
+    <div style="right: 30px;"
+      class="position-absolute right-0 z-index-4 d-flex align-items-center justify-content-center">
+      <div class="bg-white shadow rounded-1 p-3">
+        <div class="d-flex flex-column">
+          <button (click)="open('customise')" *ngIf="rolePermissionData.roleType === 'standard'" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+            <span [inlineSVG]="'./assets/media/icons/cog-outline.svg'" class="svg-icon svg-icon-3 "></span>
+            Customize
+          </button>
+
+          <button *ngIf="rolePermissionData.roleType === 'custom'" (click)="open('makecopy')" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+            <span [inlineSVG]="'./assets/media/icons/copy-outline.svg'" class="svg-icon svg-icon-3 "></span>
+            Make a copy
+          </button>
+          <button *ngIf="rolePermissionData.roleType === 'custom'" (click)="open('edit')" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+            <span [inlineSVG]="'./assets/media/icons/create-outline.svg'" class="svg-icon svg-icon-3 "></span>
+            Edit
+          </button>
+
+
+         <!--  <button class="btn btn-lg rounded-1  text-hover-danger px-3 py-2 d-flex gap-2">
+            <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'" class=" svg-icon svg-icon-3"></span>
+            Delete
+          </button> -->
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+</app-page-title>
+
+<details-card [detailsCardData]="detailsCardData"></details-card>
+<div *ngIf="!isLoading" class="bg-gray-300 form-table-card overflow-hidden mt-5 mb-4">
+  <table class="table m-0 border table-bordered table-rounded border-gray-500">
+    <thead class="bg-{{ theme }}-bright rounded-3 rounded-top">
+      <tr class="fw-bold h-40px">
+        <th class="fs-7 vertical-middle">
+          Particular
+        </th>
+        <th *ngFor="let right of rights" class="fs-7 vertical-middle min-w-125px">
+          {{right | changeCase : "capital"}}
+        </th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let row of permissionsConfig;let i=index">
+      <tr class="bg-white" >
+        <td>
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="m-0  w-content fw-bold ">{{row.name}}</p>
+          <a *ngIf="hideme[i]" (click)="changeValue(i)" class="p-2">
+            <span [inlineSVG]="'./assets/media/icons/add-circle-outline.svg'"
+              class="svg-icon svg-icon-2"></span>
+          </a>
+          <a *ngIf="!hideme[i]" (click)="changeValue(i)" class="p-2">
+            <span [inlineSVG]="'./assets/media/icons/remove-circle-outline.svg'"
+              class="svg-icon svg-icon-2"></span>
+          </a>
+          </div>
+        </td>
+        <td [attr.colspan]="rights.length"></td>
+      </tr>
+      <ng-container *ngIf="!hideme[i]">
+        <tr class="bg-white" *ngFor="let subrow of row.permissions;let j=index">
+          <td>
+            <div class="h-100 d-flex justify-content-between align-items-center fs-6 ps-4">
+              {{subrow.name}}
+            </div>
+          </td>
+          <td *ngFor="let right of rights">
+            <ng-container *ngIf="subrow[right]">
+              <div class="d-flex justify-content-center  form-check-color-{{theme}} py-2">
+                <input [checked]="getCheckedValue(subrow.id, right)" [disabled]="true" class="h-20px w-20px rounded-half form-check-input" type="checkbox" [id]="right + '-' + j" />
+            </div>
+            </ng-container>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

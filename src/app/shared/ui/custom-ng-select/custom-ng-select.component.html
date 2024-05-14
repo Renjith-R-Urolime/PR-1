@@ -1,0 +1,97 @@
+<ng-select #customSelect [multiple]="multiple" [ngClass]="ngClass" [searchable]="searchable" [(ngModel)]="selectedItems"
+  [disabled]="selectDisable" [closeOnSelect]="!multiple" (change)="onSelectChange($event)" [clearable]="clearable"
+  [loading]="loading" (close)="dropDownClosedEventTriggered()" [loadingText]="loadingText" [placeholder]="placeholder"
+  class="ng-select-{{theme}}" [items]="onOrder ? (items | orderBy: bindLabel :'alphabeticalOrder') : items" [bindLabel]="bindLabel" [bindValue]="bindValue" [appendTo]="bodyAppend"
+  (clear)="onClearClicked($event)">
+  <ng-template ng-label-tmp let-item="item">
+    <ng-container [ngTemplateOutlet]="( customNgLabel || defaulNgLabel )"
+      [ngTemplateOutletContext]="{item: item}"></ng-container>
+  </ng-template>
+  <!-- Header Template -->
+  <ng-template ng-header-tmp *ngIf=" originalItemsList.length > 10 || multiple || searchText">
+    <input #input (keydown)="onKeyDown($event)" *ngIf="originalItemsList.length > 10 || searchText" [(ngModel)]="searchText"
+      class="form-control light select-search w-100 line-clamp-1 h-24px" type="text" placeholder="Search..."
+      (input)="onSearch($event)" />
+    <!-- Mark All -->
+    <div class="form-check form-check-color-{{theme}} p-0 d-flex gap-1 ms-1 mt-1 align-items-center "
+      *ngIf="multiple && items.length > 0 && !disableMarkAllInMultiSelect">
+      <input class="form-check-input check-sm m-1 cursor-pointer" type="checkbox" (change)="toggleCheckAll($event)"
+        [(ngModel)]="markedAll" />
+      <label class="fs-6 m-0" for="markAll">
+        Mark All
+      </label>
+    </div>
+  </ng-template>
+  <!-- Option Template -->
+  <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+    <div class="form-check  form-check-color-{{theme}} p-0 d-flex gap-1 align-items-center"
+      (keydown)="onKeyDown($event)">
+      <input *ngIf="multiple" (keydown)="onKeyDown($event)" class="form-check-input check-sm m-1"
+        id="item-{{index}} cursor-pointer" type="checkbox" [checked]="item$.selected" />
+      <label class="fs-6 m-0 lh-1" for="flexCheckDefault">
+        <ng-container [ngTemplateOutlet]="( customNgOption || customNgLabel || defaulNgLabel )"
+          [ngTemplateOutletContext]="{item: item}"></ng-container>
+      </label>
+    </div>
+    <ng-container *ngIf="item.name === 'Load More' ">
+      <div
+        class="p-0 d-flex justify-content-center align-items-center position-absolute right-0 top-0 bg-white w-100 h-100">
+        <ng-container *ngIf="!loadMoreLoading; else loadMoreLoadingAnimation">
+          <button class="btn" (click)="loadMore()">Load More</button>
+        </ng-container>
+        <ng-template #loadMoreLoadingAnimation>
+          <div class="spinner spinner-{{theme}}"></div>
+        </ng-template>
+      </div>
+    </ng-container>
+  </ng-template>
+
+  <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+  </ng-template>
+
+  <ng-template ng-label-tmp let-item="item">
+    {{item[bindLabel]}}
+  </ng-template>
+  <!-- Multi Label Option -->
+  <ng-template *ngIf="multiple" ng-multi-label-tmp let-items="items" let-clear="clear">
+    <!-- Show individual selected items -->
+    <ng-container *ngIf="markedAll && items.length === 1 || !markedAll ">
+      <div class="align-items-center d-flex fs-7 gap-2 justify-content-center ng-value overflow-hidden px-2 py-0"
+        style="border-radius: 5px; min-height: 25px;" *ngFor="let item of items | slice:0:maxLimit">
+        <span class="ng-value-label p-0">{{item[bindLabel]}}</span>
+        <span class="ng-value-icon fs-8" *ngIf="!selectDisable" (click)="clear(item)" aria-hidden="true">×</span>
+      </div>
+      <div id="max-indicator" class="ng-value fs-7" style="border-radius: 5px; min-height: 25px;"
+        *ngIf="items.length > maxLimit">
+        <span class="ng-value-label">{{items.length - maxLimit}}+</span>
+      </div>
+    </ng-container>
+
+    <!-- Show "All +" when markedAll is true -->
+    <div *ngIf="markedAll && items.length > 1"
+      class="align-items-center d-flex fs-7 gap-2 justify-content-center ng-value overflow-hidden px-2 py-0"
+      style="border-radius: 5px; min-height: 25px;">
+      <span class="ng-value-label p-0">All</span>
+    </div>
+  </ng-template>
+
+  <ng-template ng-loadingspinner-tmp>
+    <!-- No spinner -->
+  </ng-template>
+  <!-- Footer Template -->
+  <ng-template ng-footer-tmp>
+    <div class="justify-content-between d-flex align-items-center" *ngIf="itemsCount > 10">
+      <div class="fs-7 fw-medium">
+        Showing {{ loadMoreNeeded ? items.length - 1 : itemsCount}} of {{itemsCount}}
+      </div>
+      <div class="fs-7 fw-medium" *ngIf="multiple">
+        Selected {{ markedAll ? searchText ? selectedItems.length : itemsCount : (selectedItems || []).length }}
+      </div>
+    </div>
+
+  </ng-template>
+</ng-select>
+
+<ng-template #defaulNgLabel let-item="item">
+  {{item[bindLabel]}}
+</ng-template>

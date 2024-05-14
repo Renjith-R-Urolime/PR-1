@@ -1,0 +1,470 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+    <div class="w-md-500px bg-white rounded-1 " >
+        <div class="row">
+            <div class="d-flex flex-column bgi-no-repeat rounded-top  " style="overflow: none;">
+                <div class=" text-dark  mt-3 ms-4  d-flex justify-content-between">
+                    <div class="align-self-start mt-2" style="width: 83px; height: 32px;
+    font-family: 'Mona Sans', sans-serif; font-weight: 700; font-size: 22px; line-height: 32px;
+    ">Notices</div>
+                    <!-- <div class="align-self-end ">
+                        <span class="close-button topright" (click)="closeNoticesDropdown()">&times;</span>
+                    </div> -->
+                </div>
+                <ul
+                    class="nav nav-line-tabs nav-line-tabs-2x nav-stretch fw-bold px-6 d-flex justify-content-between">
+                    <li class="nav-item">
+                        <a style="text-decoration: none !important;" class=" border-bottom-0
+      nav-link
+      d-flex align-items-center text-dark  w-103 h-24 font-weight-medium fs-13 lh-24
+      cursor-pointer
+    " data-bs-toggle="tab" [ngClass]="{
+        'active': activeTabId === 'kt_topbar_notices_1',
+        'anotherClass': activeTabId === 'kt_topbar_notices_1'
+    ,  'tabColor': activeTabId !== 'kt_topbar_notices_1'
+    }" (click)="setActiveTabId('kt_topbar_notices_1')">
+                            Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" border-bottom-0
+      nav-link
+      d-flex align-items-center text-dark  w-103 h-24 font-weight-medium fs-13 lh-24
+      cursor-pointer transition-colors text-decoration-color-black
+    " data-bs-toggle="tab" [ngClass]="{
+        'active': activeTabId === 'kt_topbar_notices_2',
+        'anotherClass': activeTabId === 'kt_topbar_notices_2',
+        'tabColor': activeTabId !== 'kt_topbar_notices_2'
+    }" (click)="setActiveTabId('kt_topbar_notices_2')">
+                            Announcements
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="
+        border-bottom-0
+      nav-link
+      d-flex align-items-center text-dark  w-103 h-24 font-weight-medium fs-13 lh-24
+      cursor-pointer
+    " data-bs-toggle="tab" (click)="setActiveTabId('kt_topbar_notices_3')" [ngClass]="{
+                'active': activeTabId === 'kt_topbar_notices_3',
+                'anotherClass': activeTabId === 'kt_topbar_notices_3',
+                'tabColor': activeTabId !== 'kt_topbar_notices_3'
+            }">
+                            Polls/Surveys
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content ">
+                <!-- Notices - Notification Tab View Start -->
+                <div class="tab-pane fade" id="kt_topbar_notices_1" role="tabpanel"
+                    [ngClass]="activeTabId === 'kt_topbar_notices_1' ? 'show active' : ''">
+                    <div class="scroll-y mh-325px my-5 px-4 custom-scrollbar">
+                        <!--begin::Body-->
+                        <div routerLink="/employee/flip-pdf" class="card-body   bg-white">
+                            <div class="border border-2 rounded p-4 mb-2"
+                                *ngFor="let announce of announcements; let i = index"
+                                [ngClass]="{'bg-color-a': announce.type === 'A', 'bg-color-b': announce.type === 'B', 'bg-color-c': announce.type === 'C'}">
+                                <!--begin::Item-->
+                                <div class="
+                text-dark fw-bold  w-103 h-24  lh-24   fs-13 lh-24
+                "> {{announce.description}}
+                                    <!-- <div class=" "></div> -->
+                                </div>
+                                <div class="d-flex flex-stack mt-2">
+                                    <!--begin::Icon-->
+                                    <!--end::Icon-->
+                                    <!--begin::Section-->
+                                    <div>
+                                        <div div="" class="symbol symbol-24px symbol-circle"><img alt="Pic"
+                                                src="./assets/media/avatars/300-1.jpg"><span
+                                                class="ms-3 fw-semibold">{{announce.name}}</span></div>
+                                        <!-- <div class="text-grey-700 fw-semibold fs-6 me-2">{{announce.name}}</div> -->
+                                    </div>
+                                    <!--end::Section-->
+                                    <!--begin::Action-->
+                                    <div class="d-flex flex-row">
+                                        <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr007.svg'"
+                                    class="svg-icon svg-icon-3 me-1 svg-icon-success"></span> -->
+                                        <div class=" text-xxl-end
+                                    font-style-normal font-weight-100 font-size-1 line-height-24
+                                   ">{{ announce.time }}</div>
+                                    </div>
+                                    <!--end::Action-->
+                                </div>
+                                <!--end::Item-->
+                                <!--begin::Card widget 17-->
+                            </div>
+                        </div>
+                        <!--end::Body-->
+                    </div>
+                </div>
+                <!-- Notices - Notification Tab View Ends -->
+                <!-- Notices - Announcements Tab View Starts -->
+                <div class="tab-pane fade" id="kt_topbar_notices_2" role="tabpanel"
+                    [ngClass]="activeTabId === 'kt_topbar_notices_2' ? 'show active' : ''">
+                    <div class="scroll-y mh-325px my-5 px-4 custom-scrollbar">
+                        <!--begin::Body-->
+                        <div routerLink="/employee/pdf" class=" card-body   bg-white">
+                            <div class="border border-2 rounded p-4 mb-2"
+                                *ngFor="let announce of announcements; let i = index"
+                                [ngClass]="{'bg-color-a': announce.type === 'A', 'bg-color-b': announce.type === 'B', 'bg-color-c': announce.type === 'C'}">
+                                <!--begin::Item-->
+                                <div class="
+                text-dark fw-bold w-103 h-24  lh-24   fs-13 lh-24
+                "> {{announce.description}}
+                                    <!-- <div class=" "></div> -->
+                                </div>
+                                <div class="d-flex flex-stack mt-2">
+                                    <!--begin::Icon-->
+                                    <!--end::Icon-->
+                                    <!--begin::Section-->
+                                    <div>
+                                        <div div="" class="symbol symbol-24px symbol-circle"><img alt="Pic"
+                                                src="./assets/media/avatars/300-1.jpg"><span
+                                                class="ms-3 fw-semibold">{{announce.name}}</span></div>
+                                        <!-- <div class="text-grey-700 fw-semibold fs-6 me-2">{{announce.name}}</div> -->
+                                    </div>
+                                    <!--end::Section-->
+                                    <!--begin::Action-->
+                                    <div class="d-flex flex-row">
+                                        <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr007.svg'"
+                                    class="svg-icon svg-icon-3 me-1 svg-icon-success"></span> -->
+                                        <div class=" text-xxl-end
+                                    font-style-normal font-weight-100 font-size-1 line-height-24
+                                   ">{{ announce.time }}</div>
+                                    </div>
+                                    <!--end::Action-->
+                                </div>
+                                <!--end::Item-->
+                                <!--begin::Card widget 17-->
+                            </div>
+                        </div>
+                        <!--end::Body-->
+                    </div>
+                </div>
+                <!-- Notices - Announcements Tab View Ends -->
+                <!-- Notices - Announcements Tab View Polls/Survey Starts-->
+                <div class="tab-pane fade" id="kt_topbar_notices_3" role="tabpanel"
+                    [ngClass]="activeTabId === 'kt_topbar_notices_3' ? 'show active' : ''">
+                    <div class="scroll-y mh-325px my-5 px-4 custom-scrollbar">
+                        <!--begin::Body-->
+                        <div class="card-body   bg-white">
+                            <div class="border border-2 rounded p-4 mb-2"
+                                *ngFor="let announce of announcements; let i = index"
+                                [ngClass]="{'bg-color-a': announce.type === 'A', 'bg-color-b': announce.type === 'B', 'bg-color-c': announce.type === 'C'}">
+                                <!--begin::Item-->
+                                <div class="
+                text-dark fw-bold w-103 h-24  lh-24   fs-13 lh-24
+                "> {{announce.description}}
+                                    <!-- <div class=" "></div> -->
+                                </div>
+                                <div class="d-flex flex-stack mt-2">
+                                    <!--begin::Icon-->
+                                    <!--end::Icon-->
+                                    <!--begin::Section-->
+                                    <div>
+                                        <div div="" class="symbol symbol-24px symbol-circle"><img alt="Pic"
+                                                src="./assets/media/avatars/300-1.jpg"><span
+                                                class="ms-3 fw-semibold">{{announce.name}}</span></div>
+                                        <!-- <div class="text-grey-700 fw-semibold fs-6 me-2">{{announce.name}}</div> -->
+                                    </div>
+                                    <!--end::Section-->
+                                    <!--begin::Action-->
+                                    <div class="d-flex flex-row">
+                                        <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr007.svg'"
+                                    class="svg-icon svg-icon-3 me-1 svg-icon-success"></span> -->
+                                        <div class=" text-xxl-end
+                                    font-style-normal font-weight-100 font-size-1 line-height-24
+                                   ">{{ announce.time }}</div>
+                                    </div>
+                                    <!--end::Action-->
+                                </div>
+                                <!--end::Item-->
+                                <!--begin::Card widget 17-->
+                            </div>
+                        </div>
+                        <!--end::Body-->
+                    </div>
+                </div>
+                <!-- Notices - Announcements Tab View Polls/Survey Ends-->
+                <div class="card-footer pb-5">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a *ngIf="activeTabId === 'kt_topbar_notices_1'" type="button"
+                                id="kt_layout_builder_reset" class="ms-6 mt-4 btn-color-no-bg k">View all</a>
+                            <a *ngIf="activeTabId === 'kt_topbar_notices_2'" type="button"
+                                id="kt_layout_builder_reset" class="ms-6 mt-4 btn-color-no-bg">Mark as read</a>
+                            <a *ngIf="activeTabId === 'kt_topbar_notices_3'" type="button"
+                                id="kt_layout_builder_reset" class="ms-6 mt-4 btn-color-no-bg">View all</a>
+                        </div>
+                        <div>
+                            <button *ngIf="activeTabId === 'kt_topbar_notices_1'" type="button"
+                                class="btn btn-color me-4 float-right">Add Notification</button>
+                            <button *ngIf="activeTabId === 'kt_topbar_notices_2'" type="button"
+                                class="btn-color btn btn-color me-4 float-right">Add Announcement</button>
+                            <button *ngIf="activeTabId === 'kt_topbar_notices_3'" type="button"
+                                class="btn-color btn btn-color me-4 float-right">Add Polls/Surveys</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<ng-template #skeleton>
+    <div style="position: fixed; top: 20px; right: 20px; background-color: #ffffff; border-radius: 10px;" class="w-md-500px">
+        <div >
+            <div class="row">
+                <div class="d-flex flex-column bgi-no-repeat rounded-top  " style="overflow: none;">
+                    <div class=" text-dark  mt-3 ms-4  d-flex justify-content-between">
+                        <div class="align-self-start mt-2" style="width: 83px; height: 32px;
+        font-family: 'Mona Sans', sans-serif; font-weight: 700; font-size: 22px; line-height: 32px;
+        ">Notices
+                        </div>
+                        <div class="align-self-end ">
+                            <!-- <button class="btn mb-3 " type="button" [inlineSVG]="'assets/media/icons/close.svg'"
+            (click)="closeNoticesDropdown()"
+            >
+            &times;
+            </button> -->
+                            <span class="close-button topright" (click)="closeNoticesDropdown()">&times;</span>
+                        </div>
+                    </div>
+                    <ul
+                        class="nav nav-line-tabs nav-line-tabs-2x nav-stretch fw-bold px-6 d-flex justify-content-between">
+                        <li class="nav-item">
+                            <a style="text-decoration: none !important;" class=" border-bottom-0
+          nav-link
+          d-flex align-items-center text-dark  w-103 h-24 font-weight-medium fs-13 lh-24
+          cursor-pointer
+        " data-bs-toggle="tab" [ngClass]="{
+            'active': activeTabId === 'kt_topbar_notices_1',
+            'anotherClass': activeTabId === 'kt_topbar_notices_1'
+        ,  'tabColor': activeTabId !== 'kt_topbar_notices_1'
+        }" (click)="setActiveTabId('kt_topbar_notices_1')">
+                                <ngx-skeleton-loader [theme]="{
+            height: '2rem',
+            width: '7rem'
+          }"></ngx-skeleton-loader>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class=" border-bottom-0
+          nav-link
+          d-flex align-items-center text-dark  w-103 h-24 font-weight-medium fs-13 lh-24
+          cursor-pointer transition-colors text-decoration-color-black
+        " data-bs-toggle="tab" [ngClass]="{
+            'active': activeTabId === 'kt_topbar_notices_2',
+            'anotherClass': activeTabId === 'kt_topbar_notices_2',
+            'tabColor': activeTabId !== 'kt_topbar_notices_2'
+        }" (click)="setActiveTabId('kt_topbar_notices_2')">
+                                <ngx-skeleton-loader [theme]="{
+            height: '2rem',
+            width: '7rem'
+          }"></ngx-skeleton-loader>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="
+            border-bottom-0
+          nav-link
+          d-flex align-items-center text-dark  w-103 h-24 font-weight-medium fs-13 lh-24
+          cursor-pointer
+        " data-bs-toggle="tab" (click)="setActiveTabId('kt_topbar_notices_3')" [ngClass]="{
+                    'active': activeTabId === 'kt_topbar_notices_3',
+                    'anotherClass': activeTabId === 'kt_topbar_notices_3',
+                    'tabColor': activeTabId !== 'kt_topbar_notices_3'
+                }">
+                                <ngx-skeleton-loader [theme]="{
+                    height: '2rem',
+                    width: '7rem'
+                  }"></ngx-skeleton-loader>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content ">
+                    <!-- Notices - Notification Tab View Start -->
+                    <div class="tab-pane fade" id="kt_topbar_notices_1" role="tabpanel"
+                        [ngClass]="activeTabId === 'kt_topbar_notices_1' ? 'show active' : ''">
+                        <div class="scroll-y mh-325px my-5 px-4 custom-scrollbar">
+                            <!--begin::Body-->
+                            <div routerLink="/employee/flip-pdf" class="card-body   bg-white">
+                                <div class="border border-2 rounded p-4 mb-2"
+                                    *ngFor="let announce of announcements; let i = index"
+                                    [ngClass]="{'bg-color-a': announce.type === 'A', 'bg-color-b': announce.type === 'B', 'bg-color-c': announce.type === 'C'}">
+                                    <!--begin::Item-->
+                                    <div class="
+                text-dark fw-bold w-103 h-24  lh-24   fs-13 lh-24
+                "> <ngx-skeleton-loader [theme]="{
+                    height: '2rem',
+                    width: '25rem'
+                  }"></ngx-skeleton-loader>
+                                        <!-- <div class=" "></div> -->
+                                    </div>
+                                    <div class="d-flex flex-stack mt-2">
+                                        <!--begin::Icon-->
+                                        <!--end::Icon-->
+                                        <!--begin::Section-->
+                                        <div>
+                                            <div div="" class="symbol symbol-24px symbol-circle"><img alt="Pic"
+                                                    src="./assets/media/avatars/300-1.jpg"><span
+                                                    class="ms-3 fw-semibold"><ngx-skeleton-loader [theme]="{
+                                                height: '1rem',
+                                                width: '8rem'
+                                              }"></ngx-skeleton-loader></span></div>
+                                            <!-- <div class="text-grey-700 fw-semibold fs-6 me-2">{{announce.name}}</div> -->
+                                        </div>
+                                        <!--end::Section-->
+                                        <!--begin::Action-->
+                                        <div class="d-flex flex-row">
+                                            <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr007.svg'"
+                                    class="svg-icon svg-icon-3 me-1 svg-icon-success"></span> -->
+                                            <div class=" text-xxl-end
+                                    font-style-normal font-weight-100 font-size-1 line-height-24
+                                   "><ngx-skeleton-loader [theme]="{
+                                    height: '1rem',
+                                    width: '5rem'
+                                  }"></ngx-skeleton-loader></div>
+                                        </div>
+                                        <!--end::Action-->
+                                    </div>
+                                    <!--end::Item-->
+                                    <!--begin::Card widget 17-->
+                                </div>
+                            </div>
+                            <!--end::Body-->
+                        </div>
+                    </div>
+                    <!-- Notices - Notification Tab View Ends -->
+                    <!-- Notices - Announcements Tab View Starts -->
+                    <div class="tab-pane fade" id="kt_topbar_notices_2" role="tabpanel"
+                        [ngClass]="activeTabId === 'kt_topbar_notices_2' ? 'show active' : ''">
+                        <div class="scroll-y mh-325px my-5 px-4 custom-scrollbar">
+                            <!--begin::Body-->
+                            <div routerLink="/employee/pdf" class=" card-body   bg-white">
+                                <div class="border border-2 rounded p-4 mb-2"
+                                    *ngFor="let announce of announcements; let i = index"
+                                    [ngClass]="{'bg-color-a': announce.type === 'A', 'bg-color-b': announce.type === 'B', 'bg-color-c': announce.type === 'C'}">
+                                    <!--begin::Item-->
+                                    <div class="
+                text-dark fw-bold w-103 h-24  lh-24   fs-13 lh-24
+                "> <ngx-skeleton-loader [theme]="{
+                    height: '2rem',
+                    width: '25rem'
+                  }"></ngx-skeleton-loader>
+                                        <!-- <div class=" "></div> -->
+                                    </div>
+                                    <div class="d-flex flex-stack mt-2">
+                                        <!--begin::Icon-->
+                                        <!--end::Icon-->
+                                        <!--begin::Section-->
+                                        <div>
+                                            <div div="" class="symbol symbol-24px symbol-circle"><img alt="Pic"
+                                                    src="./assets/media/avatars/300-1.jpg"><span
+                                                    class="ms-3 fw-semibold"><ngx-skeleton-loader [theme]="{
+                                                height: '1rem',
+                                                width: '8rem'
+                                              }"></ngx-skeleton-loader></span></div>
+                                            <!-- <div class="text-grey-700 fw-semibold fs-6 me-2">{{announce.name}}</div> -->
+                                        </div>
+                                        <!--end::Section-->
+                                        <!--begin::Action-->
+                                        <div class="d-flex flex-row">
+                                            <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr007.svg'"
+                                    class="svg-icon svg-icon-3 me-1 svg-icon-success"></span> -->
+                                            <div class=" text-xxl-end
+                                    font-style-normal font-weight-100 font-size-1 line-height-24
+                                   "><ngx-skeleton-loader [theme]="{
+                                    height: '1rem',
+                                    width: '5rem'
+                                  }"></ngx-skeleton-loader></div>
+                                        </div>
+                                        <!--end::Action-->
+                                    </div>
+                                    <!--end::Item-->
+                                    <!--begin::Card widget 17-->
+                                </div>
+                            </div>
+                            <!--end::Body-->
+                        </div>
+                    </div>
+                    <!-- Notices - Announcements Tab View Ends -->
+                    <!-- Notices - Announcements Tab View Polls/Survey Starts-->
+                    <div class="tab-pane fade" id="kt_topbar_notices_3" role="tabpanel"
+                        [ngClass]="activeTabId === 'kt_topbar_notices_3' ? 'show active' : ''">
+                        <div class="scroll-y mh-325px my-5 px-4 custom-scrollbar">
+                            <!--begin::Body-->
+                            <div class="card-body   bg-white">
+                                <div class="border border-2 rounded p-4 mb-2"
+                                    *ngFor="let announce of announcements; let i = index"
+                                    [ngClass]="{'bg-color-a': announce.type === 'A', 'bg-color-b': announce.type === 'B', 'bg-color-c': announce.type === 'C'}">
+                                    <!--begin::Item-->
+                                    <div class="
+                    text-dark fw-bold w-103 h-24  lh-24   fs-13 lh-24
+                    "> <ngx-skeleton-loader [theme]="{
+                        height: '2rem',
+                        width: '25rem'
+                      }"></ngx-skeleton-loader>
+                                        <!-- <div class=" "></div> -->
+                                    </div>
+                                    <div class="d-flex flex-stack mt-2">
+                                        <!--begin::Icon-->
+                                        <!--end::Icon-->
+                                        <!--begin::Section-->
+                                        <div>
+                                            <div div="" class="symbol symbol-24px symbol-circle"><img alt="Pic"
+                                                    src="./assets/media/avatars/300-1.jpg"><span
+                                                    class="ms-3 fw-semibold"><ngx-skeleton-loader [theme]="{
+                                                    height: '1rem',
+                                                    width: '8rem'
+                                                  }"></ngx-skeleton-loader></span></div>
+                                            <!-- <div class="text-grey-700 fw-semibold fs-6 me-2">{{announce.name}}</div> -->
+                                        </div>
+                                        <!--end::Section-->
+                                        <!--begin::Action-->
+                                        <div class="d-flex flex-row">
+                                            <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr007.svg'"
+                                        class="svg-icon svg-icon-3 me-1 svg-icon-success"></span> -->
+                                            <div class=" text-xxl-end
+                                        font-style-normal font-weight-100 font-size-1 line-height-24
+                                       "><ngx-skeleton-loader [theme]="{
+                                        height: '1rem',
+                                        width: '5rem'
+                                      }"></ngx-skeleton-loader></div>
+                                        </div>
+                                        <!--end::Action-->
+                                    </div>
+                                    <!--end::Item-->
+                                    <!--begin::Card widget 17-->
+                                </div>
+                            </div>
+                            <!--end::Body-->
+                        </div>
+                    </div>
+                    <!-- Notices - Announcements Tab View Polls/Survey Ends-->
+                    <div class="card-footer pb-5">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <a *ngIf="activeTabId === 'kt_topbar_notices_1'" type="button"
+                                    id="kt_layout_builder_reset" class="ms-6 mt-4 btn-color-no-bg k">View all</a>
+                                <a *ngIf="activeTabId === 'kt_topbar_notices_2'" type="button"
+                                    id="kt_layout_builder_reset" class="ms-6 mt-4 btn-color-no-bg">Mark as read</a>
+                                <a *ngIf="activeTabId === 'kt_topbar_notices_3'" type="button"
+                                    id="kt_layout_builder_reset" class="ms-6 mt-4 btn-color-no-bg">View all</a>
+                            </div>
+                            <div>
+                                <button *ngIf="activeTabId === 'kt_topbar_notices_1'" type="button"
+                                    class="btn btn-color me-4 float-right">Add Notification</button>
+                                <button *ngIf="activeTabId === 'kt_topbar_notices_2'" type="button"
+                                    class="btn-color btn btn-color me-4 float-right">Add Announcement</button>
+                                <button *ngIf="activeTabId === 'kt_topbar_notices_3'" type="button"
+                                    class="btn-color btn btn-color me-4 float-right">Add Polls/Surveys</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

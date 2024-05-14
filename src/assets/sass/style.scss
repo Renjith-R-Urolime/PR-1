@@ -1,0 +1,37 @@
+//
+// Theme style
+//
+
+// Initialize
+@import "init";
+
+// Components
+@import "./core/components/components";
+@import "components/components";
+
+// Layout
+@import "layout/layout";
+
+// Plugins
+@import "./core/vendors/plugins/plugins";
+
+// Import the plugin styles
+@import 'filepond/dist/filepond.css';
+@import 'filepond-plugin-image-edit/dist/filepond-plugin-image-edit.css';
+@import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+@import 'filepond-plugin-pdf-preview/dist/filepond-plugin-pdf-preview.css';
+
+// Angular vendors
+// @import '../node_modules/ngx-bootstrap/datepicker/bs-datepicker.css';
+// @import "~socicon/css/socicon.css";
+
+@import "~slickgrid/css/select2.css";
+@import "~@slickgrid-universal/common/dist/styles/css/slickgrid-theme-bootstrap.css";
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+// @import "~line-awesome/dist/line-awesome/css/line-awesome.css";
+// @import "~prism-themes/themes/prism-shades-of-purple.css";
+// @import "~bootstrap-icons/font/bootstrap-icons.css";
+// @import "~animate.css/animate.css";
+// @import "./core/vendors/plugins/prismjs";
+// @import "./core/vendors/plugins/formvalidation";

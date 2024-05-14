@@ -1,0 +1,64 @@
+<!-- Tabs -->
+<div *ngIf="tabsMeta" class="p-0 pt-1">
+  <div class="d-flex justify-content-between tab">
+    <div class="d-flex align-self-end overflow-hidden">
+      <!-- <ng-container *ngIf="!isLoading; else skeleton"> -->
+      <button *ngFor="let tab of tabsMeta; let i = index" type="button" class="me-6 btn-trapezoid-{{theme}}"
+        [routerLinkActive]="'active'" [routerLinkActiveOptions]="{exact: true}" (click)="updateSelectedTab(tab)"
+        [ngClass]="{ 'active': currentTabLabel === tab.label}">
+        <span class="mx-3">{{tab.showLabel ? tab.showLabel : tab.label | changeCase:'capital'}}</span>
+      </button>
+    </div>
+    <div *ngIf="showFilter">
+      <search-and-filter [tableData]="tableData"></search-and-filter>
+    </div>
+  </div>
+</div>
+
+<!-- Data Table -->
+<!-- <div class="card p-0 border-0 rounded-top-0">
+  <data-table-list [currentTab]="currentTabLabel" [isActionCol]="false" [tabs]="true" [metaData]="selectedTabTableMetaData">
+    <ng-template data-cell-temp let-data="data" let-column="column" let-index="index">
+      <ng-container [ngTemplateOutlet]="(tabDataCellTemplate)" [ngTemplateOutletContext]="{ data: data, column: column, index : index}"></ng-container>
+    </ng-template>
+  </data-table-list>
+</div> -->
+
+<div class="card p-0 border-0 rounded-top-0">
+  <ng-container *ngIf="currentTabLabel">
+    <data-table-list [currentTab]="currentTabLabel"
+      [isActionCol]="selectedTabTableMetaData?.isActionColumn ? selectedTabTableMetaData?.isActionColumn : false"
+      [tabs]="true" [metaData]="selectedTabTableMetaData" [tabsApiKey]="key">
+      <ng-container *ngIf="isCustomView">
+        <ng-template custom-view let-data$="data">
+          <ng-container [ngTemplateOutlet]="(tabCustomViewTemplate)"
+            [ngTemplateOutletContext]="{ tab: currentTabLabel, data: data$}"></ng-container>
+        </ng-template>
+      </ng-container>
+      <ng-template action-btn-temp let-id="id" let-meta="meta" let-item="item$">
+        <ng-template [ngTemplateOutlet]="( actionButtonTemplate || defaultActionButtonTemplate)"
+          [ngTemplateOutletContext]="{ id:id, meta:meta, item:item ,tab:currentTabLabel}">
+        </ng-template>
+        <ng-template #defaultActionButtonTemplate let-id="id">
+          <a [ngbTooltip]="'Edit'" class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+            (click)="open('edit', id)">
+            <span [inlineSVG]="'./assets/media/icons/create-outline.svg'" class="svg-icon svg-icon-2"></span>
+          </a>
+          <a [ngbTooltip]="'View'" class=" btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+            (click)="open('view', id)">
+            <span [inlineSVG]="
+              './assets/media/icons/document-text-outline.svg'
+            " class="svg-icon svg-icon-3"></span>
+          </a>
+        </ng-template>
+
+      </ng-template>
+      <ng-template data-cell-temp let-data="data" let-column="column" let-index="index">
+        <ng-container [ngTemplateOutlet]="(tabDataCellTemplate)"
+          [ngTemplateOutletContext]="{ data: data, column: column, index: index }"></ng-container>
+      </ng-template>
+    </data-table-list>
+    <!-- <ng-template #tableContent>
+    </ng-template> -->
+  </ng-container>
+</div>

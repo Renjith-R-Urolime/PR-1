@@ -1,0 +1,62 @@
+<button class="btn-sm bg-gray-100 pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+    (click)="getFormTemplate(classificationApplicabilityTemplate,'classificationApplicability')"
+    [id]="'kt_drawer_form_toggle_classification'">
+    <span span *ngIf="!classificationApplicabilityFormSaved" [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+        class="svg-icon svg-icon-3 p-0 me-0"></span>
+    <span span *ngIf="classificationApplicabilityFormSaved" [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+        class="svg-icon svg-icon-3 p-0 me-0"></span>
+</button>
+
+
+
+<app-form-drawer (isSaved)="onDrawerSave($event)" [formDrawerId]="'#kt_drawer_form_toggle_classification'"
+    [headerText]="'classificationApplicability'" [formTemplate]="classificationApplicabilityTemplate">
+</app-form-drawer>
+
+<ng-template #classificationApplicabilityTemplate>
+    <form [formGroup]="classificationApplicabilityForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of classificationApplicabilityFormData.labels">
+                <div class="col-4 ">
+                    <label  *ngIf="(label.type !== 'checkbox' && label.type !== 'country') || (label.type === 'country' && isCountryIncluded)" class="form-label fs-6 mb-0 text-nowrap"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+
+                    <ng-container *ngIf="label.type === 'country' && isCountryIncluded">
+                        <custom-ng-select [multiple]="label?.multiple" (onchange)="onCountryChange($event)"
+                            [patchData]="patchData?.[label.labelName.defaultValue!] ? patchData?.[label.labelName.defaultValue!] : null"
+                            [apiLink]="label.apiLink" [controlName]="label.labelName.defaultValue!"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container *ngIf="label.type === 'subsidiary'">
+                        <custom-ng-select (onchange)="onSubsidiaryChange($event)"
+                            [patchData]="patchData?.[label.labelName.defaultValue!] ? patchData?.[label.labelName.defaultValue!]:null"
+                            [formGroup]="classificationApplicabilityForm"
+                            [apiLink]="isCountryIncluded ? (coutryFetchCondition?.length > 0 ? label.apiLink : '') : label.apiLink" [maxLimit]="2"
+                            [formControlName]="label.labelName.defaultValue!" [fetchCondition]="coutryFetchCondition"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container *ngIf="label.type === 'dropdown'">
+                        <custom-ng-select [fetchCondition]="subsidiaryFilter"
+                            [patchData]="patchData?.[label.labelName.defaultValue!] ? patchData?.[label.labelName.defaultValue!] : null" 
+                            [formGroup]="classificationApplicabilityForm"
+                            [apiLink]="classificationApplicabilityForm.value?.subsidiary === 'ALL' || subsidiaryFilter.length > 0 ? label.apiLink : ''"
+                            [maxLimit]="2" [formControlName]="label.labelName.defaultValue!"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>

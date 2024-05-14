@@ -1,0 +1,63 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+ <details-card [detailsCardData]="detailsCardData">
+ </details-card>
+ <app-tab-data-table  [tabsMeta]="paystructureTabsMeta">
+    <ng-template data-cell-temp let-data="data" let-column="column" let-index="index">
+        <ng-container *ngIf="(data[column.name] | dataValue : column.name | async) as value">
+            <ng-container *ngIf="value !== 'Null' ; else noInfo">
+                <ng-container [ngSwitch]="column?.template">
+                    <ng-container *ngSwitchCase="'componentDetails_temp'">
+                        <div class="d-flex gap-3 align-items-center">
+                            <!-- <p class="text-dark fw-medium d-block fs-7 m-0">
+                                {{ value }}
+                            </p> -->
+                            <div class="symbol-group symbol-hover flex-nowrap">
+                                <div *ngFor="let comp of data?.componentDetails | orderBy:'name':'alphabeticalOrder' | slice:0:3; let i = index" 
+                                  class="symbol symbol-36px symbol-circle" data-bs-toggle="tooltip" [title]="comp['name']" >
+                                  <span class="symbol-label border-white fw-medium bg-{{theme}}{{ i > 0 ? '-' +shades[i] : '' }}">{{ i < 2 ? comp['name'][0] : data?.componentDetails?.length - 2 + '+' }}</span>
+                                </div>
+                            </div>
+                            <button class="bg-white border-gray-600 btn-light d-flex p-0" id="kt_drawer_form_toggle" (click)="componentDetails = data?.componentDetails">
+                                <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'" class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+            <ng-template #noInfo>
+            <p class="fw-medium fs-6 text-gray-400 mb-0 ">
+                Not Available
+            </p>
+            </ng-template>
+        </ng-container>
+    </ng-template>
+
+ </app-tab-data-table>
+
+ <app-form-drawer [headerText]="'Component Details'" [formTemplate]="componentDetailsDrawerRef" [viewMode]="true"></app-form-drawer>
+
+ <ng-template #componentDetailsDrawerRef>
+    <div class="row border-top border-bottom mt-5">
+        <div class="col-4 mt-2 mb-2 position-relative">
+          <label class="form-label fs-6 fw-bolder mb-1">Component</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative ">
+          <label class="form-label fs-6 fw-bolder mb-1">Percentage</label>
+        </div>
+        <div class="col-5 mt-2 mb-2 position-relative">
+          <label class="form-label fs-6 fw-bolder mb-1">Formula</label>
+        </div>
+      </div>
+      <div class="row mt-5" *ngFor="let comp of componentDetails">
+        <div class="col-4 mb-2 position-relative">
+            {{comp.name}}
+        </div>
+        <div class="col-3 mb-2 position-relative ">
+            {{comp.percentage}}
+        </div>
+        <div class="col-5 mb-2 position-relative">
+          {{getFormulaName(comp.formula)}}
+        </div>
+      </div>
+ </ng-template>

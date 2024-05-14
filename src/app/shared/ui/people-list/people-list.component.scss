@@ -1,0 +1,55 @@
+
+
+
+.groupsymbol.groupsymbol-50px > .img-class img {
+    width: 90px;
+    height: 90px;
+}
+
+
+.groupsymbol.groupsymbol-50px > .img-class .span {
+    width: 90px;
+    height: 90px;
+}
+
+
+
+.group-symbol.groupsymbol-hover .groupsymbol {
+    cursor: pointer;
+}
+
+.group-symbol .groupsymbol {
+    position: relative;
+    z-index: 0;
+    margin-left: -50px;
+    transition: all 0.3s ease;
+}
+
+.groupsymbol.groupsymbol-circle, .groupsymbol.groupsymbol-circle > .img-class img, .groupsymbol.groupsymbol-circle .groupsymbol-label {
+    border-radius: 50%;
+}
+
+.groupsymbol.groupsymbol-circle, .groupsymbol.groupsymbol-circle > .img-class span, .groupsymbol.groupsymbol-circle .groupsymbol-label {
+    border-radius: 50%;
+}
+
+
+.groupsymbol {
+    display: inline-block;
+    flex-shrink: 0;
+    border-radius: 0.75rem;
+}
+
+.group-else {
+    width: 90px !important;
+    background-color: #181C32 !important;
+    color: 
+    #E4E6EF;
+
+
+    height:  90px !important;
+    font-size: 20px !important;
+
+    
+
+}

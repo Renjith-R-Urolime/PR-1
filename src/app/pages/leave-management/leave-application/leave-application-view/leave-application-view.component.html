@@ -1,0 +1,69 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+<details-card (detailsCardDataChange)="handleDetailsCardDataChange($event)" [detailsCardData]="detailsCardData">
+    <ng-template custom-element let-data$="data$" let-key$="key$">
+        <ng-container *ngIf="key$?.templateName==='leaveType'">
+            <div class="d-flex">
+                <div class="me-2">{{ data$?.leaveType?.name }}</div>
+                <div class="svg-container" (mouseenter)="showTooltip = true" (mouseleave)="showTooltip = false">
+                    <div class="svg-icon-2 svg-icon" [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                        alt="Information icon"></div>
+                    <div *ngIf="showMessage" class="message card bg-{{theme}} d-flex flex flex-column min-w-225px">
+                            <div class="d-flex justify-content-between">
+                                <span>Leave Days</span>
+                                <span>{{data$?.leaveDays | parseFloat }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Loss of Pay Days</span>
+                                <span>{{data$?.lossOfPayDays | parseFloat}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Balance Days</span>
+                                <span>{{(data$?.availableDays - data$?.leaveDays) | parseFloat}}</span>
+                            </div>
+                            <hr class="mt-1 mb-1 tool-hr">
+                            <div class="d-flex justify-content-between">
+                                <span>Total Available Days</span>
+                                <span>{{data$?.availableDays | parseFloat}}</span>
+                            </div>
+                            <!-- <div>Leave Days  {{data$?.leaveDays }}</div>
+                            <div>Loss of Pay Days {{data$?.lossOfPayDays }} </div>
+                            <div>Balance Days {{data$?.availableDays - data$?.leaveDays}} </div>
+                            <div>Total Available Days {{data$?.availableDays}}</div> -->
+                    </div>
+                </div>
+
+                <app-tool-tip [leftWidth]="'20px'" [top]="'30%'"  [showTooltip]="showTooltip">
+                    <ng-template custom-tooltip>
+                        <div  class=" d-flex flex flex-column min-w-225px">
+                            <div class="d-flex justify-content-between">
+                                <span>Leave Days</span>
+                                <span>{{data$?.leaveDays | parseFloat }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Loss of Pay Days</span>
+                                <span>{{data$?.lossOfPayDays | parseFloat}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Balance Days</span>
+                                <span>{{(data$?.availableDays - data$?.leaveDays) | parseFloat}}</span>
+                            </div>
+                            <hr class="mt-1 mb-1 tool-hr">
+                            <div class="d-flex justify-content-between">
+                                <span>Total Available Days</span>
+                                <span>{{data$?.availableDays | parseFloat}}</span>
+                            </div>
+                            <!-- <div>Leave Days  {{data$?.leaveDays }}</div>
+                            <div>Loss of Pay Days {{data$?.lossOfPayDays }} </div>
+                            <div>Balance Days {{data$?.availableDays - data$?.leaveDays}} </div>
+                            <div>Total Available Days {{data$?.availableDays}}</div> -->
+                    </div>
+                    </ng-template>
+                </app-tool-tip>
+            </div>
+        </ng-container>
+    </ng-template>
+</details-card>
+
+
+ <app-tab-data-table  [tabsMeta]="applicationTabsMeta"></app-tab-data-table>

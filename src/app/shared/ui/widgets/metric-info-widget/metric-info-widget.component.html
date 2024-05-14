@@ -1,0 +1,98 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+<div class="card h-100 d-flex flex-column justify-content-between p-6">
+    <!--begin::Header-->
+    <div class="card-header border-0 p-0">
+        <!--begin::Title-->
+        <div class="card-title d-flex flex-column">
+            <!--begin::Amount-->
+            <span class="title-font me-2 lh-1 ls-n2 fw-bolder fs-2tx">
+                <span class="title-font me-2 fs-6">AED</span>XX,XXX.xx
+            </span>
+            <!--end::Amount-->
+            <!--begin::Subtitle-->
+            <span class="text-muted fs-5 fw-bolder mt-2">Employees Earnings</span>
+            <!--end::Subtitle-->
+        </div>
+        <!--end::Title-->
+        <!--begin::Toolbar-->
+        <div class="card-toolbar">
+        </div>
+        <!--end::Toolbar-->
+    </div>
+    <!--end::Header-->
+    <!--begin::Body-->
+    <div class="card-body p-0 mt-6">
+        <ng-container *ngFor="let row of rows; let i = index">
+            <!--begin::Item-->
+            <div class="d-flex flex-stack">
+                <!--begin::Icon-->
+                <!--end::Icon-->
+                <!--begin::Section-->
+                <div class="text-grey-700 fw-semibold fs-6 me-2">{{row.description}}</div>
+                <!--end::Section-->
+                <!--begin::Action-->
+                <div class="d-flex flex-row">
+                    <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr007.svg'"
+                        class="svg-icon svg-icon-3 me-1 svg-icon-success"></span>
+                    <div class="fw-bolder text-gray-700 text-xxl-end">{{ row.count }}</div>
+                </div>
+                <!--end::Action-->
+            </div>
+            <!--end::Item-->
+            <ng-container *ngIf="i < (rows.length - 1)">
+                <!--begin::Separator-->
+                <div class="separator separator-dashed my-3"></div>
+                <!--end::Separator-->
+            </ng-container>
+        </ng-container>
+    </div>
+    <!--end::Body-->
+</div>
+</ng-container>
+<ng-template #skeleton>
+    <div class="card card-flush card-size">
+        <!--begin::Header-->
+        <div class="card-header pt-3">
+            <!--begin::Title Skeleton-->
+            <div class="card-title d-flex flex-column">
+                <ngx-skeleton-loader [theme]="{  'border-radius': '5px', height: '30px', width:'100px' }">
+                </ngx-skeleton-loader>
+                <ngx-skeleton-loader [theme]="{  'border-radius': '5px', height: '10px', width:'100px' }">
+                </ngx-skeleton-loader>
+            </div>
+            <!--end::Title Skeleton-->
+            <!--begin::Toolbar-->
+            <div class="card-toolbar">
+            </div>
+            <!--end::Toolbar-->
+        </div>
+        <!--end::Header-->
+        <!--begin::Body-->
+        <div class="card-body">
+            <ng-container *ngFor="let row of rows; let i = index">
+                <!--begin::Item-->
+                <div class="d-flex flex-stack">
+                    <!--begin::Section Skeleton-->
+                    <div class="text-grey-700 fw-semibold fs-6 me-2">
+                        <ngx-skeleton-loader [theme]="{  'border-radius': '5px', height: '15px', width:'120px' }">
+                        </ngx-skeleton-loader>
+                    </div>
+                    <!--end::Section Skeleton-->
+                    <!--begin::Action Skeleton-->
+                    <div class="d-flex flex-row">
+                        <ngx-skeleton-loader [theme]="{ appearance:'line', 'border-radius': '5px', height: '15px', width:'70px' }">
+                        </ngx-skeleton-loader>
+                    </div>
+                    <!--end::Action Skeleton-->
+                </div>
+                <!--end::Item-->
+                <ng-container *ngIf="i < (rows.length - 1)">
+                    <!--begin::Separator-->
+                    <div class="separator separator-dashed my-3"></div>
+                    <!--end::Separator-->
+                </ng-container>
+            </ng-container>
+        </div>
+        <!--end::Body-->
+    </div>
+    </ng-template>

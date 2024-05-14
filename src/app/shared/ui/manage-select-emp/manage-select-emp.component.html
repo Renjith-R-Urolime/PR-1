@@ -1,0 +1,150 @@
+<div class="px-2">
+    <div class="row ">
+        <!-- SECTION 1 -->
+        <div class="col-md-4 p-0">
+          
+
+
+            <div  class="p-3 mt-3  bg-white">
+
+                <div class="px-10 ">
+                    <div class="d-flex align-items-center position-relative custom-div">
+                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                            <span [inlineSVG]="'./assets/media/icons/duotune/general/gen021.svg'" class="svg-icon"></span>
+                        </span>
+                        <form action="">
+                            <input type="text" [(ngModel)]="searchText" (input)="applySearchFilterCard()"
+                                data-kt-permissions-table-filter="search" class="form-control form-control-solid ps-15"
+                                placeholder="Search..." />
+                            <span>{{ searchText }}</span>
+                            <!-- <search-and-filter [manageData]="cardData"></search-and-filter> -->
+                        </form>
+                    </div>
+                </div>
+                <div class="px-10 py-3">
+                  
+                </div>
+
+             
+                <div class="separator border-gray-200"></div>
+                <div class="px-10 py-5">
+                    <div class="fs-5 text-dark fw-bolder">Filter Options</div>
+                </div>
+                <div class="px-20 py-5">
+                    <div class="mb-10">
+                        <label class="form-label fw-bold">Subsidiary:</label>
+                        <ng-select [items]="subsidiaryOptions" [(ngModel)]="selectedSubsidiary"
+                            placeholder="--select the subsidiary--"></ng-select>
+                    </div>
+                    <div class="mb-10">
+                        <label class="form-label fw-bold">Teams:</label>
+                        <ng-select [items]="teamOptions" [(ngModel)]="selectedTeam"
+                            placeholder="--select the team--"></ng-select>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="reset" class="btn btn-sm btn-light btn-active-light-{{theme}} me-2"
+                            data-kt-menu-dismiss="true" (click)="resetFilters()">Reset</button>
+                        <button type="submit" class="btn btn-sm btn-{{theme}}" (click)="applyFilters()"
+                            data-kt-menu-dismiss="true">Apply</button>
+                    </div>
+                </div>
+            </div>
+
+          
+        </div>
+    
+         <!-- SECTION 2 -->
+        <div class="col-md-4 p-0 ">
+            <div class="card card-border h-600px border-right-card ">
+                <div class="card-header border-0 pt-5 justify-content-start align-items-center">
+                    <div class="form-check form-check-sm form-check-custom form-check-solid">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="selectAllChecked"
+                            (change)="selectAllCards()" value="1" data-kt-check="true"
+                            data-kt-check-target=".widget-9-check" />
+                    </div>
+                    <div class="card-toolbar px-3">
+                        <!-- <a> Select All </a> -->
+                        <div class="fs-6 fw-bolder">Select All</div>
+                    </div>
+                </div>
+                <div class="card-body mt-3 py-3 overflow-auto">
+                    <div class="card-scroll-container">
+                        <div class=" form-check-sm form-check-custom form-check-solid"
+                            *ngFor="let item of cardData">
+                            
+                            <div class="card w-550px  pt-4 px-4 h-120px pb-2 mb-3">
+
+                               <div class="d-flex justify-content-start">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}} mx-0">
+                                    <input class="form-check-input widget-9-check" type="checkbox" [(ngModel)]="item.selected"
+                                (change)="updateSelectedEmployees()" />
+
+                                </div>
+
+                                <div class=" d-flex align-items-center px-0 mb-2 h-80px">
+                                    <div  class="symbol symbol-75px symbol-circle me-5">
+                                        <img src="{{ item.img }}" alt="" />
+                                    </div>
+                                    <div  class="d-flex justify-content-start flex-column">
+                                        <a href="#" class="text-dark fw-bolder text-hover-primary fs-4">
+                                            {{ item.name }}
+                                        </a>
+                                        <span class="text-muted fw-bold text-muted d-block fs-5">
+                                            {{ item.role }}
+                                        </span>
+                                    </div>
+                                </div>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        
+         <!-- SECTION 3 -->
+        <div class="col-md-4 p-0">
+            <div class="card card-border h-600px bg-white ">
+                <div class="card-header border-0 pt-5 mt-2 mx-5">
+                    <div class="flex-grow-1 fs-4 fw-bolder">Selected Employee</div>
+                    <div class="step-number d-flex align-items-center justify-content-center third-card">
+                        <p class="m-0">{{ selectedLength }}</p>
+                    </div>
+                </div>
+    
+                <div class="card-body overflow-auto py-3 " >
+                    <ng-container  class=" h-500px">
+                        <div  *ngFor="let employee of cardData">
+
+                            <div *ngIf="employee.selected" class="card w-400px mb-2  pt-2 px-4 h-70px">
+                                <div   class="d-flex align-items-center px-5">
+                                    <div class="symbol symbol-50px symbol-circle me-5">
+                                        <img src="{{ employee.img }}" alt="" />
+                                    </div>
+                                    <div class="d-flex justify-content-start flex-column">
+                                        <a href="#" class="text-dark fw-bolder text-hover-primary fs-6">
+                                            {{ employee.name }}
+                                        </a>
+                                        <span class="text-muted fw-bold text-muted d-block fs-7">
+                                            {{ employee.role }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+    
+                    
+    
+    
+                        <!-- <div *ngIf="employee.selected" class="card-body d-flex justify-content-start flex-column p-4 px-5">
+                            <a class="text-dark fw-bolder fs-6">{{ employee.name }}</a>
+                            <span class="text-muted fw-bold text-muted d-block fs-7">{{ employee.role }}</span>
+                        </div> -->
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

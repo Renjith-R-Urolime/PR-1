@@ -1,0 +1,63 @@
+// .custom-skeleton {
+//     background-color: #f3f3f3;
+//     &.large {
+//       height: 50px;
+//       border-radius: 50px;
+//     }
+//     .line {
+//       height: 10px;
+//       margin-bottom: 10px;
+//       width: 100%;
+//       border-radius: 50px;
+
+//     }
+// }
+
+// table tbody tr {
+//     border-bottom: 2px solid #F3F6F9 ;
+// }
+// table td:nth-child(2) {
+//     border-right: 2px solid #F3F6F9;
+// }
+// table thead {
+// border-right: 2px solid #F3F6F9;
+// }
+
+
+// .btn {
+//     position: relative;
+//     width: 150px !important;
+//     height: 50px;
+//     padding: 12px 16px;
+//     background-color: #eaecff;
+//     border: none;
+//     color: #482084;
+//     text-align: center;
+//     text-decoration: none;
+//     border-top-left-radius: 10px;
+//     border-top-right-radius: 9px;
+// }
+
+// .btn.active,
+// .btn:hover {
+//     background-color: #482084;
+//     color: #fff !important;
+// }
+
+// .btn.active::before,
+// .btn:hover::before {
+//     border-color: transparent transparent transparent #482084 !important;
+// }
+
+// .btn::before {
+//     content: "";
+//     position: absolute;
+//     height: 53px;
+//     right: -33px;
+//     top: -3px;
+//     border-style: solid;
+//     border-width: 53px 0 0 40px; /* changed from 53px 0 0 32px */
+//     border-color: transparent transparent transparent #eaecff;
+//     border-top-left-radius: 17px;
+//     border-top-right-radius: 15px;
+// }

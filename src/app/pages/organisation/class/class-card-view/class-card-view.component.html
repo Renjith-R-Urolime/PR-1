@@ -1,0 +1,69 @@
+<ng-container *ngIf="cardData$ | async; else noDataMessage">
+    <div class="row">
+      <div class=" col-md-4 col-lg-4 col-xl-4 mt-3 px-2"  *ngFor="let data of cardData">
+        <div class="card shadow-sm rounded px-7">
+          <div class="d-flex flex-end justify-content-end mt-5"><span
+              [inlineSVG]="'./assets/media/icons/ellipsis-vertical.svg'" class="svg-icon svg-icon-2 icon-custom"></span>
+          </div>
+          <div class="d-flex flex-center flex-column justify-content-center mb-6">
+              <div class="mb-5">
+                <div class="symbol symbol-75px symbol-circle">
+                  <ng-container>
+                    <span class="symbol-label fs-1 fw-bolder">
+                      {{ data.name[0] | uppercase}}
+                    </span>
+                  </ng-container>
+                  <!-- <ng-container *ngIf="!item.color && item.dataImg">
+                        <img alt="Pic" [src]="item.dataImg" />
+                      </ng-container> -->
+                </div>
+              </div>
+              <div>
+                <h4 class="text-nowrap">{{data.name | changeCase:'capital'}}</h4>
+              </div>
+          </div>
+          <div class="d-flex flex-row justify-content-between">
+            <table class="table table-responsive">
+              <tbody>
+                <tr>
+                  <td class="text-muted ">Country:</td>
+                  <td >{{data.country}}</td>
+                </tr>
+                <tr>
+                  <td class="text-muted ">Currency:</td>
+                  <td >{{data.currency}}</td>
+                </tr>
+                <tr>
+                  <td class="text-muted ">Website:</td>
+                  <td >{{data.website}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div *ngIf="component==='subsidiaries'" class="d-flex justify-content-center gap-10">
+            <div class="d-flex flex-column flex-center ">
+              <div>
+                <span [inlineSVG]="'./assets/media/svg/misc/megaphone.svg'" class="svg-icon svg-icon-1 custom-svg "></span>
+              </div>
+              <p class="fs-7  text-muted">Announcements</p>
+            </div>
+            <div class="d-flex flex-column flex-center ">
+              <div>
+                <span [inlineSVG]="'./assets/media/svg/misc/reader-outline.svg'" class="svg-icon-1 custom-svg"></span>
+              </div>
+              <p class="fs-7 text-muted">YTD Payroll</p>
+            </div>
+            <div class="d-flex flex-column flex-center ">
+              <h3 class="svg-icon text-black">{{cardData.length}}</h3>
+              <p class="fs-7 text-muted">Total Employees</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div >
+  
+  </ng-container>
+  <ng-template #noDataMessage class="d-flex flex-column flex-center">
+    <p>Loading Data ...</p>
+  </ng-template>
+  

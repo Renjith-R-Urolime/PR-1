@@ -1,0 +1,82 @@
+
+.loader {
+    width: 400px;
+    height: 16px;
+    background-color: #f5f8fa;
+    position: absolute;
+    border-radius: 100px;
+    box-shadow: inset 0 0 14px 6px #0000000a;
+}
+
+.loader:after{
+  border-radius: 100px;
+  content: '';
+  position: absolute;
+  background:  linear-gradient(to right, #fc1777 0%, #fc1f6e 25%, #fd3c4e 50%, #fd5340 75%, #ff8100 100%) !important;
+  left: 2px;
+  top: 2px;
+  bottom: 2px;
+  right: 360px;
+  animation-name: slide;
+  animation-duration: 2.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+
+.image-loader {
+    width: 400px;
+    height: 130px;
+    text-align: center;
+    transform-origin: bottom center;
+    animation: 4s rotate infinite;
+    opacity: 0;
+  }
+
+  @keyframes rotate{
+    0% {
+      transform: rotate(90deg);
+    }
+    10% {
+      opacity: 0;
+    }
+    35% {
+      transform: rotate(0deg);
+      opacity: 1;
+    }
+    65% {
+      transform: rotate(0deg);
+      opacity: 1;
+    }
+    80% {
+      opacity: 0;
+    }
+    100% {
+      transform: rotate(-90deg);
+    }
+  }
+
+@keyframes slide {
+  0% {
+    right: 360px;
+    left: 2px;
+  }
+
+  5% {
+    left: 2px;
+  }
+
+  50% {
+    right: 2px;
+    left: 360px;
+  }
+
+  55% {
+    right: 2px;
+  }
+
+  100% {
+    right: 360px;
+    left: 2px;
+  }
+}

@@ -1,0 +1,38 @@
+name: Version Update
+
+on:
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  predeploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.16.0
+
+    - name: Set Git user identity
+      run: |
+        git config user.email "subscriptions@kpi.co"
+        git config user.name "kpiadmin"
+
+    - name: Fetch development branch
+      run: git fetch origin development:development
+
+    - name: Fetch pull request branch
+      run: git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
+
+    - name: Checkout to current branch
+      run: git checkout ${{ github.head_ref }}
+
+    - name: Update Version
+      run: npm run predeploy
+      env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}

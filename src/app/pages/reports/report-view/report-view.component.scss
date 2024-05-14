@@ -1,0 +1,200 @@
+::ng-deep {
+
+    .grid-container {
+        width: 100%;
+    }
+
+    .slick-header-columns {
+        display: none !important;
+    }
+
+    .slick-header {
+        overflow: hidden !important;
+        position: relative !important;
+        border-top-left-radius: 10px !important;
+    }
+
+    .slickgrid-container .slick-header-column.ui-state-default {
+        line-height: 20px !important;
+        display: none !important;
+    }
+
+    .slickgrid-container .slick-cell,
+    .slickgrid-container .slick-footerrow-column,
+    .slickgrid-container .slick-header-column,
+    .slickgrid-container .slick-headerrow-column {
+        border-left-color: transparent !important;
+        border-left-width: 0 !important;
+        border-top-color: transparent !important;
+        border-top-width: 0 !important;
+        bottom: 0 !important;
+        cursor: default !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+        position: absolute !important;
+        text-overflow: ellipsis !important;
+        top: 0 !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+        z-index: 1 !important;
+        text-align: center !important;
+        line-height: 35px !important;
+    }
+
+    .slick-header-column.red-header {
+        border-top-left-radius: 0 !important;
+    }
+
+    .slickgrid-container .grid-canvas .slick-cell {
+        line-height: 35px !important;
+        text-align: center;
+    }
+
+    .slick-header-menu-button {
+        display: none !important;
+    }
+
+    .slick-header-column {
+        display: none;
+        border-top-left-radius: 0px;
+    }
+
+    .slick-footerrow {
+        border: 0 !important;
+        background-color: var(--gray-200) !important;
+    }
+
+    .slick-header-column:first-child {
+        visibility: visible;
+        background-color: #E0CCFF;
+    }
+
+    .slick-dropzone {
+        border-top-left-radius: 8px !important;
+        border-top-right-radius: 8px !important;
+    }
+
+    .slick-viewport {
+        scrollbar-width: 3px !important;
+        -ms-overflow-style: none;
+    }
+
+    .slick-viewport::-webkit-scrollbar {
+        display: block;
+    }
+
+    .sub-headers div {
+        border-right: 1px solid #F0E5FF;
+        padding: 5px;
+        display: none;
+        width: 100%;
+    }
+}
+
+::ng-deep .slick-preheader-panel {
+    display: flex;
+    background-color: #E0CCFF;
+}
+
+::ng-deep .common-report-header {
+    flex: 0 0 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #E0CCFF;
+    border-top-left-radius: 12px;
+    font-weight: bold;
+}
+
+::ng-deep .month-header-group {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: bold;
+    padding-top: 6px;
+}
+
+::ng-deep .month-name {
+    background-color: #E0CCFF;
+    padding: 5px 0;
+    font-weight: bold;
+}
+
+::ng-deep .sub-headers-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 12px 0px;
+}
+
+::ng-deep .sub-header {
+    border-top-left-radius: 0;
+    flex: 1;
+    text-align: center;
+    padding: 5px 0;
+    background-color: #F0E5FF;
+}
+
+::ng-deep .count-header,
+::ng-deep .percent-header {
+    flex: 1;
+    background-color: #F0E5FF;
+    text-align: center;
+    padding: 5px 0;
+}
+
+::ng-deep .percent-header {
+    border-right: 1px solid white;
+}
+
+::ng-deep .month-header-group:last-child .percent-header {
+    border-right: none;
+}
+
+::ng-deep .slick-header-columns {
+    display: none !important;
+}
+
+::ng-deep .first-count-header {
+    border-top-left-radius: 12px;
+}
+
+.button-header {
+    margin-right: 1%;
+}
+
+.export-button {
+    background-color: #8838FF;
+    width: 171px;
+    height: 39px;
+    padding: 12px;
+    color: #fff;
+    border: none;
+    font-size: small;
+    cursor: default!important;
+}
+
+.arrow-svg-icon {
+    width: 1em;
+    height: 1em;
+}
+
+.dropdown-custom {
+    position: absolute !important;
+    inset: 0px auto auto 0px !important;
+    margin: 0px !important;
+    transform: translate3d(0px, 43.8px, 0px) !important;
+    width: 100% !important;
+    box-shadow: 0 0 5px 1px #0000001f !important;
+    cursor: default!important;
+}
+
+
+.svg-icon-2 {
+    height: 1.35rem !important;
+    width: 1.35rem !important;
+    margin: 0 0 8px 0 !important;
+}

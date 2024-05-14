@@ -1,0 +1,43 @@
+.arrow-button {
+  width: 34px;
+  height: 34px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 50% !important; /* Make it circular */
+  cursor: pointer;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #B5B5C3;
+}
+
+.arrow-button:hover {
+  background-color: #ffffff; /* Change color on hover */
+  color: black;
+}
+
+  .cardStyle{
+    width: 275px;
+     height: auto; 
+     flex-shrink: 0;
+     overflow-y: hidden;
+  }
+
+  .cusData{
+    padding-top: 28px !important;
+    text-align: right;
+  }
+
+  .cust-body{
+    margin-top: 14px ;
+  }
+
+
+  h6 {
+    font-weight: 600;
+  }
+
+  .arrow-button:hover .arrow-svg path {
+    stroke: black;
+  }

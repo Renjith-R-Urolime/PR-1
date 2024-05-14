@@ -1,0 +1,88 @@
+<div class="dashboard-container">
+    <app-page-title></app-page-title>
+    <div class="card" id="report-nav">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+                        <li class="nav-item" *ngFor="let report of data; let i = index">
+                          <a class="nav-link" [id]="'tab' + report.name" data-bs-toggle="pill"
+                             [attr.href]="'#tabContent' + report.name" role="tab"
+                             [aria-controls]="'tabContent' + report.name"
+                             [ngClass]="activeTab === report.name ? 'active text-' + theme : 'text-muted'"
+                             (click)="selectTab(report.name)">
+                            {{ report.name }}
+                          </a>
+                        </li>
+                      </ul>
+                </div>
+              </div>
+            <div class="day-box mt-5">
+                <div class="row">
+                    <div *ngFor="let module of modules" class="col-3">
+                        <div class="accordion-item">
+                            <div class="row">
+                                <div class="col-2">
+                                    <span [inlineSVG]="module.svgIcon" class="svg-icon svg-icon-4 svg-border svg-icon-{{theme}}"></span>
+                                </div>
+                                <div class="col-8">
+                                    <h2 class="accordion-header" [id]="'heading' + module.id">
+                                        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+                                            [attr.data-bs-target]="'#collapse' + module.id" aria-expanded="true"
+                                            [attr.aria-controls]="'collapse' + module.id">
+                                            {{ module.title }}
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div class="col-2 down-arrow">
+                                    <span [class]="module.expanded ? 'fas fa-angle-up' : 'fas fa-angle-down'"
+                                    [ngClass]="'svg-icon-' + theme"
+                                        data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + module.id"
+                                        aria-expanded="true" (click)="module.expanded = !module.expanded"></span>
+                                </div>
+                            </div>
+                            <hr/>
+
+                            <div [id]="'collapse' + module.id" class="accordion-collapse collapse show"
+                                [attr.aria-labelledby]="'heading' + module.id" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <ul *ngIf="module.subItems" class="no-bullet text-muted">
+                                        <li *ngFor="let subItem of module.subItems | slice:0:module.visibleCount; let i = index"
+                                            class="mb-2">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="sub-item-title pe-2 p-2">{{ subItem.title }}</div>
+                                                <span *ngIf="subItem.id === 'headcount'" class="toggle-icon px-4"
+                                                    (click)="subItem.expanded = !subItem.expanded">
+                                                    <i [class]="subItem.expanded ? 'fas fa-minus' : 'fas fa-plus'"></i>
+                                                </span>
+                                            </div>
+                                            <div *ngIf="subItem.expanded" class="nested-sub-items mt-2 ps-4">
+                                                <ul class="remove-bullet ">
+                                                    <li *ngFor="let nestedSubItem of subItem.subItems" class="mb-1">
+                                                        <a [routerLink]="nestedSubItem.routerLink"
+                                                            class="router-link text-muted">{{ nestedSubItem.title }}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <div class="see-all">
+                                        <span *ngIf="module.subItems.length > 5" class="float-end pt-2 pb-4 fs-6 text text-{{theme}} "
+                                            (click)="toggleShowAll(module)">
+                                            {{ module.showAll ? 'Less' : 'See all' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>

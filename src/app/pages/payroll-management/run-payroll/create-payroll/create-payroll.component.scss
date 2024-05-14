@@ -1,0 +1,155 @@
+// .table-scroll {
+//   position: relative;
+//   width: 100%;
+//   z-index: 1;
+//   margin: auto;
+//   overflow: auto;
+//   // height: 630px;
+// }
+
+// .table-wrap {
+//   position: relative;
+// }
+
+// .table-scroll th,
+// .table-scroll td {
+//   padding: 5px 10px;
+//   vertical-align: top;
+//   z-index: 1;
+// }
+
+// .table-scroll thead th {
+//   position: -webkit-sticky;
+//   position: sticky;
+//   top: 0;
+// }
+
+// .table-scroll tfoot,
+// .table-scroll tfoot th,
+// .table-scroll tfoot td {
+//   position: -webkit-sticky;
+//   position: sticky;
+//   bottom: 0;
+//   z-index: 4;
+// }
+
+// th:first-child {
+//   position: -webkit-sticky;
+//   position: sticky;
+//   left: 0;
+//   z-index: 2;
+// }
+
+// td:first-child {
+//   position: -webkit-sticky;
+//   position: sticky;
+//   left: 0;
+//   z-index: 0;
+//   background: white ;
+// }
+
+
+
+// thead th:first-child,
+// tfoot th:first-child {
+//   z-index: 5;
+// }
+
+.bold-text {
+  font-weight: bold;
+}
+
+.custom-line {
+  height: 1px;
+  background-color: #DEDEDE;
+  margin: 10px 0;
+}
+
+.custom-line-common {
+  height: 1.5px;
+  background-color: #DEDEDE;
+  margin: 10px 0;
+}
+
+
+    .line-row {
+      height: 0px !important;
+    }
+
+.loader {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  margin: auto;
+}
+
+.loader:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 35px;
+  height: 35px;
+  margin-top: -15px;
+  margin-left: -15px;
+  border-radius: 50%;
+  border: 3px solid #e6e8e9;
+  border-top: 2px solid #21df06;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+td .fw-bold {
+  margin-top: 0;
+  display: inline-block;
+}
+
+.table-scroll {
+  scrollbar-width: none;
+}
+.pill {
+  background-color: #F3F4FB;
+  color: #7A7B80;
+  border-radius: 35px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 8px 5px 8px 11px;
+  &.pill-required{
+    padding: 8px 11px!important;
+  }
+}
+.scroll-bad-hide{
+  -ms-overflow-style: none;
+  scrollbar-width: none
+}
+
+.table-sticky{
+  position: relative;
+  thead{
+    th {
+      position: sticky;
+      top: 0;
+    }
+  }
+  tfoot{
+    td {
+      position: sticky;
+      bottom: 0;
+    }
+  }
+}
+
+.table-scroll-container{
+  max-height: calc(100vh - 74px);
+}

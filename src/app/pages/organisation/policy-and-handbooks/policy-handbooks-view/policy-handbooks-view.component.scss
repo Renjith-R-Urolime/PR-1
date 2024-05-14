@@ -1,0 +1,8 @@
+.flipbook-frame{
+  width: 100%;
+  height: calc(100vh - 114px);
+  border-radius: 8px;
+}
+::ng-deep #fb5-logo, #fb5-button-back{
+  visibility: hidden!important;
+}

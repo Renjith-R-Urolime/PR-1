@@ -1,0 +1,9 @@
+<div *ngIf="showTooltip" [style]="getLeft()"  class="message card bg-{{theme}} ">
+    <div class=" d-flex flex ">
+        <ng-template [ngTemplateOutlet]="( customToolTip || defaultCustomToolTip)"></ng-template>
+
+        <ng-template #defaultCustomToolTip>
+            {{data}}
+        </ng-template>
+    </div>
+</div>

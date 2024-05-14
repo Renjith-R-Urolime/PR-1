@@ -1,0 +1,51 @@
+<!--begin::Card widget 7-->
+
+<div class="card card-flush p-0 mt-3 d-flex flex-column justify-content-between " [style.height]="cardHeight"
+    [ngClass]="cssClass">
+
+    <div class="d-flex justify-content-start h-200px ">
+        <!--begin::Card body-->
+        <div class=" d-flex flex-column justify-content-center p-0  mx-20">
+            <!--begin::Users group-->
+
+           
+            <div class="group-symbol groupsymbol-hover flex-nowrap pb-1">
+                <ng-container *ngFor="let item of items; let i = index">
+                  <div class="groupsymbol groupsymbol-50px groupsymbol-circle" data-bs-toggle="tooltip" [title]="item.name" *ngIf="i < 10">
+                    <div class="img-class" *ngIf="item.selected">
+                      <ng-container *ngIf="item.img">
+                        <img alt="Pic" [src]="item.img" />
+                      </ng-container>
+                    </div>
+                  </div>
+                </ng-container>
+                <div class="groupsymbol groupsymbol-50px groupsymbol-circle" *ngIf="items.length > 10">
+                  <div class="img-class">
+                    <!-- <span  class="remaining-count">+{{ items.length - 10 }}</span> -->
+                    <!-- <img alt="Pic"  /> -->
+
+                    <a href="#"  class=" symbol groupsymbol-circle symbol-circle">
+                        <span class="group-else symbol-label fs-8 fw-bold" >+{{ items.length - 10 }}</span>
+                        </a>
+                        
+                  </div>
+                </div>
+              </div>
+           
+            <!--end::Card widget 7-->
+        </div>
+
+
+        <div class="  d-flex flex-column justify-content-center ">
+            <div>
+                <span class="fs-2 fw-bolder ">{{selectedLength}} Employees Selected</span>
+            </div>
+            <div class="mt-2">
+                <span class="text-gray-600 fs-3 fw-bolder ">Dubai Location</span>
+            </div>
+        </div>
+        <div class="p-10 y ">
+        </div>
+    </div>
+
+</div>

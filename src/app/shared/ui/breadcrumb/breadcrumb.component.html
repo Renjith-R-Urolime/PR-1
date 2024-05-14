@@ -1,0 +1,19 @@
+<ul class="breadcrumb pb-0 px-5 mb-0 bg-white rounded-1" [ngClass]="{ 'h-40px' : breadcrumbs.includes('List')}">
+    <li class="breadcrumb-item ">
+      <a  (click)="goBack()" class="fs-7" [inlineSVG]="'./assets/media/icons/home-outline.svg'" class="svg-icon">
+        <!-- <span></span> -->
+      </a>
+    </li>
+    <ng-container *ngFor="let item of breadcrumbs;">
+      <li class="breadcrumb-item px-0">
+        <a [inlineSVG]="'./assets/media/icons/chevron-forward-outline.svg'" class="svg-icon chevron">
+          <!-- <span></span> -->
+        </a>
+      </li>
+      <li class="breadcrumb-item active px-0">
+        <a class="fs-7">
+          {{item}}
+        </a>
+      </li>
+    </ng-container>
+  </ul>

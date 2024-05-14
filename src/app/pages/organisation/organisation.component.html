@@ -1,0 +1,74 @@
+<div *ngIf="!orgChart">
+  <app-page-title [isNewButton]="true">
+  </app-page-title>
+  <div class="card" [ngClass]="{ 'bg-transparent bs-none' : view==='card' }">
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      <app-breadcrumb [breadcrumbs]="['List']"></app-breadcrumb>
+      <div>
+        <search-and-filter (viewSelected)="changeView($event)" [multipleViewOptions]="true" [view]="view"></search-and-filter>
+      </div>
+    </div>
+    <div *ngIf="view ==='table'">
+        <data-table-list [metaData]="tableMetaData">
+          <ng-template *ngIf="currentUrl==='policy-handbook' || currentUrl === 'announcement'" action-btn-temp let-id="id" let-item="item$">
+            <a class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0" (click)="open('edit',id)">
+              <span [inlineSVG]="'./assets/media/icons/create-outline.svg'
+                " class="svg-icon svg-icon-3"></span>
+            </a>
+        </ng-template>
+          </data-table-list>
+    </div>
+
+  </div>
+  <div *ngIf="view==='card'" class="mt-1">
+    <app-card-view-list [cardMetaData]="cardJsonData">
+      <ng-template card-footer-temp *ngIf="currentUrl==='subsidiaries'">
+        <div class="d-flex mt-2 flex-row justify-content-between">
+          <div class="d-flex flex-column flex-center  text-nowrap ">
+            <div class="mb-3">
+              <span [inlineSVG]="'./assets/media/icons/megaphone.svg'" class="svg-icon svg-icon-2"></span>
+            </div>
+            <p class="m-0 fs-9 text-nowrap text-muted">Announcements</p>
+          </div>
+          <div class="d-flex flex-column flex-center py-1  text-nowrap">
+            <div class="mb-3">
+              <span [inlineSVG]="'./assets/media/icons/reader-outline-doc.svg'" class="svg-icon svg-icon-2"></span>
+            </div>
+            <p class="m-0 fs-9 text-muted">YTD Payroll</p>
+          </div>
+          <div class="d-flex flex-column flex-center py-1  text-nowrap">
+            <div class="mb-3 ms-3 d-flex">
+              <div class="fs-4 fw-bolder">100</div>
+              <div class="d-flex align-items-center rounded-0"
+                style="background-color: #E8FFF3; color: #50CD89; margin-bottom: 4px;">
+                <div class="d-flex justify-content-center">
+                  <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr066.svg'"
+                    class="svg-icon svg-icon-9 svg-icon-success ms-1"></span>
+                  <div class="fw-bolder fs-8 pe-1">2.2%</div>
+                </div>
+              </div>
+            </div>
+            <p class="m-0 fs-9 text-muted">Top Employees</p>
+          </div>
+        </div>
+      </ng-template>
+    </app-card-view-list>
+
+    <!-- <app-card-view-list></app-card-view-list> -->
+  </div>
+</div>
+
+<!-- <div *ngIf="!orgChart && model">
+  <app-page-title [isNewButton]="true" [isEditDeleteBtn]="false">
+  </app-page-title>
+  <div class="card">
+    <search-and-filter ></search-and-filter>
+    <data-table-list  *ngIf="view==='table'"  [tableData]="moduleTableData"   [wizardData]="wizardData" [formData]="formData"
+      [formSection]="formSection"></data-table-list>
+  </div>
+</div> -->
+<div *ngIf="orgChart">
+  <app-page-title>
+  </app-page-title>
+  <app-org-chart></app-org-chart>
+</div>

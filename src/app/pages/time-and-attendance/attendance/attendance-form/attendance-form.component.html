@@ -1,0 +1,174 @@
+<app-page-title></app-page-title>
+<ng-container *ngIf="componentCheckMsg">
+  <div class="mb-5 alert alert-danger">
+    <div class="alert-text font-weight-bold">
+      {{componentCheckMsg}}
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="attendanceExistCheckMsg">
+  <div class="mb-5 alert alert-danger">
+    <div class="alert-text font-weight-bold">
+      {{attendanceExistCheckMsg}}
+    </div>
+  </div>
+</ng-container>
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="formSections.length > 0">
+        <ng-container *ngFor="let section of formSections; let i = index">
+          <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3': i === 0 }">
+            <div class="ps-9 mt-2">
+              <div class="d-flex">
+                <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                <div class="hr-side me-8 ms-2">
+                  <hr class="mx-1" />
+                </div>
+              </div>
+            </div>
+            <div class="card-body py-0">
+              <form [formGroup]="attendanceForm">
+                <!-- <div class="row"> -->
+                <div class="grid-wrapper gy-5 m-0 mt-1">
+                  <div class="grid-item m-0 grid-row-{{key?.row ? key?.row : 1}} grid-col-{{key?.col ? key.col : 5}}"
+                    *ngFor="let key of formData.labels; let i = index;">
+                    <ng-container
+                      *ngIf="section.sectionName === key.sectionName  && !key?.hide && ((key.labelName.defaultValue === 'reason' && !showReason)?false:true)">
+                      <div class="max-w-90 position-relative">
+                        <label
+                          *ngIf=" key.type !== 'hours' && key.type !== 'checkbox'  && key.labelName.defaultValue!=='actualHour' && key.labelName.defaultValue!=='status'"
+                          class="form-label fs-6 mb-0 text-nowrap" [ngClass]="{'required': key?.required}">{{
+                          key.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                        <label *ngIf="  key.labelName.defaultValue==='status' && id"
+                          class="form-label fs-6 mb-0 text-nowrap" [ngClass]="{'required': key?.required}">{{
+                          key.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                        <app-input-text-field [patchValue]="attendanceForm?.value?.[key?.labelName?.defaultValue!]"
+                          *ngIf="(key.labelName.defaultValue === 'reason' && !showReason)?false:true"
+                          [formControlName]="key?.labelName?.defaultValue!"
+                          [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') "
+                          [ngClass]="{'invalid': sharedService.hasValidationErrors(key, submit, attendanceForm) }"
+                          [type]="key.type"></app-input-text-field>
+                        <ng-container [formControlName]="key.labelName.defaultValue!" class="align-items-center"
+                          *ngIf="key.type === 'employee'">
+                          <employee-select [isDisabled]="id ? true : false" [scope]="'attendance'"
+                            [patchData]="attendanceForm?.employee" [employeeFilterMeta]="employeeFilterMeta"
+                            [formControlName]="key.labelName.defaultValue!"
+                            [ngClass]="{'invalid': sharedService.hasValidationErrors(key, submit, attendanceForm)}"
+                            [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') "
+                            (onchange)="onEmployeeChange($event)"></employee-select>
+                        </ng-container>
+                        <ng-container class="align-items-center" *ngIf="key.type === 'date'">
+                          <!-- ngb-bootstrap datepicker -->
+                          <input-date-picker [formControlName]="key.labelName.defaultValue!"
+                            [minDate]="minDate"></input-date-picker>
+                          <!-- -- -->
+                        </ng-container>
+                        <ng-container class="align-items-center" *ngIf="key.type === 'attendanceStatus'">
+                          <custom-ng-select [items]="attendanceStatusList" [multiple]="key.multiple"
+                            (onchange)="checkIfReasonRequired($event)"
+                            [ngClass]="{'invalid': sharedService.hasValidationErrors(key, submit, attendanceForm) }"
+                            [formControlName]="key.labelName.defaultValue!"
+                            [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') ">
+                          </custom-ng-select>
+                        </ng-container>
+                        <ng-container class="align-items-center" *ngIf="key.type === 'file'">
+                            <input-file-upload [allowPdf]="true" theme="light"
+                            fieldStyle="compact"
+                            [formControlName]="key.labelName.defaultValue!"></input-file-upload>
+                        </ng-container>
+                        <ng-container *ngIf="key.type === 'transactionStatus' && id">
+                          <custom-ng-select [multiple]="key.multiple" [jsonListName]="key.jsonListName"
+                            [controlName]="key.labelName.defaultValue!"
+                            [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(key,submit, attendanceForm) }"
+                            [formControlName]="key.labelName.defaultValue!" [controlName]="key.labelName.defaultValue!"
+                            [patchData]="attendanceForm.value[key.labelName.defaultValue!] ? attendanceForm.value[key.labelName.defaultValue!] : undefined"
+                            [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital')">
+                          </custom-ng-select>
+                        </ng-container>
+                        <ng-container *ngIf="key.type === 'calendarDay'">
+                          <div class="spinner {{theme}} loader" *ngIf="isDayloading"></div>
+                          <custom-ng-select [multiple]="key.multiple" [isSelectDisabled]="'true'"
+                          [loader]="(key?.labelName?.defaultValue === 'workCalendarId' || key?.labelName?.defaultValue === 'shiftId' || key?.labelName?.defaultValue === 'calendarDay')?isDayloading:false"
+                            [items]="calendarDaysList" [controlName]="key.labelName.defaultValue!"
+                            [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(key,submit, attendanceForm) }"
+                            [formControlName]="key.labelName.defaultValue!" [controlName]="key.labelName.defaultValue!"
+                            [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital')">
+                          </custom-ng-select>
+                        </ng-container>
+                        <ng-container *ngIf="key.type === 'workCalendar'">
+                          <div class="spinner {{theme}} loader" *ngIf="isWorkCalendarloading"></div>
+                          <custom-ng-select [multiple]="key.multiple" [apiLink]="key.apiLink"
+                            [isSelectDisabled]="'true'" [controlName]="key.labelName.defaultValue!"
+                            [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(key,submit, attendanceForm) }"
+                            [formControlName]="key.labelName.defaultValue!" [controlName]="key.labelName.defaultValue!"
+                            [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital')"
+                            [patchData]="attendanceForm?.value?.[key.labelName.defaultValue]"
+                            >
+                          </custom-ng-select>
+                        </ng-container>
+                        <ng-container *ngIf="key.type === 'shift'">
+                          <div class="spinner {{theme}} loader" *ngIf="isShiftloading"></div>
+                          <custom-ng-select [multiple]="key.multiple" [apiLink]="key.apiLink"
+                            [isSelectDisabled]="'true'" [controlName]="key.labelName.defaultValue!"
+                            [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(key,submit, attendanceForm) }"
+                            [formControlName]="key.labelName.defaultValue!" [controlName]="key.labelName.defaultValue!"
+                            [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital')">
+                          </custom-ng-select>
+                        </ng-container>
+                        <ng-container *ngIf="key.type === 'time'">
+                          <div [ngClass]="{'mt-6':key.labelName.defaultValue === 'actualHour'}"
+                            class=" w-50px h-36px border-2 border-{{theme}} rounded-1 align-items-center pt-1 ps-1 fs-6">
+                            <div>{{this.attendanceForm.value[key.labelName.defaultValue]}}</div>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="key.type === 'hour'">
+                          <app-new-time-picker [formControlName]="key.labelName.defaultValue!"
+                            (inputValueChange)="calculateHours()"></app-new-time-picker>
+                        </ng-container>
+
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+                <!-- </div> -->
+              </form>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container>
+        <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+        <!-- <div class=" p-md-0 ">
+          <div class="d-flex  flex-column flex-md-row justify-content-end gap-4">
+            <button (click)="onCancel()" type="button" class="btn border btn-sm cursor-pointer bg-{{theme}}-bright">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-{{theme}} btn-sm cursor-pointer" (click)="onSubmit()">
+              <ng-container *ngIf="!isProcessing">
+                Submit
+              </ng-container>
+              <ng-container *ngIf="isProcessing">
+                <div class="d-flex gap-3">
+                  Please wait
+                  <div class="spinner"></div>
+                </div>
+              </ng-container>
+            </button>
+          </div>
+        </div> -->
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+    <div class="fv-plugins-message-container ">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>

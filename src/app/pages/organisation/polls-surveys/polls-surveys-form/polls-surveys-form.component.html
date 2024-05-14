@@ -1,0 +1,15 @@
+<app-page-title ></app-page-title>
+
+<div class="card">
+
+  <app-wizard-tabs [wizardData]="wizardData"></app-wizard-tabs>
+  <ng-container *ngIf="currentStep !== wizardData.length">
+    <!-- <app-basic-form [formData]="formData" [formSection]="formSections" formType="withoutSection"></app-basic-form> -->
+  </ng-container>
+  <ng-container *ngIf="currentStep === wizardData.length">
+    <!-- <app-review-model [formSection]="formSections" [formData]="formData" reviewType="withoutSection"></app-review-model> -->
+  </ng-container>
+</div>
+<ng-container>
+  <app-progress-button ></app-progress-button>
+</ng-container>

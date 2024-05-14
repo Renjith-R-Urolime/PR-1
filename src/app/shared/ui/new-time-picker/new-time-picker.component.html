@@ -1,0 +1,40 @@
+<div class="position-relative">
+    <!-- Add this HTML code -->
+    <div class="input-group highlight-{{theme}}" [ngClass]="{ 'focus' : isFocused }" (click)="toggleDropdown()" [ngStyle]="{ 'pointer-events': isDisabled ? 'none' : 'auto' }">
+        <input [maxlength]="maxLength" (keydown)="onKeyDown($event)" (focus)="onInputFocus()" class="i-field form-control form-control-sm " [placeholder]=timeFormat [(ngModel)]="timeValue" [ngClass]="{ 'no-cursor-blinking': isDisabled }"
+            (input)="onManualInput($event)">
+        <div class="input-group-append pe-1">
+            <span class="input-group-icon svg-icon svg-icon-2"
+                [inlineSVG]="'./assets/media/icons/time-outline.svg'"></span>
+        </div>
+    </div>
+
+    <!-- Dropdown Content -->
+    <div *ngIf="showDropdown" class="dropdown-content position-absolute z-index-9 mt-2 card">
+        <div class="d-flex flex-row justify-content-between px-4 py-1 h-200px ">
+            <div class="scroll d-flex flex-column gap-1 align-items-top"  #dropdownContainerHour >
+                <div *ngFor="let hour of hours" (click)="selectHour(hour);"
+                [attr.data-hour]="hour"
+                    [ngClass]="[(hour === selectedHour) ? 'bg-' + theme : '']"
+                    class="hoverable  p-1 me-1 d-flex justify-content-center align-items-center">{{ hour }}</div>
+            </div>
+
+
+            <div class="scroll d-flex flex-column gap-1 align-items-top"  #dropdownContainerMinute >
+                <div *ngFor="let minute of minutes" (click)="selectMinute(minute);"
+                [attr.data-minute]="minute"
+                    [ngClass]="[(minute === selectedMinute) ? 'bg-' + theme : '']"
+                    class="hoverable  p-1 me-1 d-flex justify-content-center align-items-center">{{ minute }}</div>
+            </div>
+            <div *ngIf="!isTimeIntervalMode">
+                <div (click)="selectPeriod('AM');" [ngClass]="[(selectedPeriod === 'AM') ? 'bg-' + theme : '']"
+                    class="hoverable d-flex justify-content-center align-items-center">
+                    AM</div>
+                <div (click)="selectPeriod('PM');" [ngClass]="[(selectedPeriod === 'PM') ? 'bg-' + theme : '']"
+                    class="hoverable d-flex justify-content-center align-items-center">
+                    PM</div>
+            </div>
+        </div>
+    </div>
+
+</div>

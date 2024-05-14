@@ -1,0 +1,22 @@
+[
+    {
+        "id": "1",
+        "name": "Subsidiary Head"
+    },
+    {
+        "id": "2",
+        "name": "Jurisdiction Head"
+    },
+    {
+        "id": "3",
+        "name": "Location Head"
+    },
+    {
+        "id": "4",
+        "name": "Department Head"
+    },
+    {
+        "id": "5",
+        "name": "Class Head"
+    }
+]

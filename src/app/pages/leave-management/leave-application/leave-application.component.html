@@ -1,0 +1,245 @@
+<app-page-title [isNewButton]="true">
+</app-page-title>
+<div *ngIf="!isLoading" class="row mt-4 mb-3">
+  <ng-container *ngIf="isRowWise ;else colmnWise">
+    <div class=" d-flex flex-row justify-content-between ">
+      <div class="card col-md-4 me-2 px-4 py-2 d-flex flex-column justify-content-between  border border-dark mb-2">
+        <div class="card-header p-0 border-0 ">
+          <div class="card-title d-flex flex-column">
+            <div class="d-flex flex-row">
+              <div class="rounded-0 ps-3">
+                <div class="fs-6 fw-bolder mb-2">Who's on leave</div>
+                <div class="fs-5 fw-bold mb-4">{{applicationData?.onLeave}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-toolbar">
+            <div class="circular-background">
+              <span [inlineSVG]="'./assets/media/icons/people-outline.svg'"
+                class="svg-icon svg-icon-1 svg-icon-{{theme}}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card col-md-4 me-2 px-4 py-2 d-flex flex-column justify-content-between  border border-dark mb-2">
+        <div class="card-header p-0 border-0 ">
+          <div class="card-title d-flex flex-column">
+            <div class="d-flex flex-row">
+              <div class="rounded-0 ps-3">
+                <div class="fs-6 fw-bolder mb-2">Pending Request</div>
+                <div class="fs-5 fw-bold mb-4">{{applicationData?.pendingRequest}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-toolbar">
+            <div class="circular-background">
+              <span [inlineSVG]="'./assets/media/icons/time-outline.svg'"
+                class="svg-icon svg-icon-1 svg-icon-{{theme}}"></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="card col-md-4 me-2 mb-2 px-4 py-2 d-flex flex-column justify-content-between  border border-dark ">
+        <div class="card-header p-0 border-0 ">
+          <div class="card-title d-flex flex-column">
+            <div class="d-flex flex-row">
+              <div class="rounded-0 ps-3">
+                <div class="fs-6 fw-bolder mb-2">Approved Request</div>
+                <div class="fs-5 fw-bold mb-4">{{applicationData?.approvedRequest}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-toolbar">
+            <div class="circular-background">
+              <span [inlineSVG]="'./assets/media/icons/assignment-task.svg'"
+                class="svg-icon svg-icon-1 svg-icon-{{theme}}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #colmnWise>
+    <div class="col-md-3 d-flex flex-column justify-content-between ">
+      <div class="card px-4 py-2 d-flex flex-column justify-content-between  border border-dark mb-2">
+        <div class="card-header p-0 border-0 ">
+          <div class="card-title d-flex flex-column">
+            <div class="d-flex flex-row">
+              <div class="rounded-0 ps-3">
+                <div class="fs-6 fw-bolder mb-2">Who's on leave</div>
+                <div class="fs-5 fw-bold mb-4">{{applicationData?.onLeave}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-toolbar">
+            <div class="circular-background">
+              <span [inlineSVG]="'./assets/media/icons/people-outline.svg'"
+                class="svg-icon svg-icon-1 svg-icon-{{theme}}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card px-4 py-2 d-flex flex-column justify-content-between  border border-dark mb-2">
+        <div class="card-header p-0 border-0 ">
+          <div class="card-title d-flex flex-column">
+            <div class="d-flex flex-row">
+              <div class="rounded-0 ps-3">
+                <div class="fs-6 fw-bolder mb-2">Pending Request</div>
+                <div class="fs-5 fw-bold mb-4">{{applicationData?.pendingRequest}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-toolbar">
+            <div class="circular-background">
+              <span [inlineSVG]="'./assets/media/icons/time-outline.svg'"
+                class="svg-icon svg-icon-1 svg-icon-{{theme}}"></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="card px-4 py-2 d-flex flex-column justify-content-between  border border-dark ">
+        <div class="card-header p-0 border-0 ">
+          <div class="card-title d-flex flex-column">
+            <div class="d-flex flex-row">
+              <div class="rounded-0 ps-3">
+                <div class="fs-6 fw-bolder mb-2">Approved Request</div>
+                <div class="fs-5 fw-bold mb-4">{{applicationData?.approvedRequest}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-toolbar">
+            <div class="circular-background">
+              <span [inlineSVG]="'./assets/media/icons/assignment-task.svg'"
+                class="svg-icon svg-icon-1 svg-icon-{{theme}}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-container *ngIf="!isRowWise">
+    <div class="col-md-9 overflow-auto mt-2 mt-md-0">
+      <div class="scrollable-cards">
+        <div class="d-flex gap-4 w-fit min-h-275px ">
+          <div *ngFor="let request of applicationData?.recentApplications;let i = index"
+            class="w-300px card border-4 border-transparent bgi-no-repeat bgi-size-contain bgi-position-x-75px  px-4 py-3">
+            <!--begin::Header-->
+            <div class="card-header p-0 ">
+              <!--begin::Title-->
+              <div class="card-title d-flex flex-column">
+                <ng-container *ngIf="request?.leaveType?.name.length >= 20 ;else default">
+                  <span class="fw-bolder col-md-8 mb-2 text-truncate" [title]="request?.leaveType?.name">{{request?.leaveType?.name}}</span>
+                </ng-container>
+                <ng-template  #default>
+                  <span class="fw-bolder mb-2">{{request?.leaveType?.name}}</span>
+
+                </ng-template>
+                <div class="d-flex flex-column">
+                <div>
+                  <div class="symbol symbol-30px symbol-circle ">
+                    <ng-container *ngIf="request?.employee?.image; else showInitial">
+                      <img [src]="request?.employee?.image | s3FileFetch | async" alt="User Image" class="object-fit-contain" />
+                    </ng-container>
+                    <ng-template #showInitial>
+                      <div class="symbol-label  fw-bolder fs-4 symbol-color bg-{{theme}}">
+                        {{request?.employee?.fullName?.[0] | uppercase}}
+                      </div>
+                    </ng-template>
+                  </div>
+                  <span class="p-2 fs-6">{{request?.employee?.fullName}}</span>
+                </div>
+                  <span class="fs-6 p-1 ms-8">{{ request?.createdAt | timeAgo }}</span>
+                </div>
+
+              </div>
+
+              <!--end::Title-->
+            </div>
+            <!--end::Header-->
+
+            <!--begin::Card body-->
+            <div class="card-body p-0">
+              <div class="text-center mt-2">
+                <div class="card-title fw-bold">{{request.leaveDays | number:'1.0-0'}} Days</div>
+                <div class="text-muted">{{request.startDate}} - {{request.endDate}}</div>
+              </div>
+              <!-- <apx-chart [series]="[request.availableDays,request.leaveDays]" [chart]="chartOptions.chart"
+                [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
+                [yaxis]="chartOptions.yaxis" [xaxis]="chartOptions.xaxis" [fill]="chartOptions.fill"
+                [title]="chartOptions.title" [labels]="chartOptions.labels" [legend]="chartOptions.legend"
+                [colors]="chartOptions.colors"></apx-chart> -->
+                <ng-container >
+                  <div #chartRef class="mixed-widget-4-chart" [style.height]="chartHeight">
+                    <apx-chart [series]="chartOptions[i].series" [chart]="chartOptions[i].chart"
+                        [xaxis]="chartOptions[i].xaxis" [yaxis]="chartOptions[i].yaxis"
+                        [dataLabels]="chartOptions[i].dataLabels"  [labels]="chartOptions[i].labels" [stroke]="chartOptions[i].stroke"
+                        [legend]="chartOptions[i].legend" [fill]="chartOptions[i].fill"
+                        [states]="chartOptions[i].states" [tooltip]="chartOptions[i].tooltip"
+                        [colors]="chartOptions[i].colors" [markers]="chartOptions[i].markers"
+                        [plotOptions]="chartOptions[i].plotOptions"></apx-chart>
+                </div>
+                </ng-container>
+
+            </div>
+            <div class="d-flex  flex-column flex-md-row justify-content-end gap-4">
+              <button (click)="onApprove(request?.id,3)" type="button" class="fw-bold btn border1 btn-white-custom  btn-{{theme}}-outline">Reject</button>
+              <button (click)="onApprove(request?.id,2)" type="submit" class="fw-bold btn btn-{{theme}} ms-md-3">
+                Approve
+              </button>
+            </div>
+            <!--end::Card body-->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </ng-container>
+
+</div>
+<div class="card " [ngClass]="{ 'bg-transparent bs-none' : view==='card' }">
+  <div class="d-flex flex-row justify-content-between align-items-center pt-1 mb-1">
+    <app-breadcrumb [breadcrumbs]="['List']"></app-breadcrumb>
+    <div>
+      <search-and-filter (viewSelected)="changeView($event)" [multipleViewOptions]="true" [importExportOption]="true" (openImportModal)="openModalFromEvent()" [view]="view"></search-and-filter>
+    </div>
+  </div>
+  <div *ngIf="view==='table'">
+    <data-table-list [metaData]="tableMetaData">
+    </data-table-list>
+  </div>
+
+</div>
+<div *ngIf="view==='card'">
+
+  <app-card-view-list [cardMetaData]="cardJsonData">
+    <ng-template card-header-temp let-item="item$">
+      <div class="d-flex flex-center flex-column justify-content-center mb-2 ">
+        <!-- Image -->
+        <div class="mb-3">
+          <div class="symbol symbol-70px symbol-circle ">
+            <ng-container *ngIf="item?.employee?.image; else showInitial">
+              <!-- Show Image if Available -->
+              <img [src]="item?.employee?.image| s3FileFetch | async" alt="User Image" class="symbol-label" />
+
+            </ng-container>
+            <ng-template #showInitial>
+              <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                {{item?.employee?.firstName?.[0] | uppercase}}
+              </div>
+            </ng-template>
+
+          </div>
+        </div>
+        <!-- Name -->
+        <div class="text-center">
+          <div [title]="item.firstName +' '+ item.lastName" class="line-clamp-1 fs-6 fw-bolder cursor-pointer"> {{
+            item?.employee?.firstName +' '+ item?.employee?.lastName }}
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </app-card-view-list>
+
+</div>

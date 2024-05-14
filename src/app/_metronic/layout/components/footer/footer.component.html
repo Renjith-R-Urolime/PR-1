@@ -1,0 +1,31 @@
+<div  class="align-items-center border border-gray-400 d-flex justify-content-between mt-8 px-12 w-100">
+  <!-- begin::Copyright  -->
+  <div class="text-dark">
+    <span class="text-muted fw-bold me-2">{{ currentDateStr }} &copy;</span>
+    <a class="text-gray-800 text-hover-primary cursor-pointer"> KPI </a>
+  </div>
+  <!-- end::Copyright  -->
+
+  <div>
+    <span class="text-muted fw-bold bg-{{theme}} fs-7 rounded-half px-2 py-1 me-2">{{ isProduction ? 'BETA' : 'DEV' }}</span>
+    <span class="text-muted fw-bold">v</span>
+    <a class="text-gray-800 text-hover-primary cursor-pointer">{{appAngularVersion}}</a>
+  </div>
+
+  <div *ngIf="!isProduction">
+    <span class="text-muted fw-bold bg-{{theme}} fs-7 rounded-half px-2 py-1 me-2">Speed</span>
+    <a class="text-gray-800 text-hover-primary cursor-pointer">{{connectionSpeed}}</a>
+    <span class="text-muted fw-bold ms-2">Mbps</span>
+  </div>
+
+  <!-- begin::Nav  -->
+  <ul class="menu menu-gray-600 menu-hover-primary fw-bold order-1">
+    <li class="menu-item">
+      <a class="menu-link ps-0 pe-2 cursor-pointer"> About </a>
+    </li>
+    <li class="menu-item">
+      <a class="menu-link pe-0 pe-2 cursor-pointer"> Support </a>
+    </li>
+  </ul>
+  <!-- end::Nav  -->
+</div>

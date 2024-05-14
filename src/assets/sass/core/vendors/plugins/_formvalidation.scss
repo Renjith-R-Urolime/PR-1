@@ -1,0 +1,25 @@
+//
+// FormValidation Customization.  More info: https://formvalidation.io/
+//
+
+.fv-plugins-message-container {
+    // margin-top: -0.7rem;
+    // top: 67px;
+    bottom:0px;
+    margin:0px;
+    position:relative;
+    span{
+        color: red;
+    }
+    .fv-help-block {
+        color: var(--#{$prefix}danger) !important;
+        font-size: 1rem;
+        font-weight: $font-weight-normal;
+    }
+
+    &.valid-feedback,
+    &.invalid-feedback {
+        display: block;
+        font-weight: $font-weight-normal;
+    }
+}

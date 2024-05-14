@@ -1,0 +1,28 @@
+.inactive-card {
+    opacity: 0.5;
+    background: #ebebeb;
+}
+
+.active-card {
+    background: #ebebeb;
+}
+
+.card-border {
+    border-top: 4px solid #d6d6d6;
+}
+.card-border1{
+    border: 1px solid rgba(0,0,0,0.4) !important;
+}
+.leave-border{
+    border-radius: 10px;
+}
+.line{
+    height: 30px;
+    width: 2px;
+}
+.custom-card {
+    // border: 1px solid;
+    // border-radius: 19px;
+    border-left: 12px solid black;
+}
+

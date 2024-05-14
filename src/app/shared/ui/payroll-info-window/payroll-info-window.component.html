@@ -1,0 +1,40 @@
+<ng-container *ngIf="currentStep === 1">
+    <div class="mt-5 d-flex flex-row justify-content-between bg-color rounded-1  border-{{theme}} p-3 px-7"
+        *ngIf="EmployeePayrollInfoData[0].step === currentStep">
+        <div class="d-flex flex-column " *ngFor="let item of EmployeePayrollInfoData[0].data">
+            <div class="text-gray-600">
+                {{ item.payrollTitle }}
+            </div>
+            <div class="fw-bolder text-dark">
+                {{ item.payrollInfo }}
+            </div>
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="currentStep === 2">
+    <div class="mt-5 d-flex flex-row justify-content-between rounded-1 bg-{{theme}}-bright border border-{{theme}} p-3 px-7"
+        *ngIf="EmployeePayrollInfoData[1].step === currentStep">
+        <div class="d-flex flex-column " *ngFor="let item of EmployeePayrollInfoData[1].data">
+            <div class="text-gray-600">
+                {{ item.payrollTitle }}
+            </div>
+            <div class="fw-bolder text-dark">
+                {{ item.payrollInfo }}
+            </div>
+        </div>
+    </div>
+</ng-container>
+<!-- <ng-container *ngIf="currentStep === 3">
+    <div class="mt-5 d-flex flex-row justify-content-between  bg-{{theme}}-bright rounded-1 border-dashed border-{{theme}} p-3 px-7"
+        *ngIf="EmployeePayrollInfoData[2].step === currentStep">
+        <div class="d-flex flex-column" *ngFor="let item of EmployeePayrollInfoData[2].data">
+            <div class="text-gray-600">
+                {{ item.payrollTitle }}
+            </div>
+            <div class="fw-bolder text-dark">
+                {{ item.payrollInfo }}
+            </div>
+        </div>
+    </div>
+</ng-container> -->

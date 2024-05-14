@@ -1,0 +1,51 @@
+<!-- <ng-container *ngIf="!isLoading; else skeleton"> -->
+<div class="p-md-0 mb-5">
+    <div class="notice gap-3 d-flex align-items-center rounded border-{{theme}} bg-{{theme}}-bright border-2 border-dashed p-4 ">
+        <ng-container *ngIf="modalType === 'survey' ">
+            <span [inlineSVG]="'./assets/media/icons/polls-survey.svg'" class="svg-icon svg-icon-3tx svg-icon-{{theme}}">
+            </span>
+        </ng-container>
+        <ng-container *ngIf="modalType === 'announcement'">
+            <span [inlineSVG]="'./assets/media/icons/megaphone-outline.svg'" class="svg-icon svg-icon-3tx svg-icon-{{theme}}">
+            </span>
+        </ng-container>
+        <ng-container *ngIf="modalType === 'run-payroll'">
+            <span [inlineSVG]="'./assets/media/icons/folder-outline.svg'" class="svg-icon svg-icon-3tx svg-icon-{{theme}}">
+            </span>
+        </ng-container>
+        <div class="d-flex flex-stack flex-grow-1">
+            <div class="fw-bold">
+                <h4 class="text-gray-800 fs-4 fw-bolder">{{notificationHeader}}</h4>
+                <div class="fs-7 text-gray-600">
+                    {{notificationSubHeading}}
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-3">
+            <button class="btn  btn-{{theme}}" data-bs-toggle="modal" data-bs-target="#kt_modal_offer_a_deal" (click)="openModal(announcement)"> {{buttonOpenText}}
+            </button>
+            <button class="btn btn-danger" > {{buttonCloseText}}
+            </button>
+        </div>
+    </div>
+</div>
+
+<ng-template #announcement role="document" let-modal>
+    <div class="modal-body p-10 text-center">
+        <div class="d-flex flex-column gap-4" *ngIf="!playVideo">
+            <div class="rounded-circle d-flex justify-content-center align-items-center h-200px w-200px mx-auto bg-{{theme}}">
+                <span class="p-11 svg-icon svg-icon-xl-fluid" [inlineSVG]="'./assets/media/icons/megaphone-outline.svg'"></span>
+            </div>
+            <h2 class="fw-bolder my-5">Exciting News! The Infitha Launch is Here!</h2>
+            <p>Exciting News! The long-awaited Infitha Launch has finally arrived! We are thrilled to announce the unveiling of our latest innovations and offerings. Join us on this remarkable journey as we introduce groundbreaking products and services that will revolutionize your experience. Get ready to witness cutting-edge technology, unparalleled features, and a seamless user interface. Be a part of this momentous occasion and discover the future of innovation. Don't miss out on this extraordinary opportunity to be among the first to explore the possibilities that the Infitha Launch brings. Get ready to embark on a new era of excellence!</p>
+        </div>
+        <div *ngIf="playVideo">
+            <iframe width="1140" height="515" src="https://www.youtube.com/embed" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <div class="mt-10 d-flex gap-3 justify-content-center">
+            <button class="btn btn-{{theme}}" (click)="playVideo = !playVideo">
+                <span class="svg-icon svg-icon-2"  [inlineSVG]="'./assets/media/icons/play-outline.svg'"></span>Play Video</button>
+            <button class="btn btn-secondary text-dark" (click)="onModalClose()">Ok, Got it</button>
+            </div>
+    </div>
+</ng-template>

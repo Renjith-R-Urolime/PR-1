@@ -1,0 +1,113 @@
+<app-page-title></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+    <ng-container>
+        <div class="card bs-none p-4">
+            <app-breadcrumb></app-breadcrumb>
+            <ng-container *ngIf="!isLoading ; else skeleton">
+                <ng-container *ngIf="formSections.length>0">
+                    <ng-container *ngFor="let section of formSections; let i=index">
+                        <ng-container *ngIf="section.tabName === formData.tabName">
+                            <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                                <div class="ps-9">
+                                    <ng-container *ngIf="!isLoading;">
+                                        <div class="d-flex">
+                                            <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                            <div class="hr-side me-8 ms-2">
+                                                <hr class="mx-1">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <div class="card-body py-0">
+                                    <form [formGroup]="departmentForm">
+                                        <div class="row">
+                                            <ng-container *ngFor="let label of formData.labels">
+                                                <ng-container *ngIf="label.sectionName === section.sectionName">
+                                                    <div
+                                                        class="position-relative col-lg-{{ label.col ? label.col : col }}  mb-2">
+                                                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                                            <label *ngIf="label.type !== 'toggle'"
+                                                                class="form-label fs-6 mb-0" [ngClass]="{
+                                                        'required': label?.required,
+                                                        'invalid': sharedService.hasValidationErrors(label, submit, departmentForm)
+                                                      }">{{
+                                                                label.labelName.alias.replace('Id','') | changeCase :
+                                                                "capital" }}</label>
+                                                            <app-input-text-field
+                                                                [patchValue]="departmentForm?.value[label.labelName.defaultValue!]"
+                                                                [name]="label.labelName.alias!"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, departmentForm) }"
+                                                                [type]="label.type"
+                                                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true">
+                                                            </app-input-text-field>
+                                                            <ng-container *ngIf="label.type === 'country'">
+                                                                <custom-ng-select
+                                                                    [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, locationForm) }"
+                                                                    (onchange)="onCountryChange($event)"
+                                                                    [apiLink]="label?.apiLink"
+                                                                    [isSelectDisabled]="!(id === undefined) "
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="departmentForm?.value.country"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                    [multiple]="false">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'subsidiary'">
+                                                                <custom-ng-select [fetchCondition]="subsidiaryFilter"
+                                                                    [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, departmentForm) }"
+                                                                    [apiLink]="subsidiaryFilter.length > 0? label.apiLink : ''"
+                                                                    [patchData]="departmentData?.subsidiary"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                    [multiple]="true" >
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'department'">
+                                                                <custom-ng-select
+                                                                    [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, departmentForm) }"
+                                                                    [apiLink]="label.apiLink"
+                                                                    [patchData]="departmentData?.parentDepartment"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                    [multiple]="false" [items]="departmentList">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngFor="let validation of label.validations;">
+                                                                <ng-container [ngTemplateOutlet]="formError"
+                                                                    [ngTemplateOutletContext]="{ validation: validation.name, message: validation.message, control: departmentForm.get(label.labelName.alias) }"></ng-container>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <ng-container>
+                    <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+                </ng-container>
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container">
+            <span role="alert" class="fv-help-block fs-9 ">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+<ng-template #skeleton>
+    <app-edit-form-skeleton [isLoading]="isLoading"></app-edit-form-skeleton>
+</ng-template>

@@ -1,0 +1,26 @@
+
+.scrollable-cards {
+    max-height: 400px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .cards {
+    display: inline-flex;
+    margin-right: 10px;
+
+  }
+  .card:last-child {
+    margin-right: 0;
+  }
+  .scrollable-cards::-webkit-scrollbar {
+    width: 0.5em;
+    background-color: transparent;
+  }
+
+  .scrollable-cards::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+  .bw-4{
+    border-width: 4px !important;
+  }
+

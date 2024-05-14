@@ -1,0 +1,287 @@
+<div class="row g-5 mb-1">
+    <div class="col-md-6" *ngIf="salaryInformationData">
+        <details-card [detailsCardData]="cardSalaryInformationMeta" [data]="salaryInformationData"
+            (editEvent)="getFormTemplate(defineSalary,'heading','defineSalary')"
+            [id]=" isDefineSalaryDrawerOpen ?'kt_drawer_form_defineSalary' :''"
+            [fullHeight]="true" [inlineWithLabel]="true" [col]="12" [isEditBtn]="false"></details-card>
+    </div>
+    <div class="col-md-6">
+        <div>
+            <div>
+                <div>
+                    <div class="card border-4 border-transparent">
+                        <div class="card-header d-flex align-items-center border-0 p-2">
+                            <div class="fs-3 fw-bold custom-color mt-1 mx-6 me-auto">Salary Breakup</div>
+                            <div class="hr-side mt-4 ms-2">
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="card-body p-0" *ngIf="salaryBreakupDetails?.length>0; else noInfo ">
+                            <div id="chart" class="chart-container">
+                                <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
+                                    [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
+                                    [yaxis]="chartOptions.yaxis" [xaxis]="chartOptions.xaxis" [fill]="chartOptions.fill"
+                                    [title]="chartOptions.title" [labels]="chartOptions.labels"
+                                    [legend]="chartOptions.legend" [colors]="chartOptions.colors"
+                                    [responsive]="chartOptions.responsive"></apx-chart>
+                                <div class="custom-legend">
+                                    <div *ngFor="let label of chartOptions.labels; let i = index" class="legend-item">
+                                        <div class="legend-marker" [style.backgroundColor]="chartOptions.colors[i]">
+                                        </div>
+                                        <div class="legend-label">{{ label }}</div>
+                                    </div>
+                                </div>
+                                <div class="custom-legend">
+                                    <div *ngFor="let label of chartOptions.labels; let i = index" class="legend-item">
+                                        <div class="legend-value">{{ chartOptions.series[i] }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row g-5  pt-3">
+    <div class="col-md-6" *ngIf="expenseManagementData">
+        <details-card [detailsCardData]="expenseManagementMeta" [data]="expenseManagementData"[inlineWithLabel]="true" [isEditBtn]="false" [col]="12"></details-card>
+    </div>
+    <div class="col-md-6" *ngIf="provisionData">
+        <details-card [detailsCardData]="provisionMeta" [data]="provisionData"
+            [inlineWithLabel]="true" [isEditBtn]="false" [col]="12"></details-card>
+    </div>
+</div>
+<div class="row g-5  pt-4" *ngIf="setupData">
+    <div class="col-md-6">
+        <details-card [detailsCardData]="setupMeta" [data]="setupData"
+            (editEvent)="getFormTemplate(setUpTemplate,'heading','setUp')"
+            [id]=" isSetupDrawerOpen ?'kt_drawer_form_setup' :''" [inlineWithLabel]="true" [isEditBtn]="true"
+            [col]="12"></details-card>
+    </div>
+    <div class="col-md-6">
+        <details-card [detailsCardData]="payPeriodInformationMeta" [data]="payPeriodInformationData" [fullHeight]="true"
+             [inlineWithLabel]="true" [isEditBtn]="false" [col]="12"></details-card>
+    </div>
+</div>
+<app-form-drawer [formTemplate]="setUpTemplate" [headerText]="'Setup'" (isSaved)="onDrawerSaveSetUpForm($event)"
+    (isCanceled)="cancelSetupForm($event) " [drawerWidth]="550" [formDrawerId]="'#kt_drawer_form_setup'"
+    [formDrawerCloseId]="'kt_drawer_form_setup_close'" [buttonDisable]="isSetUpFormSaveDisabled"
+    [isProcessing]="isProcessing">
+</app-form-drawer>
+<ng-template #setUpTemplate>
+    <form [formGroup]="setUpForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of setUpFormData.labels;let k=index">
+                <div class="col-4">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mt-1"
+                        [ngClass]="{'required': label?.required,'invalid': sharedService.hasValidationErrors(label, submit, setUpForm) }">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4">
+                    <!-- <ng-container class="align-items-center" *ngIf="label.type === 'payrollCycle'">
+                        <custom-ng-select [apiLink]="label.apiLink"
+                            [ngClass]="{ 'invalid':setUpForm.get(label.labelName.defaultValue).invalid }"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container class="align-items-center" *ngIf="label.type === 'contributionRules'">
+                        <custom-ng-select [ngClass]="{ 'invalid':setUpForm.get(label.labelName.defaultValue).invalid }"
+                            [apiLink]="contributionRuleCondition.length>0 ? label.apiLink : ''"
+                            [fetchCondition]="contributionRuleCondition"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container class="align-items-center" *ngIf="label.type === 'overtimeRules'">
+                        <custom-ng-select [items]="overtimeRulesList" (onchange)="filterOvertimeList($event)"
+                            [disableMarkAllInMultiSelect]="'true'" [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container> -->
+                    <ng-container class="align-items-center" *ngIf="label.type === 'ticketEligibility'">
+                        <custom-ng-select [apiLink]="label.apiLink" [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container *ngFor="let validation of label?.validations;">
+                        <div>
+                            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                      validation: validation.name,
+                                      message: validation.message,
+                                      control: setUpForm.get(label.labelName.defaultValue)
+                                    }"></ng-container>
+                        </div>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+<div class="row pt-3">
+    <app-tab-data-table [tabsMeta]="payrollPillTabsMeta" key="employee-payroll">
+        <ng-template action-btn-temp let-id="id" let-meta="meta">
+            <ng-container *ngIf="meta?.customAction">
+                <ng-container *ngIf="print.status && print.id === id" >
+                    <div class="spinner {{theme}}" ></div>
+                </ng-container>
+                <span (click)="payslipPreview(id)" [ngbTooltip]="'View'" [ngClass]="{'d-none': print.status && print.id === id}"
+                    class=" btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0">
+                    <span [inlineSVG]="'./assets/media/icons/print-outline.svg'" class="svg-icon svg-icon-3"></span>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="!meta?.customAction">
+                <a [ngbTooltip]="'Edit'" class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+                    (click)="open('edit', id)">
+                    <span [inlineSVG]="'./assets/media/icons/create-outline.svg'" class="svg-icon svg-icon-2"></span>
+                </a>
+                <a [ngbTooltip]="'View'" class=" btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+                    (click)="open('view', id)">
+                    <span [inlineSVG]="
+                        './assets/media/icons/document-text-outline.svg'
+                      " class="svg-icon svg-icon-3"></span>
+                </a>
+            </ng-container>
+        </ng-template>
+    </app-tab-data-table>
+</div>
+<ng-template #noInfo>
+    <div id="chart" class="chart-container-demo">
+        <div class="circle"></div>
+        <div class="custom-legend">
+            <div class="legend-item-demo">
+                <div class="legend-marker" [style.backgroundColor]="'#EDEDF9'">
+                </div>
+                <div class="legend-value-demo">No data to display</div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #customTemplate>
+    <div class="mb-2 d-flex gap-6 justify-content-center">
+        <a [routerLink]="['/employee-hub/profiles/employee/view', this.id]" class="btn btn-{{theme}} btn-sm"
+            (click)="onViewClicked()">View</a>
+    </div>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="control.hasError(validation)">
+        <div class="fv-plugins-message-container ps-4">
+            <span role="alert" class="fv-help-block fs-7 ">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+<app-form-drawer [formTemplate]="defineSalaryTemplate" [headerText]="'Define Salary'"
+    (isSaved)="onDrawerSaveDefineSalaryForm($event)" (isCanceled)="cancelDefineSalaryForm($event) " [drawerWidth]="550"
+    [formDrawerId]="'#kt_drawer_form_defineSalary'" [formDrawerCloseId]="'kt_drawer_form_defineSalary_close'"
+    [buttonDisable]="isDefineSalaryFormSaveDisabled" [isProcessing]="isProcessing">
+</app-form-drawer>
+<ng-template #defineSalary>
+    <form [formGroup]="defineSalaryForm">
+        <div class="row mt-4">
+            <ng-container *ngFor="let label of defineSalaryFormData.labels">
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-2">
+                    <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                        <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required,
+                  'text-danger': next && defineSalaryForm.invalid}">{{
+                            label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                        <app-input-text-field [name]="label.labelName.alias"
+                            *ngIf="label.labelName.defaultValue==='grossPay'"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [type]="label.type"></app-input-text-field>
+                        <!-- </ng-container> -->
+                        <ng-container class="align-items-center" *ngIf="label.type === 'salaryAllocation'">
+                            <custom-ng-select (onchange)="chooseComponentAllocationMethod($event)"
+                                [isSelectDisabled]="true" [jsonListName]="label.jsonListName"
+                                [ngClass]="{ 'invalid': next && defineSalaryForm.invalid && (employeeInformationInvalidControls.length>0 ? employeeInformationInvalidControls.includes(label.labelName.defaultValue) : false)}"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                            </custom-ng-select>
+                        </ng-container>
+                        <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                            <input *ngIf="label.labelName.defaultValue === 'effectiveDate'" readonly type="text"
+                                [formControlName]="label.labelName.defaultValue!" class="form-control form-control-sm ">
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+    <div >
+        <table class="table large">
+            <thead>
+                <tr class="border-gray-500 border-left-0 border-right-0 border-top-2 border-bottom-2 m-0">
+                    <th class="ps-2">Select</th>
+                    <th>Component</th>
+                    <th class="text-end pe-3">{{ isPercentageAllocation ? 'Rate(%)' : 'Rate' }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="vertical-middle" *ngFor="let component of componentItems; let i=index">
+                    <td class="text-center ps-3">
+                        <div class="form-check form-check-color-{{theme}}">
+                            <input (change)="enableInputField($event,i,component)"
+                                [disabled]="component?.disable && isPercentageAllocation"
+                                class="form-check-input h-25px w-25px ps-3" type="checkbox" [id]="name"
+                                [checked]="component.checked" />
+                        </div>
+                    </td>
+                    <td>
+                        {{ component.label | changeCase : "capital" }}
+                    </td>
+                    <td class="max-w-50">
+                        <app-input-text-field
+                            [max]="isPercentageAllocation?maxLimit:this.defineSalaryForm.value.grossPay"
+                            (inputValueChange)="calculateTotal($event,component)" [(ngModel)]="component.value"
+                            [isFieldDisabled]="!component.checked || component?.disable" placeholder="xxxxx"
+                            [ngClass]="'text-end'" type="number"></app-input-text-field>
+                        <!-- <input type="number" (keyup)="calculateTotal(i)" [disabled]="!component.checked"
+                 class="form-control form-control-sm "> -->
+                    </td>
+                </tr>
+                <tr class="border-gray-500 border-left-0 border-right-0 border-top-2 border-bottom-2 m-0">
+                    <td></td>
+                    <td>
+                        <p class="m-0 fw-bold">Total</p>
+                    </td>
+                    <td>
+                        <p class="m-0 fw-bold text-end pe-3">{{componentTotal}}</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div *ngIf="!isPercentageAllocation && componentTotal > 0"
+        class="border border-gray-300 rounded-1 bg-{{theme}}-bright">
+        <div *ngIf="componentTotal>defineSalaryForm.get('grossPay').value && isDefineSalaryFormSaveDisabled"
+            class="d-flex flex-column p-3 justify-content-between fs-8">
+            <div class="fs-6 fw-bold">Note:</div>
+            <div class="fs-6">Your Total {{componentTotal}} is more than Gross Pay</div>
+            <div class="fs-6">Kindly Check</div>
+        </div>
+        <div *ngIf="componentTotal<defineSalaryForm.get('grossPay').value && isDefineSalaryFormSaveDisabled"
+            class="d-flex flex-column p-3 justify-content-between fs-8">
+            <div class="fs-6 fw-bold">Note:</div>
+            <div class="fs-6">Your Total {{componentTotal}} is less than Gross Pay</div>
+            <div class="fs-6">Kindly Check</div>
+        </div>
+        <!-- <span *ngIf="componentTotal<defineSalaryForm.get('defineSalary').get('grossPay').value" class="text-danger fs-8">
+          is less than Gross</span> -->
+    </div>
+    <div *ngIf="isPercentageAllocation && componentTotal > 0">
+        <span *ngIf="componentTotal>100" class="text-danger fs-8">
+            Total Amount <span class="fs-8">{{componentTotal}}</span> is more than Gross Percentage</span>
+        <!-- <span *ngIf="componentTotal<100" class="text-danger fs-8">
+          is less than Gross percentage</span> -->
+    </div>
+    <span *ngIf="defineSalaryForm.get('grossPay').value<minGrossPay" class="text-danger fs-6">
+        Gross amount can not be less than {{minGrossPay}}</span>
+</ng-template>

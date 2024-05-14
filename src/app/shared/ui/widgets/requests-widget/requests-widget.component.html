@@ -1,0 +1,97 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+    <div class="card h-100  p-6 ">
+        <div class="card-header border-0 p-0">
+            <span class="fs-2x fw-bolder lh-base mb-1 h-fit">{{ requestCardData.cardTitle }}</span>
+        </div>
+        <div class="card-body p-0 overflow-auto">
+            <div class="tab-content">
+                <table class="table xxxl table-row-dashed table-row-gray-200 align-middle gs-0 gy-4">
+                    <tbody>
+                        <tr *ngFor="let row of requestCardData.tableData">
+                            <td>
+                                <div class="symbol symbol-44px me-2">
+                                    <span [inlineSVG]="'./assets/media/icons/person.svg'" *ngIf="row.profileImage === ''"
+                                        class="symbol-label p-2" [style.backgroundColor]="row.backgroundColor"></span>
+                                    <img *ngIf="row.profileImage !== ''" [src]="row.profileImage"
+                                        class="h-50 align-self-center" alt="" />
+                                </div>
+                            </td>
+                            <td>
+                                <a href="#" class="text-dark fw-bolder text-hover-primary mb-1 fs-6">
+                                    {{ row.name }}
+                                </a>
+                                <span class="text-muted fw-bold d-block">{{ row.position }}</span>
+                            </td>
+                            <td class="text-end text-muted fw-bold">{{ row.date }}</td>
+                            <td class="text-end">
+                                <a [href]="row.editLink" >
+                                    <span [inlineSVG]="'./assets/media/icons/chevron-forward.svg'"
+                                        class="svg-icon svg-icon-2"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<ng-template #skeleton>
+    <div class="card h-100 p-6">
+        <div class="card-header border-0 p-0">
+            <span class="fs-2x fw-bolder lh-base mb-1 h-fit">
+                <ngx-skeleton-loader [theme]="{
+                                height: '2rem',
+                                width: '16rem'
+                              }"></ngx-skeleton-loader>
+            </span>
+        </div>
+        <div class="card-body p-0 overflow-auto">
+            <div class="tab-content">
+                <table class="table table-row-dashed table-row-gray-200 align-middle gs-0 gy-4">
+                    <tbody>
+                        <!-- requestCardData.tableData -->
+                        <tr *ngFor="let row of requestCardData.tableData">
+                            <td>
+                                <div class="symbol symbol-44px me-2">
+                                    <span class="symbol-label" [style.backgroundColor]="row.backgroundColor">
+                                        <ngx-skeleton-loader [theme]="{
+                                                                    height: '3rem',
+                                                                    width: '3.3rem',
+                                                                    'margin-top': '1rem'
+                                                                  }"></ngx-skeleton-loader>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="#" class="text-dark fw-bolder text-hover-primary mb-1 fs-6">
+                                    <ngx-skeleton-loader [theme]="{
+                                                              height: '1rem',
+                                                              width: '8rem'
+                                                            }"></ngx-skeleton-loader>
+                                </a>
+                                <span class="text-muted fw-bold d-block">
+                                    <ngx-skeleton-loader [theme]="{
+                                                              height: '1rem',
+                                                              width: '12rem'
+                                                            }"></ngx-skeleton-loader>
+                                </span>
+                            </td>
+                            <td class="text-end text-muted fw-bold">
+                                <ngx-skeleton-loader [theme]="{
+                                                        height: '1rem',
+                                                        width: '12rem'
+                                                      }"></ngx-skeleton-loader>
+                            </td>
+                            <td class="text-end">
+                                <a [href]="row.editLink" >
+                                    <!-- <span [inlineSVG]="'./assets/media/icons/Vector.svg'" class="svg-icon svg-icon-2"></span> -->
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</ng-template>

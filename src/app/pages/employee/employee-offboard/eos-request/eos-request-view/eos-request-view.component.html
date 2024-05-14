@@ -1,0 +1,21 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+<details-card [detailsCardData]="detailsCardData">
+    <ng-template custom-element let-data="data$" let-key="key$">
+        <ng-container *ngIf="key.templateName === 'supervisor'">
+            <ng-container *ngIf="data?.employee?.supervisor; else noInfo">
+                <ng-container>
+                    <div class="text-hover-{{ theme }} fw-medium fs-6 text-dark px-0 cursor-pointer">
+                        {{data?.employee?.supervisor?.fullName }}
+                    </div>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+        <ng-template #noInfo>
+            <div class="fw-medium fs-6 text-gray-400 px-0 mt-1">
+                Not Availaible
+            </div>
+        </ng-template>
+    </ng-template>
+</details-card>
+<app-tab-data-table [tabsMeta]="eosRequestTabsMeta"></app-tab-data-table>

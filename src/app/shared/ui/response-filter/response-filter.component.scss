@@ -1,0 +1,45 @@
+.border-bottom {
+    border-bottom: 2px solid #EBEDF3 !important;
+    padding-bottom: 3px;
+}
+
+
+
+.form-check {
+    display: block !important;
+    min-height: 1.35rem !important;
+    padding-left: 3.5rem !important;
+    margin-bottom: 0.125rem !important;
+}
+
+.w-60 {
+    width: 60%!important;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: white !important;
+    color: #7E8299 !important;
+    font-size: 1.1rem!important;
+    box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color) !important;
+
+  }
+
+
+  .accordion-button {
+    font-size: 1.1rem !important;
+    color: #7E8299 !important;
+}
+
+.separator {
+    width: 2px;
+    height: 16px;
+    background-color: #000;
+    margin: 0 8px;
+}
+
+
+.clear-button-style{
+    padding-right: 39px !important;
+    padding-left: 10px !important;
+    color: #0074ff;
+}

@@ -1,0 +1,27 @@
+<h1 class="fs-2hx d-flex text-dark fw-bolder flex-column justify-content-center my-0">
+    {{title | renameValue}}
+  </h1>
+
+<app-page-title  [isEditDeleteBtn]="false" >
+</app-page-title>
+<!-- <app-basic-form  [formData]="formData" [formSection]="formSections" formType="withoutSection"></app-basic-form> -->
+
+<div class=" p-md-0 bg-white rounded-bottom-3">
+    <div class="d-flex flex-column flex-md-row justify-content-end gap-4">
+        <button  type="button" class="btn outline-border cursor-pointer" (click)="cancel()" >
+            Cancel </button>
+        <button class="btn btn-primary " [disabled]="isProceesing" (click)="onSubmit()">
+        <ng-container *ngIf="!isProceesing">
+            Save
+          </ng-container>
+          <ng-container *ngIf="isProceesing">
+            <div class="d-flex gap-3">
+              Please wait
+              <div class="spinner"></div>
+            </div>
+          </ng-container>
+        </button>
+
+    </div>
+  </div>
+

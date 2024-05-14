@@ -1,0 +1,131 @@
+<ng-container *ngIf="user">
+  <div class="menu-item px-3">
+    <div class="menu-content d-flex align-items-center px-3">
+      <div class="symbol symbol-50px me-5">
+
+        <ng-container *ngIf="user.pic; else showInitial">
+          <img alt="Logo" [src]="user.pic" />
+        </ng-container>
+        <ng-template #showInitial>
+          <div class="initial-avatar fs-3">{{ user?.name?.charAt(0)?.toUpperCase() }}</div>
+        </ng-template>
+      </div>
+
+
+      <div class="d-flex flex-column">
+        <div class="fw-bolder d-flex align-items-center fs-5">
+          {{ user?.name }}
+          <span class="ms-2" *ngIf="user?.verified === 'true'">
+            <img class="w-20px h-20px" src="assets/media/icons/verified-symbol-icon.svg" alt="">
+          </span>
+        </div>
+        <a class="fw-bold text-muted text-hover-primary fs-7 cursor-pointer">
+          {{ user?.email }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="separator my-2"></div>
+  <div class="menu-item px-5">
+    <a (click)="logout()" class="menu-link px-5 cursor-pointer"> Sign Out </a>
+  </div>
+  <div class="menu-item px-5">
+    <a routerLink="/employee//employeeList/view/1" class="menu-link px-5">
+      My Profile
+    </a>
+  </div>
+
+  <div class="menu-item px-5">
+    <a class="menu-link px-5 cursor-pointer" placement="top-start" ngbTooltip="Coming soon">
+      <span class="menu-text">My Projects</span>
+      <span class="menu-badge">
+        <span class="badge badge-purple badge-circle fw-bolder fs-7">3</span>
+      </span>
+    </a>
+  </div>
+
+  <div class="menu-item px-5" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start"
+    data-kt-menu-flip="bottom">
+  </div>
+
+  <div class="menu-item px-5">
+    <a class="menu-link px-5 cursor-pointer" placement="top-start" ngbTooltip="Coming soon">My Statements</a>
+  </div>
+
+  <div *ngIf="length > 1" class="menu-item px-5 accordion" data-kt-menu-trigger="click"
+    data-kt-menu-placement="right-start" data-kt-menu-flip="bottom" id="accordionExample">
+    <div class="accordion-item">
+      <a class="accordion-button menu-link px-5 cursor-pointer" type="button" data-bs-toggle="collapse"
+        data-bs-target="#collapseOne" [attr.aria-expanded]="isAccordionOpen" [class.collapsed]="!isAccordionOpen"
+        (click)="isAccordionOpen = !isAccordionOpen">
+        Switch Account
+      </a>
+      <div id="collapseOne" class="accordion-collapse collapse" [ngClass]="{'show': isAccordionOpen}"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div *ngFor="let account of data">
+            <div *ngIf="account.accountId !== accountIdFromUrl" class="menu-item px-5">
+              <div class="row align-items-center">
+                <div *ngIf="account.logo" class="col-auto">
+                  <img [src]="account.logo" height="30px" width="50px" alt="Account Logo" class="account-logo">
+                </div>
+                <div class="col">
+                  <a class="menu-link px-2 cursor-pointer" (click)="switchAccount(account)">
+                    {{ account.name }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="separator my-2"></div>
+
+  <div class="menu-item px-5" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start"
+    data-kt-menu-flip="bottom">
+    <a class="menu-link px-5 cursor-pointer">
+      <span class="menu-title position-relative">
+        Language
+        <span class="
+            fs-8
+            rounded
+            bg-light
+            px-3
+            py-2
+            position-absolute
+            translate-middle-y
+            top-50
+            end-0
+          ">
+          {{ language.name }}{{ " " }}
+          <img class="w-15px h-20px rounded-1 ms-2" [src]="language.flag" alt="infithra" />
+        </span>
+      </span>
+    </a>
+
+    <div class="menu-sub menu-sub-dropdown w-175px py-4">
+      <div *ngFor="let l of langs" class="menu-item px-3 cursor-pointer" (click)="selectLanguage(l.lang)">
+        <a class="menu-link d-flex px-5" [ngClass]="l.lang === language.lang ? 'active' : ''">
+          <span class="symbol symbol-20px me-4">
+            <img class="rounded-1" [src]="l.flag" alt="infithra" />
+          </span>
+          {{ l.name }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-item px-5">
+    <a class="menu-link px-5 cursor-pointer" placement="top-start" ngbTooltip="company Info">
+      <span (click)="companyInfo()" class="menu-text">Account Settings</span>
+    </a>
+  </div>
+
+  <!-- <div class="menu-item px-5">
+    <a (click)="logout()" class="menu-link px-5 cursor-pointer"> Sign Out </a>
+  </div> -->
+</ng-container>

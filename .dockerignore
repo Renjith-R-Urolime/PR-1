@@ -1,0 +1,7 @@
+node_modules
+charts
+package-lock.json
+.github
+.angular
+.vscode
+dist

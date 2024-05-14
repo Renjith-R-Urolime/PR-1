@@ -1,0 +1,26 @@
+.progress-box {
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+  }
+
+  .progress {
+    border-right: 2px solid white;
+    border-radius: 16px;
+  }
+  
+  .progress-bar .arrow {
+    // position: absolute;
+    top: 0;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border-top: 7.5px solid transparent;
+    border-bottom: 7.5px solid transparent;
+    border-left: 10px solid #fff; /* Adjust color as needed */
+  }
+  
+  .bg-color{
+background-color: #5db8fe;
+
+  }

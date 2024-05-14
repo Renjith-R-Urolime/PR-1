@@ -1,0 +1,12 @@
+<app-page-title [isNewButton]="true" [isEditDeleteBtn]="false" ></app-page-title>
+
+
+<div class="d-flex flex-row justify-content-between align-items-center">
+    <h4 >{{componentTitle}}({{employeeDetails.length}})</h4>
+    <search-and-filter class="flex-grow-1" [Dropdown]="Dropdown" [filterToggle]="filterToggle"></search-and-filter>
+    <div class="d-flex gap-4">
+    </div>
+</div>
+
+
+<!-- <app-card-list [grievance]="grievance" *ngIf="view==='card'" [details]="employeeDetails"></app-card-list> -->

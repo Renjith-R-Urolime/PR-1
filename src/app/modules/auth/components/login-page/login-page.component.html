@@ -1,0 +1,213 @@
+<div class=" col-lg-12" [dir]="textStyle" style="background-image: url(./assets/media/login/login_bg_image.png);
+/* background-position: center center; */
+background-repeat: no-repeat;
+background-size: cover;">
+  <div class="p-8">
+    <div class="d-flex justify-content-center align-items-center" style="background: none;">
+      <div class="flex-grow-1 text-center">
+        <img src="./assets/media/login/infithra-login-logo.svg" alt="Image" class="img-fluid">
+      </div>
+      <div class="ms-auto">
+        <img (click)="convertor('ar')" *ngIf="enableArabic" src="./assets/media/login/language.svg" alt="">
+
+        <img (click)="convertor('en')" *ngIf="enableEnglish" src="./assets/media/login/language.svg" alt="">
+      </div>
+    </div>
+    <div class="row d-flex flex-column flex-md-row gap-lg-0 gap-9">
+      <div class="col-md-4 col-12 card rounded-1 p-5">
+        <div class="d-flex justify-content-between p-5 px-0">
+          <h2 class="fs-2tx" >{{'Welcome Back' | translate}}</h2>
+        </div>
+        <!--begin::Form-->
+        <form class="form w-100" [formGroup]="loginForm" novalidate="novalidate" id="kt_login_signin_form"
+          (ngSubmit)="submit()">
+
+          <!-- begin::Alert info-->
+          <!-- <ng-container *ngIf="!hasError">
+              <div class="mb-10 bg-light-info p-8 rounded">
+                <div class="text-info">
+                  Use account <strong>{{ defaultAuth.email }}</strong> and password
+                  <strong>{{ defaultAuth.password }}</strong> to continue.
+                </div>
+              </div>
+            </ng-container> -->
+          <!-- end::Alert info-->
+
+          <!-- begin::Alert error-->
+          <ng-container *ngIf="hasError">
+            <div class="mb-5 alert alert-danger">
+              <div class="alert-text font-weight-bold">
+                {{'The login details are incorrect' | translate}}
+              </div>
+            </div>
+          </ng-container>
+          <!-- end::Alert error-->
+
+          <!--begin::Form group-->
+          <div class="fv-row mb-10">
+            <label class="form-label fs-6 fw-bolder text-dark">{{"Email" | translate}}</label>
+            <input class="form-control form-control-lg form-control-solid" type="email" name="email"
+              formControlName="email" autocomplete="off" [ngClass]="{
+                  'is-invalid': loginForm.controls['email'].invalid,
+                  'is-valid': loginForm.controls['email'].valid
+                }" />
+            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                  validation: 'required',
+                  message: 'Email is required',
+                  control: loginForm.controls['email']
+                }"></ng-container>
+            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                  validation: 'email',
+                  message: 'Email is invalid',
+                  control: loginForm.controls['email']
+                }"></ng-container>
+            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                  validation: 'minLength',
+                  message: 'Email should have at least 3 symbols',
+                  control: loginForm.controls['email']
+                }"></ng-container>
+            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                  validation: 'maxLength',
+                  message: 'Email should have maximum 360 symbols',
+                  control: loginForm.controls['email']
+                }"></ng-container>
+          </div>
+          <!--end::Form group-->
+
+          <!--begin::Form group-->
+          <div class="fv-row mb-10">
+            <div class="d-flex justify-content-between mt-n5">
+              <div class="d-flex flex-stack mb-2">
+                <label class="form-label fw-bolder text-dark fs-6 mb-0">{{"Password"| translate}}</label>
+              </div>
+            </div>
+
+            <input class="form-control form-control-lg form-control-solid" type="password" name="password"
+              autocomplete="off" formControlName="password" [ngClass]="{
+                  'is-invalid': loginForm.controls['password'].invalid,
+                  'is-valid': loginForm.controls['password'].valid
+                }" />
+            <div class="d-flex mt-2">
+              <a routerLink="/auth/forgot-password" class="link-primary fs-6 fw-bolder" id="kt_login_forgot"
+                class="ms-auto text-primary" [style.margin-left]="'5px'">
+                {{"Forgot Password?" | translate}}
+              </a>
+            </div>
+            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                  validation: 'required',
+                  message: 'Password is required',
+                  control: loginForm.controls['password']
+                }"></ng-container>
+            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                  validation: 'minlength',
+                  message: 'Password should have at least 8 symbols',
+                  control: loginForm.controls['password']
+                }"></ng-container>
+            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                  validation: 'maxLength',
+                  message: 'Password should have maximum 100 symbols',
+                  control: loginForm.controls['password']
+                }"></ng-container>
+          </div>
+          <!--end::Form group-->
+
+          <!--begin::Action-->
+          <div class="text-center">
+            <button type="submit" id="kt_sign_in_submit" class="btn btn-lg btn-primary w-100 mb-5"
+              [disabled]="loginForm.invalid">
+              <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                  {{'Please wait...' | translate}}
+                  <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+              </ng-container>
+              <ng-container *ngIf="(isLoading$ | async) === false">
+                <span class="indicator-label">{{"Log in" | translate}}</span>
+              </ng-container>
+            </button>
+          </div>
+          <!--end::Action-->
+        </form>
+        <!--end::Form-->
+        <div class="d-flex align-items-center my-3 ">
+          <hr class="flex-grow-1 mr-1 me-2 custom-hr">
+          <span class="me-2 text-muted">{{"Or With" | translate}}</span>
+          <hr class="flex-grow-1 ml-1 custom-hr">
+        </div>
+
+        <div class="gap-4 d-flex flex-wrap justify-content-center">
+          <button class="btn border text-dark p-2 w-200px h-50px flex-grow-1">
+            <span class="me-2"><img src="./assets/media/login/google-logo.svg " alt=""></span>{{"Log in with Google" |
+            translate}}
+          </button>
+          <button class="btn border text-dark p-2 w-200px h-50px  flex-grow-1">
+            <span class="me-2 "><img src="./assets/media/login/apple-logo.svg " alt=""></span> {{"Log in with Apple" |
+            translate}}
+          </button>
+        </div>
+
+      </div>
+      <!-- <div class=" "> -->
+      <!-- <div class="container-fluid"> -->
+      <div class="col-md-8 col-12 p-0">
+        <div class="ms-lg-6 ms-0 d-flex flex-row flex-wrap flex-md-nowrap rounded-1 bg-login h-100 p-0">
+          <div class="p-5">
+            <div class="d-flex gap-2 ">
+              <div class="border-line-light w-40px pt-30" [ngClass]="{'selected': selectedContent.id === section.id}" (click)="selectedContent = section" *ngFor="let section of rightSectionData">
+              </div>
+            </div>
+
+            <!-- <div *ngFor="let data of rightSectionData" > -->
+            <div class="d-flex flex-column gap-3 mt-8">
+              <h2 class="fs-2x fw-bolder pt-3 lh-lg">{{ selectedContent.title |
+                translate }}<br></h2>
+                <p class="fw-bolder d-flex align-items-center"> {{ selectedContent.subTitle | translate }}</p>
+                <p class="fw-medium reg-sm-font">
+                  {{ selectedContent.description | translate }}
+                </p>
+                <button class="btn btn-purple-outline fw-bolder w-200px">{{ 'Register Now' | translate }}</button>
+            </div>
+          </div>
+          <div>
+            <img alt="banner" class=" h-100 img rounded-start-0" [src]="selectedContent.image">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row  justify-content-center pt-13">
+      <div class="col-md-10 col-12 d-flex flex-md-row flex-column">
+        <div class="row bg-login rounded" *ngFor="let data of updatesData">
+          <div class="col-md-4 col-12">
+            <img class="lap-img img-fluid" [src]="data.image" alt="">
+          </div>
+          <div class="col-md-8 col-12 py-5 pe-6 d-flex align-items-center ads-content" >
+            <div class="d-flex flex-column">
+              <h3 class="fs-2 fw-bolder">{{data.title | translate}}</h3>
+              <p>{{data.description | translate}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="control.hasError(validation) && (control.dirty || control.touched)">
+      <div class="fv-plugins-message-container">
+        <span role="alert">
+          {{ message | translate }}
+        </span>
+      </div>
+    </ng-container>
+  </ng-template>
+
+
+  <!-- <carousel #carousel [interval]="autoSlideInterval" [noPause]="true">
+    <slide *ngFor="let item of items" [active]="item.id === 1">
+      <img src="{{ item.imageSrc }}" alt="Slide {{ item.id }}">
+      <div class="carousel-caption">
+        <h3>{{ item.caption }}</h3>
+      </div>
+    </slide>
+  </carousel> -->

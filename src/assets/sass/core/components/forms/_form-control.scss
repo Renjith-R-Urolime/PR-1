@@ -1,0 +1,89 @@
+//
+// Form controls
+//
+
+// Customization
+.form-control {
+	border: 1px solid var(--bs-gray-600)!important;
+	background-color: $white;
+	&:active,
+		&.active,
+		&:focus,
+		&.focus {
+			border: 1px solid var(--bs-gray-700)!important;
+		}
+	&.light{
+		border: 1px solid var(--bs-gray-300)!important;;
+		&:active,
+		&.active,
+		&:focus,
+		&.focus {
+			border: 1px solid var(--bs-gray-400)!important;
+		}
+	}
+	&.border-0{
+		border: 0!important;
+	}
+	// Transparent style
+	&.form-control-transparent {
+		background-color: transparent;
+		border-color: transparent;
+
+		.dropdown.show > &,
+		&:active,
+		&.active,
+		&:focus,
+		&.focus {
+			background-color: transparent;
+			border-color: transparent;
+		}
+	}
+
+	// Flush
+	&.form-control-flush {
+		@include input-reset();
+	}
+}
+// Solid style
+.form-control.form-control-solid {
+	background-color: $input-solid-bg;
+	border-color: $input-solid-bg;
+	color: $input-solid-color;
+	@include placeholder($input-solid-placeholder-color);
+	transition: $transition-input;
+
+	.dropdown.show > &,
+	&:active,
+	&.active,
+	&:focus,
+	&.focus {
+		background-color: $input-solid-bg-focus;
+		border-color: $input-solid-bg-focus;
+		color: $input-solid-color;
+		transition: $transition-input;
+	}
+}
+
+// Form control solid bg
+.form-control-solid-bg {
+	background-color: $input-solid-bg;
+}
+
+// Readonly controls as plain text
+.form-control-plaintext {
+  	color: $input-plaintext-color
+}
+
+// Placeholder colors
+.placeholder-gray-500 {
+	@include placeholder(var(--#{$prefix}gray-500));
+}
+
+.placeholder-white {
+	@include placeholder($white);
+}
+
+// Textarea reset resize
+.resize-none {
+	resize: none;
+}

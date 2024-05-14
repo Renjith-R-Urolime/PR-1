@@ -1,0 +1,34 @@
+<div class="d-flex gap-2">
+    <custom-ng-select [apiLink]="'core-hr/employee'" [ngClass]="ngClass" class="w-100"
+    [fetchCondition]="filterCondition" [patchData]="patchData"
+        (onchange)="onEmployeeSelect($event)" [(ngModel)]="selectedEmployee" [isSelectDisabled]="isDisabled"
+        [placeholder]="placeholder" [scope]="scope" [bindLabel]="'firstName'">
+        <ng-template custom-ng-label-temp let-item$="item">
+            <div class="d-flex gap-3 align-items-center">
+                <div class="d-flex gap-3 align-items-center fs-7">
+                    <ng-container *ngIf="item$?.logo || item$?.image; else noImg">
+                    <ng-container *ngIf="item$?.logo || item$?.image | s3FileFetch | async as imageUrl; else noImg">
+                        <div class="symbol symbol-circle symbol-30px rounded-3" data-bs-toggle="tooltip"
+                            data-bs-boundary="window" data-bs-placement="top" [title]="item$?.fullName">
+                            <img class="object-fit-cover object-position-top" width="30px" [src]="imageUrl" [lazyLoad]="imageUrl" alt="profile" />
+                        </div>
+                    </ng-container>
+                </ng-container>
+                    <ng-template #noImg>
+                        <div class="symbol symbol-30px symbol-circle ">
+                            <ng-container>
+                                <div class="symbol-label fw-bolder fs-4 symbol-color bg-{{theme}}">
+                                    {{item$?.firstName?.[0] | uppercase}}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-template>
+                    <div>{{ item$.employeeId+': '+item$?.fullName}}</div>
+                </div>
+            </div>
+        </ng-template>
+    </custom-ng-select>
+<ng-container *ngIf="!filterDisabled">
+    <app-response-filter [responseFilterMeta]="employeeFilterMeta" (onSubmit)="filteredData($event)" ></app-response-filter>
+</ng-container>
+</div>

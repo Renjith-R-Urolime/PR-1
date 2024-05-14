@@ -1,0 +1,60 @@
+.important-text {
+  margin-left: auto !important;
+}
+
+.custom-dropdown {
+  height: 23px;
+  padding: 5px 32px;
+  font-size: 11px;
+}
+
+.form-check {
+  margin-right: 5px;
+}
+
+.box-shadow-none {
+  box-shadow: none !important;
+}
+
+.check-margin {
+  margin-right: 6px
+}
+
+th.long-content,
+td.long-content {
+  min-width: 150px; /* Adjust the width as needed */
+}
+
+th, td {
+  white-space: nowrap;
+}
+
+.custom-border {
+  border: 2px solid #ff9123;
+  border-radius: 11px;
+  padding: 2px;
+}
+
+
+.highlighted {
+  background-color: yellow; /* Example background color for highlighting */
+  font-weight: bold; /* Example font weight for highlighting */
+}
+
+.toggle-container,
+.day-container,
+.time-container {
+  flex: 1;
+}
+
+
+.day-box {
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 0px 12px;
+  border-radius: 8px;
+}
+
+.data-item {
+  margin: 22px 0px 6px 0px;
+}

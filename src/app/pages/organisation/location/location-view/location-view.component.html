@@ -1,0 +1,29 @@
+<app-page-title
+  [isEditDeleteBtn]="true"
+  [isGoBack]="true"
+></app-page-title>
+
+<div class="py-1">
+  <details-card
+    [detailsCardData]="detailsCardData"
+  ></details-card>
+</div>
+
+<app-tab-data-table [tabsMeta]="locationTabsMeta"></app-tab-data-table>
+    <!-- <div class="d-flex flex-end justify-content-between mh-50px">
+        <div>
+          <trapezoid-tabs [tabs]="trapezoidTabs"></trapezoid-tabs>
+        </div>
+        <div class="me-6">
+          <search-and-filter [tableData]="tableData"></search-and-filter>
+        </div>
+      </div> -->
+      <!-- <data-table-list
+        newRecordOpenType="page"
+        [tableData$]="detailsData$"
+        [wizardData]="wizardData"
+        [formData]="formData"
+        [formSection]="formSection"
+      ></data-table-list> -->
+
+

@@ -1,0 +1,357 @@
+<section id="payroll-summary-section">
+    <div class="fw-bolder fs-2x mb-4">Payroll Report</div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 d-flex align-items-center justify-content-center">
+                    <apx-chart *ngIf="!isSummaryLoading ;else skeletoncard" [series]="chartOptions.series"
+                        [chart]="chartOptions.chart" [dataLabels]="chartOptions.dataLabels"
+                        [plotOptions]="chartOptions.plotOptions" [yaxis]="chartOptions.yaxis"
+                        [xaxis]="chartOptions.xaxis" [fill]="chartOptions.fill" [title]="chartOptions.title"
+                        [labels]="chartOptions.labels" [legend]="chartOptions.legend" [colors]="chartOptions.colors">
+                    </apx-chart>
+                </div>
+                <div class="col-md-7 d-flex">
+                    <div *ngIf="!isSummaryLoading ;else skeletonView" class="row w-100 align-content-center">
+                        <div *ngFor="let option of summaryData; let i = index" class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="h-10px w-10px rounded-circle" [style.backgroundColor]="option?.dotColor"></span>
+                                    <span class="text-dark fw-bold">{{ option?.name }}</span>
+                                </div>
+                                <span class="text-muted">{{ option?.percentage }}</span>
+                            </div>
+                            <hr class="ms-n6 mb-0" *ngIf="i !== option.length - 1">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="h-300px">
+                        <img class="h-100 w-100 object-fit-contain" src="./assets/media/png/group.png">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="payroll-report-section">
+    <div class="fw-bolder fs-2x mb-4 mt-10">Explore All Reports</div>
+    <div class="row">
+        <div class="col-md-3 mt-4" *ngFor="let report of allReportsData;let i = index">
+            <div class="card">
+                <div class="card-body card-width">
+
+
+                    <div class="row custom-row">
+                        <div class="col-md-4">
+
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center justify-content-center report-icon">
+                                <span class="svg-icon svg-icon-3tx" *ngIf="report.icon" [inlineSVG]="report.icon">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4"></div>
+                    </div>
+                    <div class="row custom-row mt-3">
+                        <div class="col-md-12 text-center">
+                            <!-- <div class="text-dark fs-3 btn-text fw-bolder overflow-hidden" style="height: 60px;">{{ report.text }}</div> -->
+                            <div
+                                class="text-dark fs-3 btn-text overflow-hidden d-flex align-items-center justify-content-center">
+                                {{ report.text }}
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row custom-row mt-3">
+
+                        <div class="gap-3 d-flex flex-wrap justify-content-center">
+                            <button (click)="newModel(previewModal , 'Create',id)"
+                                class="btn btn-{{theme}}-outline btn-font-small">
+                                <ng-container *ngIf="!isProcessing">
+                                    {{ report.button1Text
+                                    }}
+                                </ng-container>
+                                <ng-container *ngIf="isProcessing">
+                                    <div class="d-flex gap-3">
+                                        Please wait
+                                        <img class="h-20px spin" src="./assets/media/png/loader.png" alt="loader">
+                                    </div>
+                                </ng-container>
+                            </button>
+                            <button (click)="newModel(downloadModal , 'Create',id,report.id)"
+                                class="btn btn-{{theme}}-outline btn-font-small "> <ng-container *ngIf="!isDownloading">
+                                    {{ report.button2Text
+                                    }}
+                                </ng-container>
+                                <ng-container *ngIf="isDownloading">
+                                    <div class="d-flex gap-3">
+                                        Please wait
+                                        <img class="h-20px spin" src="./assets/media/png/loader.png" alt="loader">
+                                    </div>
+                                </ng-container>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="payroll-details-section">
+    <div class="fw-bolder fs-2x mb-4 mt-10">Payroll Details</div>
+    <div class="card">
+        <div class="px-4 py-2 d-flex flex-row justify-content-between">
+            <search-and-filter filterButton="true"></search-and-filter>
+        </div>
+        <data-table-list [customData]="true" [metaData]="tableMetaData" [data]="detailsdata">
+            <ng-template data-cell-temp let-data="data" let-column="column" let-index="index">
+                <ng-container *ngIf="column?.name === 'Print'">
+                    <ng-container *ngIf="print.status && print.id === data.id" >
+                        <div class="spinner {{theme}}" ></div>
+                    </ng-container>
+                    <span (click)="payslipPreview(data.id, data.fileName)" [ngbTooltip]="'View'" [ngClass]="{'d-none': print.status && print.id === data.id}"
+                        class=" btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0">
+                        <span [inlineSVG]="'./assets/media/icons/print-outline.svg'" class="svg-icon svg-icon-3"></span>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="column?.name === 'SNo.'">
+                    <div class="fw-medium fs-7 text-dark px-0 mt-1">
+                        {{ index + 1}}
+                    </div>
+                </ng-container>
+            </ng-template>
+        </data-table-list>
+    </div>
+
+
+</section>
+
+<ng-template #previewModal let-modal>
+    <div class="modal-header py-2">
+        <!-- <div *ngIf="form == 'create' else edit"> -->
+        <h4 class="modal-title" id="modal-basic-title">Preview As</h4>
+        <!-- </div>
+      <ng-template #edit >
+        <h4 class="modal-title" id="modal-basic-title">Modify {{title | renameValue}}</h4>
+      </ng-template> -->
+        <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+            (click)="closeModal()">
+            <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+        </div>
+    </div>
+    <div class="modal-body p-0">
+
+        <div class="row mt-1">
+            <div class="d-flex justify-content-center">
+                <img src="./assets/media/icons/preview-icon.svg" class="svg-icon-2">
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="d-flex justify-content-around">
+                <div class="d-flex justify-content-center align-items-center fullsection-checkbox w-100px h-45px">
+                    <div class="form-check form-check-color-{{theme}} pt-1">
+                        <input class="form-check-input checkbox-round mt-2 mb-3 h-22px w-22px" type="checkbox"
+                            [(ngModel)]="xlsChecked" id="xlsCheckbox" (click)="handleCheckboxClick('xls')" />
+                        <label class="form-check-label fs-6 mt-2 mb-1" for="xlsCheckbox">
+                            XLS
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center fullsection-checkbox w-100px h-45px">
+                    <div class="form-check form-check-color-{{theme}} pt-1">
+                        <input class="form-check-input checkbox-round mt-2 mb-3 h-22px w-22px" type="checkbox"
+                            [(ngModel)]="csvChecked" id="csvCheckbox" (click)="handleCheckboxClick('csv')" />
+                        <label class="form-check-label fs-6 mt-2 mb-1" for="csvCheckbox">
+                            CSV
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center fullsection-checkbox w-100px h-45px">
+                    <div class="form-check form-check-color-{{theme}} pt-1">
+                        <input class="form-check-input checkbox-round mt-2 mb-3 h-22px w-22px" type="checkbox"
+                            [(ngModel)]="pdfChecked" id="pdfCheckbox" (click)="handleCheckboxClick('pdf')" />
+                        <label class="form-check-label fs-6 mt-2 mb-1" for="pdfCheckbox">
+                            PDF
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center fullsection-checkbox w-100px h-45px">
+                    <div class="form-check form-check-color-{{theme}} pt-1">
+                        <input class="form-check-input checkbox-round mt-2 mb-3 h-22px w-22px" type="checkbox"
+                            [(ngModel)]="sifChecked" id="sifCheckbox" (click)="handleCheckboxClick('sif')" />
+                        <label class="form-check-label fs-6 mt-2 mb-1" for="sifCheckbox">
+                            SIF
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row mt-2">
+            <div class="d-flex justify-content-center">
+                <h4 class="modal-title fs-6 mt-2 mb-1" for="flexCheckDefault">
+                    Layout as:
+                </h4>
+
+                <div class="form-check form-check-inline mx-3 ">
+                    <input class="form-check-input me-2 radio-form mt-2" type="radio" name="inlineRadioOptions"
+                        [(ngModel)]="selectedLayout" value="horizontal">
+                    <label class="form-label fs-6 mb-0 mt-2">
+                        Horizontal
+                    </label>
+                </div>
+                <div class="form-check form-check-inline ">
+                    <input class="form-check-input me-2 radio-form mt-2" type="radio" name="inlineRadioOptions"
+                        [(ngModel)]="selectedLayout" value="vertical">
+                    <label class="form-label fs-6 mb-0 mt-2">
+                        Vertical
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal-footer py-3 mt-4">
+        <button type="button" class="btn border border-{{theme}}" (click)="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-{{theme}}">Preview</button>
+    </div>
+</ng-template>
+
+
+<ng-template #downloadModal let-modal>
+    <div class="modal-header py-2">
+        <!-- <div *ngIf="form == 'create' else edit"> -->
+        <h4 class="modal-title" id="modal-basic-title">Download As</h4>
+        <!-- </div>
+      <ng-template #edit >
+        <h4 class="modal-title" id="modal-basic-title">Modify {{title | renameValue}}</h4>
+      </ng-template> -->
+        <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+            (click)="closeModal()">
+            <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+        </div>
+    </div>
+    <div class="modal-body p-0">
+
+        <div class="row mt-1">
+            <div class="d-flex justify-content-center">
+                <img src="./assets/media/icons/download-icon.svg" class="svg-icon-2">
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="d-flex justify-content-around">
+                <div class="d-flex justify-content-center align-items-center fullsection-checkbox w-100px h-45px">
+                    <div class="form-check form-check-color-{{theme}} pt-1">
+                        <input class="form-check-input checkbox-round mt-2 mb-3 h-22px w-22px" type="checkbox"
+                            [(ngModel)]="xlsChecked" id="xlsCheckbox" (click)="handleCheckboxClick('xls')" />
+                        <label class="form-check-label fs-6 mt-2 mb-1" for="xlsCheckbox">
+                            XLS
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center fullsection-checkbox w-100px h-45px">
+                    <div class="form-check form-check-color-{{theme}} pt-1">
+                        <input class="form-check-input checkbox-round mt-2 mb-3 h-22px w-22px" type="checkbox"
+                            [(ngModel)]="csvChecked" id="csvCheckbox" (click)="handleCheckboxClick('csv')" />
+                        <label class="form-check-label fs-6 mt-2 mb-1" for="csvCheckbox">
+                            CSV
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center fullsection-checkbox w-100px h-45px">
+                    <div class="form-check form-check-color-{{theme}} pt-1">
+                        <input class="form-check-input checkbox-round mt-2 mb-3 h-22px w-22px" type="checkbox"
+                            [(ngModel)]="pdfChecked" id="pdfCheckbox" (click)="handleCheckboxClick('pdf')" />
+                        <label class="form-check-label fs-6 mt-2 mb-1" for="pdfCheckbox">
+                            PDF
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center fullsection-checkbox w-100px h-45px">
+                    <div class="form-check form-check-color-{{theme}} pt-1">
+                        <input class="form-check-input checkbox-round mt-2 mb-3 h-22px w-22px" type="checkbox"
+                            [(ngModel)]="sifChecked" id="sifCheckbox" (click)="handleCheckboxClick('sif')" />
+                        <label class="form-check-label fs-6 mt-2 mb-1" for="sifCheckbox">
+                            SIF
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+       <div class="row mt-4">
+            <div class="d-flex justify-content-center">
+                <h4 class="modal-title fs-6 mt-2 mb-1" for="flexCheckDefault">
+                    Layout as:
+                </h4>
+
+                <div class="form-check form-check-inline mx-3 ">
+                    <input class="form-check-input me-2 radio-form mt-2" type="radio" name="inlineRadioOptions"
+                           [(ngModel)]="selectedLayout" value="horizontal">
+                    <label class="form-label fs-6 mb-0 mt-2">
+                        Horizontal
+                    </label>
+                </div>
+                <div class="form-check form-check-inline ">
+                    <input class="form-check-input me-2 radio-form mt-2" type="radio" name="inlineRadioOptions"
+                    [(ngModel)]="selectedLayout" value="vertical">
+                    <label class="form-label fs-6 mb-0 mt-2">
+                        Vertical
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-center" *ngIf="detectedError">
+            <div class="text-{{theme}}">
+              {{ errorMessage }}
+            </div>
+          </div>
+
+    </div>
+    <div class="modal-footer py-3 mt-4">
+        <button type="button" class="btn border border-{{theme}}" (click)="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-{{theme}}" (click)="downloadFile()">Download</button>
+    </div>
+</ng-template>
+
+<ng-template #skeletoncard>
+    <div class="col-md-4 ">
+        <ngx-skeleton-loader class="ms-10" appearance="circle"
+            [theme]="{ width: '20em', height: '20em' }"></ngx-skeleton-loader>
+
+    </div>
+
+
+</ng-template>
+<ng-template #skeletonView>
+    <div class="col-md-4 me-n10">
+        <div class="d-flex flex-row justify-content-between my-5  m-0">
+            <ngx-skeleton-loader
+                [theme]="{ width: '10rem', height: '2em' ,'margin-right':'10px' }"></ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{ width: '5rem', height: '2em','margin-right':'10px' }"></ngx-skeleton-loader>
+            <ngx-skeleton-loader
+                [theme]="{ width: '10rem', height: '2em','margin-right':'10px' }"></ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{ width: '5rem', height: '2em' }"></ngx-skeleton-loader>
+
+        </div>
+        <div class="d-flex flex-row justify-content-between my-5  m-0">
+            <ngx-skeleton-loader
+                [theme]="{ width: '10rem', height: '2em','margin-right':'10px' }"></ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{ width: '5rem', height: '2em','margin-right':'10px' }"></ngx-skeleton-loader>
+            <ngx-skeleton-loader
+                [theme]="{ width: '10rem', height: '2em','margin-right':'10px' }"></ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{ width: '5rem', height: '2em' }"></ngx-skeleton-loader>
+
+        </div>
+    </div>
+
+</ng-template>

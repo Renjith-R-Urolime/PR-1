@@ -1,0 +1,654 @@
+<app-page-title></app-page-title>
+<app-error-popup *ngIf="detectedError"></app-error-popup>
+<div class="card bs-none p-4">
+    <app-breadcrumb></app-breadcrumb>
+    <ng-container *ngIf="!isLoading && !componentListLoading ; else skeleton">
+        <ng-container *ngIf="formSections.length>0">
+            <ng-container *ngFor="let section of formSections; let i=index">
+                <ng-container *ngIf="section.tabName === formData.tabName">
+                    <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                        <div class="ps-9">
+                            <ng-container *ngIf="!isLoading;">
+                                <div class="d-flex">
+                                    <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                    <div class="hr-side me-8 ms-2">
+                                        <hr class="mx-1">
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div class="card-body py-0">
+                            <form [formGroup]="contributionMasterForm">
+                                <div class="row">
+                                    <ng-container *ngFor="let label of formData.labels">
+                                        <div class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                                            <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                                <label *ngIf="label.type !== 'formDrawer' && label.type !== 'toggle'"
+                                                    class="form-label fs-6 mb-0" [ngClass]="{
+                                  'required': label?.required,
+                                  'invalid': sharedService.hasValidationErrors(label, submit, contributionMasterForm)
+                                }">{{
+                                                    label.labelName.alias.replace('Id','') | changeCase : "capital"
+                                                    }}</label>
+                                                <label *ngIf="label.type === 'formDrawer'" class="form-label fs-6 mt-7"
+                                                    [ngClass]="{
+                                                        'required': label?.required,
+                                                        'invalid': sharedService.hasValidationErrors(label, submit, contributionMasterForm)
+                                                      }">{{
+                                                    label.labelName.alias.replace('Id','') | changeCase : "capital"
+                                                    }}</label>
+
+
+
+                                                    <ng-container  *ngIf="label.type === 'toggle'">
+                                                        <app-input-text-field [formControlName]="label.labelName.defaultValue!"
+                                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                        [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, contributionMasterForm) }"
+                                                        [name]="label.labelName.alias!" [type]="label.type"
+                                                        [maxLength]="label?.maxLength"
+                                                        (inputValueChange)="onToggleChange($event,label.labelName.defaultValue!)"
+                                                        [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"></app-input-text-field>
+
+                                                    </ng-container>
+
+
+                                                    <ng-container *ngIf="label.type !== 'toggle'">
+                                                        <app-input-text-field [formControlName]="label.labelName.defaultValue!"
+                                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                        [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, contributionMasterForm) }"
+                                                        [name]="label.labelName.alias!" [type]="label.type"
+                                                        [maxLength]="label?.maxLength"
+                                                        [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"></app-input-text-field>
+                                                    </ng-container>
+
+
+                                                <ng-container *ngIf="label.type === 'dropdown'">
+                                                    <custom-ng-select
+                                                        [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, contributionMasterForm) }"
+                                                        [apiLink]="label.apiLink" [maxLimit]="2"
+                                                        [formGroup]="contributionMasterForm"
+                                                        [formControlName]="label.labelName.defaultValue!"
+                                                        [controlName]="label.labelName.defaultValue!"
+                                                        [patchData]="contributionMasterData[label.labelName.alias!] ? contributionMasterData[label.labelName.alias!] : undefined"
+                                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                        [multiple]="label.multiple">
+                                                    </custom-ng-select>
+                                                </ng-container>
+                                                <ng-container *ngIf="label.type === 'baseComponent'">
+                                                    <custom-ng-select
+                                                        [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, contributionMasterForm) }"
+                                                        [formGroup]="contributionMasterForm" [apiLink]="label.apiLink"
+                                                        [maxLimit]="2" [fetchCondition]="label.fetchCondition"
+                                                        [formControlName]="label.labelName.defaultValue!"
+                                                        [controlName]="label.labelName.defaultValue!"
+                                                        [patchData]="contributionMasterData[label.labelName.defaultValue!] ? contributionMasterData[label.labelName.defaultValue!] : undefined"
+                                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                        [multiple]="label.multiple">
+                                                    </custom-ng-select>
+                                                </ng-container>
+
+                                                <ng-container *ngIf="label.type === 'payrollComponent'">
+                                                    <custom-ng-select
+                                                        [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, contributionMasterForm) }"
+                                                        [apiLink]="label.apiLink" [maxLimit]="2"
+                                                        [formControlName]="label.labelName.defaultValue!"
+                                                        [patchData]="contributionMasterData['payrollComponent']"
+                                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                        [multiple]="label.multiple">
+                                                    </custom-ng-select>
+                                                </ng-container>
+                                                <ng-container class="align-items-center "
+                                                    *ngIf="label.type === 'formDrawer'">
+                                                    <ng-container
+                                                        *ngIf="label.labelName.defaultValue === 'classificationApplicability'">
+                                                        <button
+                                                            class="btn-sm bg-gray-100 pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                            (click)="assignTemplate(label.labelName.defaultValue,classificationApplicabilityTemplate,i,'classificationApplicability')"
+                                                            [id]="'kt_drawer_form_toggle'">
+                                                            <span span *ngIf="!classificationApplicabilityFormSaved"
+                                                                [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                            <span span *ngIf="classificationApplicabilityFormSaved"
+                                                                [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                        </button>
+                                                    </ng-container>
+                                                </ng-container>
+                                                <ng-container *ngFor="let validation of label.validations;">
+                                                    <ng-container [ngTemplateOutlet]="formError"
+                                                        [ngTemplateOutletContext]="{
+                                                          validation: validation.name,
+                                                          message: validation.message,
+                                                          control: contributionMasterForm.get(label.labelName.alias)
+                                                        }"></ng-container>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <!--  -->
+                                <div class="mb-4 me-9">
+                                    <table class="table m-0 border-gray-400 table-bordered table-rounded">
+                                        <thead class="bg-{{ theme }}-bright">
+                                            <tr class="fw-bold h-36px">
+                                                <th *ngFor="let tableHeader of tableMeta.labels"
+                                                    class="fs-7 text-center vertical-middle min-w-125px">
+                                                    {{tableHeader.labelName.alias | changeCase : "capital"}}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <!--  -->
+                                        <tbody [formArrayName]="'contributionSetupDetails'">
+                                            <tr class="bg-white h-50px"
+                                                *ngFor="let item of formFields?.controls; let i = index"
+                                                [formGroupName]="i">
+                                                <td class="vertical-middle">
+                                                    <div class="d-flex h-100 align-items-center justify-content-center">
+                                                        <ng-container>
+                                                            <custom-ng-select [formGroup]="contributionMasterForm"
+                                                                class="w-100" [jsonListName]="'nationality'"
+                                                                [formControlName]="'nationality'"
+                                                                [patchData]="contributionMasterForm?.value?.contributionSetupDetails?.[i]?.nationality"
+                                                                [controlName]="'nationality'"
+                                                                [placeholder]="'Select nationality'" [multiple]="false">
+                                                            </custom-ng-select>
+                                                        </ng-container>
+
+                                                    </div>
+                                                </td>
+                                                <!--  -->
+                                                <td class="vertical-middle">
+                                                    <div
+                                                        class="d-flex gap-2 h-100 align-items-center justify-content-center">
+                                                        <ng-container
+                                                            *ngIf="contributionMasterForm.value.defineRange!=true">
+                                                            <div class="w-180px">
+                                                                <app-input-text-field
+                                                                    [formControlName]="'employerContribution'"
+                                                                    [max]="100" [type]="'decimal'"
+                                                                    [placeholder]="'Enter Percentage'"></app-input-text-field>
+
+                                                            </div>
+
+                                                        </ng-container>
+                                                        <ng-container *ngIf="item?.get('viewMode')?.value">
+                                                            <div>{{ rowValues[i]?.employerContribution }}</div>
+                                                        </ng-container>
+                                                        <span>
+                                                            <button
+                                                                *ngIf="contributionMasterForm.value.defineRange!=true"
+                                                                class="btn-sm bg-gray-100 pt-0 pb-1 px-1  border border-1"
+                                                                (click)="assignTemplate('Define Break up employer',employerContributionDetails,i,'employer');"
+                                                                [id]="formDrawerId">
+                                                                <span span
+                                                                    *ngIf="!item?.get('editModeEmployerContribution')?.value"
+                                                                    [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                    class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                <span span
+                                                                    *ngIf="item?.get('editModeEmployerContribution')?.value"
+                                                                    [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                    class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                            </button>
+                                                            <button *ngIf="contributionMasterForm.value.defineRange"
+                                                                class="btn-sm btn-light pt-0 pb-1 px-1  border border-1 ms-1"
+                                                                (click)="newModel(employerContributionDefineRange ,'Define Range',i,'employer')">
+                                                                <span span *ngIf="!contributionMasterForm.get('contributionSetupDetails').at(i).get('employerContributionDefineRange')?.value[0]?.maximumYear"
+                                                                    [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                    class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                <span span *ngIf="contributionMasterForm.get('contributionSetupDetails').at(i).get('employerContributionDefineRange')?.value[0]?.maximumYear"
+                                                                    [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                    class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <!--  -->
+                                                <!--  -->
+                                                <td class="vertical-middle">
+                                                    <div
+                                                        class="d-flex gap-2 h-100 align-items-center justify-content-center">
+                                                        <ng-container *ngIf="!item?.get('viewMode')?.value; ">
+                                                            <div class="w-180px" *ngIf="contributionMasterForm.value.defineRange!=true">
+
+                                                                <app-input-text-field [max]="100"
+                                                                    [formControlName]="'employeeContribution'"
+                                                                    [type]="'decimal'"
+                                                                    [placeholder]="'Enter Percentage'"></app-input-text-field>
+                                                            </div>
+                                                            <span>
+                                                                <button
+                                                                    *ngIf="contributionMasterForm.value.defineRange!=true"
+                                                                    class="btn-sm pt-0 pb-1 px-1 bg-gray-100 border border-1"
+                                                                    (click)="assignTemplate('Define Break up',employeeContributionDetails,i,'employee');"
+                                                                    [id]="formDrawerId">
+                                                                    <span span
+                                                                        *ngIf="!item?.get('editModeEmployeeContribution')?.value"
+                                                                        [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                        class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                    <span span
+                                                                        *ngIf="item?.get('editModeEmployeeContribution')?.value"
+                                                                        [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                        class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                </button>
+
+                                                                <button *ngIf="contributionMasterForm.value.defineRange"
+                                                                    class="btn-sm btn-light pt-0 pb-1 px-1 border border-1 ms-1"
+                                                                    (click)="newModel(employeeContributionDefineRange ,'Define Range',i,'employee')">
+                                                                    <span span *ngIf="!contributionMasterForm.get('contributionSetupDetails').at(i).get('employeeContributionDefineRange')?.value[0]?.maximumYear"
+                                                                        [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                        class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                    <span span *ngIf="contributionMasterForm.get('contributionSetupDetails').at(i).get('employeeContributionDefineRange')?.value[0]?.maximumYear"
+                                                                        [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                        class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                </button>
+
+                                                            </span>
+                                                            <ng-container *ngIf="!item?.get('viewMode')?.value; ">
+                                                                <!-- <button (click)="setMode(true,i,'softSubmit')"
+                                                                    class="btn btn-icon btn-36px border-gray-500">
+                                                                    <span
+                                                                        [inlineSVG]="'./assets/media/icons/checkmark-outline.svg'"
+                                                                        class="svg-icon svg-icon-2 svg-icon-success py-1"></span>
+                                                                </button>
+                                                                <button
+                                                                    class="btn btn-icon btn-36px border-gray-500">
+                                                                    <span
+                                                                        [inlineSVG]="'./assets/media/icons/close-outline.svg'"
+                                                                        class="svg-icon svg-icon-2  svg-icon-danger py-1"
+                                                                        (click)="setMode(true,i,'cancel')"></span>
+                                                                </button> -->
+                                                                <button class="btn btn-icon btn-36px border-gray-500">
+                                                                    <span
+                                                                        [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                                                                        class="svg-icon svg-icon-2  svg-icon-danger py-1 "
+                                                                        (click)="setMode(true,i,'delete')"></span>
+                                                                </button>
+                                                            </ng-container>
+                                                            <div class="d-flex gap-2">
+                                                                <ng-container *ngIf="item?.get('viewMode')?.value;">
+                                                                    <a (click)="setMode(true,i,'edit')"
+                                                                        class="btn btn-icon text-hover-{{ theme }} btn-sm p-0"
+                                                                        (click)="onEdit(i)">
+                                                                        <span
+                                                                            [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                                                                            class="svg-icon svg-icon-2"></span>
+                                                                    </a>
+                                                                </ng-container>
+                                                            </div>
+                                                        </ng-container>
+                                                        <ng-container *ngIf="item?.get('viewMode')?.value">
+                                                            <div>
+                                                                <div>{{ rowValues[i]?.employeeContribution }}</div>
+                                                            </div>
+                                                        </ng-container>
+                                                        <ng-container *ngIf="item?.get('viewMode')?.value">
+                                                            <a (click)="setMode(false,i,'edit')"
+                                                                class="btn btn-icon text-hover-{{ theme }} btn-sm p-0">
+                                                                <span
+                                                                    [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                                                                    class="svg-icon svg-icon-2"></span>
+                                                            </a>
+                                                        </ng-container>
+                                                    </div>
+                                                </td>
+                                                <!--  -->
+                                            </tr>
+
+
+                                        </tbody>
+
+
+                                    </table>
+                                    <div *ngIf="!contributionSetupDetailsStatus" class="ms-3" class="warning_class">
+                                        All fields required*
+                                    </div>
+                                    <div *ngIf="!contributionSetupDetailsNationalityStatus" class="ms-3"
+                                        class="warning_class">
+                                        Nationality should be unique*
+                                    </div>
+                                    <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3"
+                                        (click)="addMore()">Add
+                                        More</button>
+                                </div>
+                                <!--  -->
+                            </form>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+        <div class="me-9">
+            <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+        </div>
+    </ng-container>
+</div>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+<ng-template #skeleton>
+    <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container ">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+<app-form-drawer [headerText]="headerText  | changeCase : 'capital'" [formTemplate]="formTemplate"
+    (isSaved)="onDrawerSave($event)" (isCanceled)="onDrawerCancel($event)" [buttonDisable]="saveButtonDisable">
+</app-form-drawer>
+<ng-template #classificationApplicabilityTemplate (isCanceled)="cancelFormSave($event)">
+    <form [formGroup]="classificationApplicabilityForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of classificationApplicabilityFormData.labels">
+                <div class="col-4 ">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+                    <ng-container *ngIf="label.type === 'subsidiary'">
+                        <custom-ng-select class="w-100" (onchange)="onSubsidiaryChange($event)"
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, contributionMasterForm) }"
+                            [apiLink]="label.apiLink" [maxLimit]="2" [formGroup]="contributionMasterForm"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [controlName]="label.labelName.defaultValue!"
+                            [patchData]="contributionMasterData[label.labelName.defaultValue!] ? contributionMasterData[label.labelName.defaultValue!] : undefined"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container *ngIf="label.type === 'dropdown'">
+                        <custom-ng-select class="w-100" [fetchCondition]="subsidiaryFilter"
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, contributionMasterForm) }"
+                            [apiLink]="classificationApplicabilityForm.value?.subsidiary === 'ALL' || subsidiaryFilter.length > 0 ? label.apiLink : ''"
+                            [maxLimit]="2" [formGroup]="contributionMasterForm"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [controlName]="label.labelName.defaultValue!"
+                            [patchData]="contributionMasterData[label.labelName.defaultValue!] ? contributionMasterData[label.labelName.defaultValue!] : undefined"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+<ng-template #employerContributionDetails (isCanceled)="cancelFormSave($event)">
+    <form [formGroup]="contributionMasterForm">
+        <div [formArrayName]="'contributionSetupDetails'">
+            <div [formGroupName]="indexValue">
+                <div [formArrayName]="'employerContributionDetails'">
+                    <div class="row mt-3">
+                        <ng-container>
+                            <div class="col-12 ">
+                                <label class="form-label fs-6 mb-0 float-start mt-1">Total Percentage</label>
+                                <input [disabled]="true" [type]="'number'" [value]="cumulativePercentage"
+                                    class="form-control form-control-sm w-auto float-start mx-1"
+                                    [placeholder]="'Enter Percentage'">
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="row">
+                        <label class="form-label fs-6 mb-0 mt-1 col-2">SL No</label>
+                        <label class="form-label fs-6 mb-0 mt-1 col-4">Name</label>
+                        <label class="form-label fs-6 mb-0 mt-1 col-6">Percentage</label>
+                    </div>
+                    <ng-container *ngFor="let item of  contributionMasterForm.get('contributionSetupDetails').at(indexValue).get('employerContributionDetails').controls
+                    ; let k=index">
+                        <div [formGroupName]="k" class="row mt-3">
+                            <div class="col-2 ">
+                                <app-input-text-field [isFieldDisabled]="true" [formControlName]="'sno'"
+                                    [type]="'number'"></app-input-text-field>
+                            </div>
+                            <div class="col-4 ">
+                                <app-input-text-field [formControlName]="'name'" [type]="'text'"
+                                    [placeholder]="'Enter Percentage'"></app-input-text-field>
+                            </div>
+                            <div class="col-6 d-flex align-items-center">
+                                <app-input-text-field [formControlName]="'percentage'" [type]="'decimal'" [max]="100"
+                                    [placeholder]="'Enter Percentage'"></app-input-text-field>
+                                <button class="btn btn-icon btn-36px border-gray-500 ms-1">
+                                    <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                                        class="svg-icon svg-icon-2 svg-icon-danger py-1"
+                                        (click)="deleteEmployerSubForm(indexValue, k)"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div *ngIf="percentageAlert" class="text-danger">
+                        <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                            class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Total is more than
+                        consolidated percentage
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row mt-3">
+        <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3 w-auto"
+            (click)="addMoreEmployerContributionSubForm(indexValue)">Add
+            More</button>
+    </div>
+</ng-template>
+<ng-template #employeeContributionDetails (isCanceled)="cancelFormSave($event)">
+    <form [formGroup]="contributionMasterForm">
+        <div [formArrayName]="'contributionSetupDetails'">
+            <div [formGroupName]="indexValue">
+                <div [formArrayName]="'employeeContributionDetails'">
+                    <div class="row mt-3">
+                        <ng-container>
+                            <div class="col-12 ">
+                                <label class="form-label fs-6 mb-0 float-start mt-1">Total Percentage</label>
+                                <input [disabled]="true" [type]="'number'" [value]="cumulativePercentage"
+                                    class="form-control form-control-sm w-auto float-start mx-1"
+                                    [placeholder]="'Enter Percentage'">
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="row">
+                        <label class="form-label fs-6 mb-0 mt-1 col-2">SL No</label>
+                        <label class="form-label fs-6 mb-0 mt-1 col-4">Name</label>
+                        <label class="form-label fs-6 mb-0 mt-1 col-6">Percentage</label>
+                    </div>
+                    <ng-container
+                        *ngFor="let item of contributionMasterForm.get('contributionSetupDetails').at(indexValue).get('employeeContributionDetails').controls; let k=index">
+                        <div [formGroupName]="k" class="row mt-3">
+                            <div class="col-2 ">
+                                <app-input-text-field [isFieldDisabled]="true" [formControlName]="'sno'"
+                                    [type]="'number'"></app-input-text-field>
+                            </div>
+                            <div class="col-4 ">
+                                <app-input-text-field [formControlName]="'name'" [type]="'text'"
+                                    [placeholder]="'Enter Percentage'"></app-input-text-field>
+                            </div>
+                            <div class="col-6 d-flex align-items-center">
+                                <app-input-text-field [formControlName]="'percentage'" [type]="'decimal'" [max]="100"
+                                    [placeholder]="'Enter Percentage'"></app-input-text-field>
+                                <button class="btn btn-icon btn-36px border-gray-500 ms-1">
+                                    <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                                        class="svg-icon svg-icon-2 svg-icon-danger py-1"
+                                        (click)="deleteEmployeeSubForm(indexValue, k)"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div *ngIf="percentageAlert" class="text-danger">
+                        <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                            class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Total is more than
+                        consolidated percentage
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row mt-3">
+        <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3 w-auto"
+            (click)="addMoreEmployeeContributionSubForm(indexValue)">Add More</button>
+    </div>
+</ng-template>
+
+
+<ng-template #employerContributionDefineRange let-modal>
+    <div class="mx-5">
+        <div class="modal-header py-4">
+            <h4 class="modal-title" id="modal-basic-title">{{headerText}}</h4>
+            <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+                (click)="handleCancelModalClick()">
+                <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+            </div>
+
+        </div>
+        <form [formGroup]="contributionMasterForm">
+            <div [formArrayName]="'contributionSetupDetails'">
+                <div [formGroupName]="indexValue">
+                    <div [formArrayName]="'employerContributionDefineRange'">
+
+                        <div class="row">
+                            <label class="form-label fs-6 mb-0 mt-1 col-3">Minimum Year</label>
+                            <label class="form-label fs-6 mb-0 mt-1 col-3">Maximum Year </label>
+                            <label class="form-label fs-6 mb-0 mt-1 col-3">Percentage</label>
+                            <label class="form-label fs-6 mb-0 mt-1 col-3"></label>
+                        </div>
+                        <ng-container *ngFor="let item of  contributionMasterForm.get('contributionSetupDetails').at(indexValue).get('employerContributionDefineRange').controls
+                    ; let k=index">
+                            <div [formGroupName]="k" class="row mt-3">
+                                <div class="col-3 ">
+
+                                    <app-input-text-field [max]="9999" [isFieldDisabled]="true"
+                                        [formControlName]="'minimumYear'" [placeholder]="'Enter Years'"
+                                        [type]="'number'"></app-input-text-field>
+                                </div>
+                                <div class="col-3 ">
+
+                                    <app-input-text-field [max]="8888" [maxLegth]="4" [formControlName]="'maximumYear'"
+                                        [placeholder]="'Enter Years'" [type]="'number'"></app-input-text-field>
+                                </div>
+
+                                <div class="col-3 ">
+                                    <app-input-text-field [max]="366" [formControlName]="'percentage'"
+                                        [placeholder]="'Enter Percentage'" [type]="'number'"></app-input-text-field>
+                                </div>
+                                <div class="col-3 d-flex align-items-center">
+                                    <button class="btn btn-icon btn-36px border-gray-500 ms-1"
+                                        (click)="removeEmployerDefineRange(k)">
+                                        <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                                            class="svg-icon svg-icon-2 svg-icon-danger py-1"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <div *ngIf="defineRangeAlert" class="text-danger">
+                            <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                                class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Error-Ensure all fields
+                            are
+                            entered and it satisfies the tiering model
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row mt-3">
+            <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3 w-auto"
+                (click)="addMoreEmployerContributionSubFormDefineRange(indexValue)">Add
+                More</button>
+        </div>
+        <div class="modal-footer py-3">
+            <app-progress-button (submitEvent)="onModelSubmit('employer')" [isProcessing]="isProcessing" [submitBtnText]="'Save'"
+                (cancelEvent)="handleCancelModalClick()" [modal]="true"></app-progress-button>
+        </div>
+    </div>
+
+</ng-template>
+
+
+
+
+
+
+
+
+
+
+
+<ng-template #employeeContributionDefineRange let-modal>
+    <div class="mx-5">
+        <div class="modal-header py-4">
+            <h4 class="modal-title" id="modal-basic-title">{{headerText}}</h4>
+            <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+                (click)="handleCancelModalClick()">
+                <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+            </div>
+
+        </div>
+        <form [formGroup]="contributionMasterForm">
+            <div [formArrayName]="'contributionSetupDetails'">
+                <div [formGroupName]="indexValue">
+                    <div [formArrayName]="'employeeContributionDefineRange'">
+
+                        <div class="row">
+                            <label class="form-label fs-6 mb-0 mt-1 col-3">Minimum Year</label>
+                            <label class="form-label fs-6 mb-0 mt-1 col-3">Maximum Year </label>
+                            <label class="form-label fs-6 mb-0 mt-1 col-3">Percentage</label>
+                            <label class="form-label fs-6 mb-0 mt-1 col-3"></label>
+                        </div>
+                        <ng-container *ngFor="let item of  contributionMasterForm.get('contributionSetupDetails').at(indexValue).get('employeeContributionDefineRange').controls
+                    ; let k=index">
+                            <div [formGroupName]="k" class="row mt-3">
+                                <div class="col-3 ">
+
+                                    <app-input-text-field [max]="9999" [isFieldDisabled]="true"
+                                        [formControlName]="'minimumYear'" [placeholder]="'Enter Years'"
+                                        [type]="'number'"></app-input-text-field>
+                                </div>
+                                <div class="col-3 ">
+
+                                    <app-input-text-field [max]="8888" [maxLegth]="4" [formControlName]="'maximumYear'"
+                                        [placeholder]="'Enter Years'" [type]="'number'"></app-input-text-field>
+                                </div>
+
+                                <div class="col-3 ">
+                                    <app-input-text-field [max]="366" [formControlName]="'percentage'"
+                                        [placeholder]="'Enter Percentage'" [type]="'number'"></app-input-text-field>
+                                </div>
+                                <div class="col-3 d-flex align-items-center">
+                                    <button class="btn btn-icon btn-36px border-gray-500 ms-1"
+                                        (click)="removeEmployeeDefineRange(k)">
+                                        <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                                            class="svg-icon svg-icon-2 svg-icon-danger py-1"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <div *ngIf="defineRangeAlert" class="text-danger">
+                            <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                                class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Error-Ensure all fields
+                            are
+                            entered and it satisfies the tiering model
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row mt-3">
+            <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3 w-auto"
+                (click)="addMoreEmployeeContributionSubFormDefineRange(indexValue)">Add
+                More</button>
+        </div>
+        <div class="modal-footer py-3">
+            <app-progress-button (submitEvent)="onModelSubmit('employee')" [isProcessing]="isProcessing" [submitBtnText]="'Save'"
+                (cancelEvent)="handleCancelModalClick()" [modal]="true"></app-progress-button>
+        </div>
+    </div>
+
+</ng-template>

@@ -1,0 +1,205 @@
+<app-page-title ></app-page-title>
+<!--<app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="!isLoading ; else skeleton">
+
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngIf="section.tabName === formData.tabName">
+              <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                <!--begin::Col-->
+                <div class="ps-9">
+                  <ng-container *ngIf="!isLoading;">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+
+
+                </div>
+                <div class="card-body py-0">
+                  <form [formGroup]="roleAndPermissionsForm">
+                    <div class="row">
+                      <ng-container *ngFor="let label of formData.labels">
+                        <div class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                          <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                          <label class="form-label fs-6 mb-0" [ngClass]="{
+                        'required': label?.required,
+                        'invalid': sharedService.hasValidationErrors(label, submit, roleAndPermissionsForm)
+                      }">{{
+                            label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                          <ng-container class="align-items-center" *ngIf="
+                              [
+                                'text',
+                                'password',
+                                'email',
+                                'number',
+                                'tel',
+                                'url'
+                              ].includes(label.type)
+                            ">
+                            <input *ngIf="label.type !== 'number'" [formControlName]="label.labelName.defaultValue!"
+                              [type]="label.type" class="form-control form-control-sm"
+                              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                              [ngClass]="{
+                              'invalid': sharedService.hasValidationErrors(label, submit, roleAndPermissionsForm)
+                            }" />
+                            <input *ngIf="label.type === 'number'"
+                              oninput="this.value = this.value.replace(/[^0-9]/g, '')" [min]="label.min"
+                              [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                              class="form-control form-control-sm max-w-90"
+                              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                              [ngClass]="{
+                              'invalid': sharedService.hasValidationErrors(label, submit, roleAndPermissionsForm)
+                            }" />
+                            <!-- <app-input-text-field [group]="roleAndPermissionsForm" [fieldData]="label"></app-input-text-field> -->
+
+                          </ng-container>
+                          <ng-container *ngIf="label.type === 'subsidary'">
+                            <custom-ng-select
+                            (onchange)="onSubsidiaryChange($event)"
+                              [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, roleAndPermissionsForm) }"
+                              [apiLink]="label.apiLink" [maxLimit]="2" [formGroup]="roleAndPermissionsForm"
+                              [formControlName]="label.labelName.defaultValue!"
+                              [controlName]="label.labelName.defaultValue!"
+                              [patchData]="rolesAndPermissionData[label.labelName.defaultValue!] ? rolesAndPermissionData[label.labelName.defaultValue!] : undefined"
+                              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                              [multiple]="label.multiple">
+                            </custom-ng-select>
+                          </ng-container>
+                          <ng-container *ngIf="label.type === 'dropdown'">
+                            <custom-ng-select
+                            [fetchCondition]="subsidiaryCondition"
+                              [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, roleAndPermissionsForm) }"
+                              [apiLink]="roleAndPermissionsForm.value?.subsidiary === 'ALL' || subsidiaryFilter.length > 0 ? label.apiLink : ''" [maxLimit]="2" [formGroup]="roleAndPermissionsForm"
+                              [formControlName]="label.labelName.defaultValue!"
+                              [controlName]="label.labelName.defaultValue!"
+                              [patchData]="rolesAndPermissionData[label.labelName.defaultValue!] ? rolesAndPermissionData[label.labelName.defaultValue!] : undefined"
+                              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                              [multiple]="label.multiple">
+                            </custom-ng-select>
+                          </ng-container>
+                          <ng-container *ngIf="label.type === 'employeePermission'">
+                            <custom-ng-select
+                              [patchData]="rolesAndPermissionData?.employeePermission"
+                              [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, roleAndPermissionsForm) }"
+                              [formControlName]="label.labelName.defaultValue!"
+                              [controlName]="label.labelName.defaultValue!"
+                              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                              [multiple]="false"
+                              [items]="permissionList">
+                            </custom-ng-select>
+                          </ng-container>
+                          <ng-container *ngIf="label.type === 'roleType'">
+                            <custom-ng-select
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, roleAndPermissionsForm) }"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="false"
+                            [patchData]="rolesAndPermissionData?.roleType"
+                            [items]="roleTypeList">
+                          </custom-ng-select>
+                          </ng-container>
+                          <ng-container *ngIf="label.type === 'parentRole'">
+                            <custom-ng-select
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, roleAndPermissionsForm) }"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="false"
+                            [patchData]="rolesAndPermissionData?.parentRole"
+                            [apiLink]="label.apiLink">
+                          </custom-ng-select>
+                          </ng-container>
+                          <ng-container *ngFor="let validation of label.validations;">
+                            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: validation.name,
+                          message: validation.message,
+                          control: roleAndPermissionsForm.get(label.labelName.defaultValue)
+                        }"></ng-container>
+                          </ng-container>
+                        </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </form>
+                  <div class="mb-4 me-9">
+                    <table class="table m-0 border-gray-400 table-bordered table-rounded">
+                      <thead class="bg-{{ theme }}-bright">
+                        <tr class="fw-bold h-40px">
+                          <th class="fs-7 vertical-middle min-w-150px">
+                            Particular
+                          </th>
+                          <th *ngFor="let right of rights" class="fs-7 text-center vertical-middle min-w-125px">
+                            {{right | changeCase : "capital"}}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody *ngFor="let row of permissionsConfig;let i=index">
+                        <tr class="bg-white" >
+                          <td>
+                            <div class="d-flex justify-content-between align-items-center">
+                              <p class="m-0  w-content fw-bold ">{{row.name}}</p>
+                            <a *ngIf="hideme[i]" (click)="changeValue(i)" class="p-2">
+                              <span [inlineSVG]="'./assets/media/icons/add-circle-outline.svg'"
+                                class="svg-icon svg-icon-2"></span>
+                            </a>
+                            <a *ngIf="!hideme[i]" (click)="changeValue(i)" class="p-2">
+                              <span [inlineSVG]="'./assets/media/icons/remove-circle-outline.svg'"
+                                class="svg-icon svg-icon-2"></span>
+                            </a>
+                            </div>
+                          </td>
+                          <td [attr.colspan]="rights.length"></td>
+                        </tr>
+                        <ng-container *ngIf="!hideme[i]">
+                          <tr class="bg-white" *ngFor="let subrow of row.permissions;let j=index">
+                            <td>
+                              <div class="h-100 d-flex justify-content-between align-items-center fs-6 ps-4">
+                               <p class="m-0"> {{subrow.name}}</p>
+                              </div>
+                            </td>
+                            <td *ngFor="let right of rights">
+                              <ng-container *ngIf="subrow[right]">
+                                <div class="d-flex justify-content-center  form-check-color-{{theme}} py-2">
+                                  <input (change)="onCheckChange($event,subrow.id, right)" [checked]="getCheckedValue(subrow.id, right)" class="h-20px w-20px rounded-half form-check-input" type="checkbox" [id]="right + '-' + j" />
+                              </div>
+                              </ng-container>
+
+                            </td>
+                          </tr>
+                        </ng-container>
+                        </tbody>
+                      </table>
+                    </div>
+
+
+                  </div>
+                </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <div class="me-9">
+          <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+        </div>
+      </ng-container>
+    </div>
+    <ng-template #skeleton>
+      <app-edit-form-skeleton></app-edit-form-skeleton>
+    </ng-template>
+    <ng-template #formError let-control="control" let-message="message" let-validation="validation">
+      <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container ">
+          <span role="alert" class="fv-help-block fs-9">
+            {{ message }}
+          </span>
+        </div>
+      </ng-container>
+    </ng-template>

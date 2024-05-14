@@ -1,0 +1,92 @@
+<ng-container *ngIf="responseFilterMeta">
+        <div class="d-flex gap-2">
+            <button class="border-1 {{selectedNames?.length > 0 ? 'bg-'+ theme : 'bg-white'}} {{sectionName === 'Report filter' ? 'btn btn-icon btn-30px bg-white btn-active-' + theme : 'border-gray-600 box-36px'}}"
+                    [id]="'kt_drawer_form_toggle'">
+                <ng-container *ngIf="sectionName !== 'Report filter'">
+                    <span [inlineSVG]="'./assets/media/icons/funnel-outline.svg'" class="svg-icon svg-icon-3 p-0 me-0"></span>
+                </ng-container>
+                <ng-container *ngIf="sectionName === 'Report filter'">
+                    <span class="svg-icon svg-icon-2" [inlineSVG]="'./assets/media/icons/funnel.svg'"></span>
+                </ng-container>
+            </button>
+        </div>
+
+    <app-form-drawer [headerText]="'Filter'" [buttonDisable]="submitDisabled" [formTemplate]="responseFilterTemplate" [responseFilterStyle]="true"
+        [saveButtonText]="'Apply'" [cancelButtonText]="'Cancel'" (isCanceled)="onDrawerCancel($event)"
+        (isSaved)="onDrawerSave($event)"></app-form-drawer>
+
+    <ng-template #responseFilterTemplate>
+        <div *ngIf="!loading">
+            <div *ngFor="let data of datas; let i = index" #listContainer>
+                <div class="accordion" [id]="'dropdown' + i">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" [id]="'heading'+i" (click)="scrollToTop()">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                [attr.data-bs-target]="'#collapse'+i" aria-expanded="false"
+                                [attr.aria-controls]="'collapse'+i">
+                                {{data.label}}<span *ngIf="data?.required" [ngClass]="{'text-danger': data.required}">*</span>
+                            </button>
+                        </h2>
+                        <div [id]="'collapse'+i" class="accordion-collapse collapse"
+                            [attr.aria-labelledby]="'heading'+i" [attr.data-bs-parent]="'#dropdown' + i">
+                            <div class="pt-2">
+                                <div *ngIf="data.type !== 'date'"
+                                    class="d-flex justify-content-between align-items-center ps-5">
+                                    <input (keydown)="onKeyDown($event)"
+                                        class="form-control light select-search w-60 line-clamp-1 h-24px" type="text"
+                                        placeholder="Search..." (input)="onSearch($event, i)" />
+
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2 text-gray-600">{{ data?.count || 0}} selected</span>
+                                        <div class="separator"></div>
+                                        <button class="btn btn-link ms-auto clear-button-style"
+                                            (click)="reset(i)">Clear</button>
+                                    </div>
+                                </div>
+                                <div style="max-height: 150px; overflow-y: auto; width: 94%; padding: 1px; margin-bottom: 3px; margin-left: 18px;"
+                                    *ngIf="data.type === 'date' && data.defaultValue === 'fromDate'">
+                                    <input-date-picker (dateSelected)="fromDateChange($event)">
+                                    </input-date-picker>
+                                </div>
+
+                                <div style="max-height: 150px; overflow-y: auto; width: 94%; padding: 1px; margin-bottom: 3px; margin-left: 18px;"
+                                    *ngIf="data.type === 'date' && data.defaultValue === 'toDate'">
+                                    <input-date-picker (dateSelected)="toDateChange($event)">
+                                    </input-date-picker>
+                                </div>
+
+                                <div class="checkbox-container overflow-y-auto">
+                                    <div *ngFor="let item of data.data; let j = index"
+                                        class="checkbox-item border-bottom">
+                                        <div *ngIf="data.type !== 'date'" class="form-check form-check-color-{{theme}}">
+                                            <input [(ngModel)]="item.selected" class="form-check-input mt-2 mb-3"
+                                                type="checkbox"
+                                                [disabled]="!data.multiple && atLeastOneSelected(data.data,j)"
+                                                (change)="onSelectChange($event,i,j,item)"  />
+                                            <label class="form-label fs-6 mt-2 mb-1" >
+                                                {{ item?.name | changeCase: 'capital' }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="card h-100 mt-5" *ngIf="loading">
+            <div class="card-body">
+                <ngx-skeleton-loader class="me-1" [theme]="{ height: '32px', width: '200px' }"></ngx-skeleton-loader>
+                <ngx-skeleton-loader [count]="1"
+                    class="text-gray-800 text-hover-{{ theme }} fs-2 fw-bolder cursor-pointer"></ngx-skeleton-loader>
+            </div>
+        </div>
+
+    </ng-template>
+</ng-container>

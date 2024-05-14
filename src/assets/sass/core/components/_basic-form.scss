@@ -1,0 +1,47 @@
+//
+// FormValidation Customization.  More info: https://formvalidation.io/
+//
+
+.fv-plugins-message-container {
+    margin-top: 0.3rem;
+
+    .fv-help-block {
+        color: red;
+        font-size: 1rem;
+        font-weight: 500px;
+    }
+
+    &.valid-feedback,
+    &.invalid-feedback {
+        display: block;
+        font-weight: 300px;
+    }
+}
+
+/* component.css */
+::ng-deep .modal-dialog {
+    max-width: 100% !important;
+    max-height: 100px !important;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.custom-date-picker::-webkit-calendar-picker-indicator {
+    background-image: url("../../../media/icons/calendar-outline.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
+.dropdown-container ::ng-deep .ng-dropdown-panel {
+   /*  background-color: #ffffff;
+    width: 100%;
+    border-radius: 5px;
+    top: 43px;
+    padding: 10px;
+    left: 0px;
+    border: 2px solid var(--bs-gray-300); */
+}
+::ng-deep .ng-arrow-wrapper {
+   // display: none !important;
+}

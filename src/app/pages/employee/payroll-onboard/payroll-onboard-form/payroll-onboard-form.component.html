@@ -1,0 +1,587 @@
+<app-page-title></app-page-title>
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <div class="mx-6">
+        <app-wizard-tabs [wizardData]="wizardData" (switchTab)="switchTab($event)" [isSwitchRequired]="isSwitchRequired"></app-wizard-tabs>
+      </div>
+      <ng-container *ngIf="!isLoading ; else skeleton">
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngFor="let form of formData">
+              <!-- <ng-container *ngIf="currentStep===1 && form.tabName==='step1'"> -->
+              <ng-container *ngIf="section.sectionName=== form.sectionName">
+                <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                  <!-- <ng-container *ngIf="!isLoading;"> -->
+                  <ng-container *ngIf="currentStep===1 && form.tabName==='step1'">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold ms-6">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="currentStep===2 && form.tabName==='step2'">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold ms-6">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+                  <div class="card-body py-0">
+                    <form [formGroup]="baseForm">
+                      <ng-container *ngIf="currentStep===1 && form.tabName==='step1'">
+                        <div class="row" [formGroupName]="form.formName">
+                          <ng-container *ngFor="let label of form.labels; let i = index">
+                            <ng-container *ngIf="label.sectionName === section.sectionName">
+                              <div class="col-lg-{{ label.col ? label.col : col }} mb-2 position-relative">
+                                <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                  <label *ngIf="label.labelName.defaultValue!== 'paymentId' && label.type !== 'employee'"
+                                    class="form-label fs-7 mb-0" [ngClass]="{'required': label?.required,
+                                'text-danger': next && baseForm.invalid}">{{
+                                    label.labelTransformationCancelled ? label.labelName.alias.replace('Id','') :
+                                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                  <label *ngIf="label.labelName.defaultValue==='paymentId' && showPaymentId
+                                " class="form-label fs-7 mb-0" [ngClass]="{'required': label?.required,
+                              'text-danger': next && baseForm.invalid}">{{idPrefix}} {{
+                                    label.labelTransformationCancelled ? label.labelName.alias.replace('Id','') :
+                                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                  <app-input-text-field class="mt-3" [name]="label.labelName.alias"
+                                    *ngIf="label.labelName.defaultValue!=='paymentId' && label.labelName.defaultValue !== 'probationPeriod' && label.labelName.defaultValue !== 'noticePeriod'"
+                                    [patchValue]="baseForm?.value[label.labelName.defaultValue!]"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, baseForm) }"
+                                    [type]="label.type"></app-input-text-field>
+                                  <app-input-text-field [name]="label.labelName.alias"
+                                    *ngIf="label.labelName.defaultValue === 'probationPeriod'" [max]="365" [min]="0"
+                                    [patchValue]="baseForm?.value[label.labelName.defaultValue!]"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, baseForm) }"
+                                    [type]="label.type"></app-input-text-field>
+                                  <app-input-text-field [name]="label.labelName.alias"
+                                    *ngIf="label.labelName.defaultValue === 'noticePeriod'" [max]="365" [min]="0"
+                                    [patchValue]="baseForm?.value[label.labelName.defaultValue!]"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, baseForm) }"
+                                    [type]="label.type"></app-input-text-field>
+                                  <!-- </ng-container> -->
+                                  <ng-container
+                                    class="align-items-center mb-4" *ngIf="label.type === 'employee'">
+                                    <div class="d-flex align-items-center flex-row">
+                                      <ng-container *ngIf="empSelected?.['image'] ; else noImage">
+                                        <div class="symbol">
+                                          <ng-container *ngIf="empSelected?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+                                            <ng-container *ngIf="imageData !=='null' ;else noImage">
+                                              <div class="symbol symbol-70px symbol-circle rounded-3" data-bs-toggle="tooltip"
+                                                data-bs-boundary="window" data-bs-placement="top" [title]="item?.['firstName']+' '+item?.['lastName']">
+                                                <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                                                  alt="profile" />
+                                              </div>
+                                            </ng-container>
+                                          </ng-container>
+                                        </div>
+                                      </ng-container>
+                                      <ng-template #noImage>
+                                      <div class="symbol symbol-70px symbol-circle ">
+                                          <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                                            {{empSelected["firstName"][0] | uppercase}}{{empSelected["lastName"][0] |
+                                            uppercase}}
+                                          </div>
+                                      </div>
+                                    </ng-template>
+                                      <div class="mx-9 d-flex flex-column align-items-center">
+                                        <div>
+                                          {{empSelected["employeeId"]}}
+                                        </div>
+                                        <label class=" form-label fs-7 ">
+                                          {{ empSelected["firstName"] | changeCase : "capital" }} {{
+                                          empSelected["lastName"] |
+                                          changeCase : "capital" }}
+                                        </label>
+                                      </div>
+                                      <div>
+                                      </div>
+                                    </div>
+
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                                    <!-- ngb-bootstrap datepicker -->
+                                    <div *ngIf="label.labelName.defaultValue !== 'dateOfConfirmation'">
+                                      <input-date-picker [formControlName]="label.labelName.defaultValue!"
+                                        [ngClass]="{'invalid':next && baseForm.invalid && (employeeInformationInvalidControls.length>0 ? employeeInformationInvalidControls.includes(label.labelName.defaultValue) : false) }"></input-date-picker>
+                                    </div>
+                                    <!-- -- -->
+                                    <input *ngIf="label.labelName.defaultValue === 'dateOfConfirmation'" readonly
+                                      type="text" [formControlName]="label.labelName.defaultValue!"
+                                      class="form-control form-control-sm "
+                                      [ngClass]="{'border-danger': next && baseForm.invalid && (employeeInformationInvalidControls.length>0 ? employeeInformationInvalidControls.includes(label.labelName.defaultValue) : false),'bg-secondary':label.labelName.defaultValue==='dateOfConfirmation'}">
+                                  </ng-container>
+                                  <ng-container class="align-items-center"
+                                    *ngIf="label.labelName.defaultValue === 'sponserSubsidiaryId'">
+                                    <custom-ng-select [apiLink]="label.apiLink" [patchData]="empSelected.subsidiary"
+                                      [fetchCondition]="subsidiaryCountryFilter"
+                                      [ngClass]="{ 'invalid': submit && baseForm.controls['employeeInformationForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center"
+                                    *ngIf="label.labelName.defaultValue === 'expenseSubsidiaryId'">
+                                    <custom-ng-select [apiLink]="label.apiLink" [patchData]="empSelected.subsidiary"
+                                      [fetchCondition]="subsidiaryCountryFilter"
+                                      [ngClass]="{ 'invalid': submit && baseForm.controls['employeeInformationForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'jurisdiction'">
+                                    <!-- baseForm.invalid && (employeeInformationInvalidControls.length>0 ? employeeInformationInvalidControls.includes(label.labelName.defaultValue) : false) -->
+                                    <custom-ng-select [items]="jurisdictionList"
+                                      [ngClass]="{ 'invalid': next && baseForm.controls['employeeInformationForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple" (onchange)="addJurisdictionToFilter($event)">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'accountType'">
+                                    <custom-ng-select [apiLink]="label.apiLink"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'employeeContract'">
+                                    <custom-ng-select [items]="employeeContractList" [required]="isContractRequired"
+                                      [ngClass]="{ 'invalid': next && baseForm.controls['employeeInformationForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'workCalendar'">
+                                    <custom-ng-select (onchange)="filterShift($event)"
+                                      [apiLink]="filterCondition.length>0?label.apiLink:''"
+                                      [fetchCondition]="filterCondition"
+                                      [ngClass]="{ 'invalid': next && baseForm.controls['employeeInformationForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'shift'">
+                                    <custom-ng-select [apiLink]="workCalendarCondition.length>0?label.apiLink:''"
+                                      [fetchCondition]="workCalendarCondition"
+                                      [ngClass]="{ 'invalid': next && baseForm.controls['employeeInformationForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'paymentMethod'">
+                                    <custom-ng-select (onchange)="checkIfPayementIdRequired($event)"
+                                      [apiLink]="label.apiLink" [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center"
+                                    *ngIf="label.labelName.defaultValue==='paymentId' && showPaymentId">
+                                    <input [formControlName]="label.labelName.defaultValue!" type="text"
+                                      class="form-control form-control-sm" [ngClass]="{ 'invalid': next && baseForm.controls['bankInformationForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " />
+                                  </ng-container>
+                                  <ng-container *ngFor="let validation of label.validations;">
+                                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                                    validation: validation.name, message: validation.message,control: baseForm.get('employeeInformationForm').get(label.labelName.defaultValue)
+                                                }">
+                                </ng-container>
+                              </ng-container>
+                                </div>
+
+                              </div>
+                            </ng-container>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="currentStep===2 && form.tabName==='step2'">
+                        <div class="row" [formGroupName]="form.formName">
+                          <ng-container *ngFor="let label of form.labels; let i = index">
+                            <ng-container *ngIf="label.sectionName === section.sectionName">
+                              <div class="col-lg-{{ label.col ? label.col : col }} mb-2"
+                                [ngClass]="{ 'mt-5': label.type === 'formDrawer' }">
+                                <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                  <label *ngIf="label.type !== 'checkbox' &&  label.type !== 'employee'"
+                                    class="form-label fs-7 mb-0" [ngClass]="{'required': label?.required,
+                                'text-danger': submit && baseForm.invalid}">{{
+                                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+                                  <app-input-text-field [name]="label.labelName.alias"
+                                    [patchValue]="baseForm?.value[label.labelName.defaultValue!]"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, baseForm) }"
+                                    [type]="label.type"></app-input-text-field>
+
+                                  <!-- </ng-container> -->
+
+                                  <ng-container class="align-items-center mb-4"
+                                    *ngIf="label.type === 'checkbox'">
+                                    <input [formControlName]="label.labelName.defaultValue!"
+                                      class="form-check-input form-check-input-sm mt-4  mb-3" type="checkbox">
+                                    <label class="mt-4 mx-3  mb-3 form-label fs-7 mb-1" [ngClass]="{'required': label?.required,
+                                'text-danger': submit && baseForm.invalid}">
+                                      {{
+                                      label.labelName.alias.replace('Id','') | changeCase : "capital" }}
+                                    </label>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'formDrawer'">
+                                    <ng-container *ngIf="label.labelName.defaultValue! === 'defineSalary'">
+                                      <button *ngIf="!defineSalarySaved"
+                                        class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue!,defineSalary)"><span span
+                                          [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                          class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                                      <button *ngIf="defineSalarySaved" id="kt_drawer_form_toggle"
+                                        class=" btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                        (click)="assignTemplate(label.labelName.defaultValue!,defineSalary)"><span span
+                                          [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                          class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                                    </ng-container>
+                                  </ng-container>
+                                  <ng-container
+                                  class="align-items-center mb-4" *ngIf="label.type === 'employee'">
+                                  <div class="d-flex align-items-center flex-row">
+                                    <ng-container *ngIf="empSelected?.['image'] ; else noImage">
+                                      <div class="symbol">
+                                        <ng-container *ngIf="empSelected?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+                                          <ng-container *ngIf="imageData !=='null' ;else noImage">
+                                            <div class="symbol symbol-70px symbol-circle rounded-3" data-bs-toggle="tooltip"
+                                              data-bs-boundary="window" data-bs-placement="top" [title]="item?.['firstName']+' '+item?.['lastName']">
+                                              <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                                                alt="profile" />
+                                            </div>
+                                          </ng-container>
+                                        </ng-container>
+                                      </div>
+                                    </ng-container>
+                                    <ng-template #noImage>
+                                    <div class="symbol symbol-70px symbol-circle ">
+                                        <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                                          {{empSelected["firstName"][0] | uppercase}}{{empSelected["lastName"][0] |
+                                          uppercase}}
+                                        </div>
+                                    </div>
+                                  </ng-template>
+                                    <div class="mx-9 d-flex flex-column align-items-center">
+                                      <div>
+                                        {{empSelected["employeeId"]}}
+                                      </div>
+                                      <label class=" form-label fs-7 ">
+                                        {{ empSelected["firstName"] | changeCase : "capital" }} {{
+                                        empSelected["lastName"] |
+                                        changeCase : "capital" }}
+                                      </label>
+                                    </div>
+                                    <div>
+                                    </div>
+                                  </div>
+                                </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                                    <input-date-picker [formControlName]="label.labelName.defaultValue!"
+                                    [ngClass]="{ 'invalid': next && baseForm.controls['employeeInformationForm'].controls[label.labelName.defaultValue].invalid}"></input-date-picker>
+
+                                    <!-- <div class="position-relative">
+                                      <input (input)="sharedService.formatDate($event)" class="form-control form-control-sm" data-type="date"
+                                      [ngClass]="{ 'invalid': next && baseForm.invalid && label.labelName.defaultValue === 'payrollOnboardDate'}"
+                                        formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD"
+                                        name="dp" ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                                        (click)="d.toggle()"
+                                        [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate"/>
+                                      <span class="date-icon" (click)="d.toggle()"></span>
+                                    </div> -->
+                                    <!-- -- -->
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'payrollCycle'">
+                                    <custom-ng-select [apiLink]="label.apiLink"
+                                    [ngClass]="{ 'invalid': submit && baseForm.controls['payrollSetupForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'contributionRules'">
+                                    <custom-ng-select [ngClass]="{ 'invalid': submit && baseForm.controls['payrollSetupForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [apiLink]="contributionRuleCondition.length>0 ? label.apiLink : ''"
+                                      [fetchCondition]="contributionRuleCondition"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'overtimeRules'">
+                                    <custom-ng-select [items]="overtimeRulesList"
+                                      (onchange)="filterOvertimeList($event)"
+                                      [disableMarkAllInMultiSelect]="'true'"
+                                      [fetchCondition]="filterCondition"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'ticketEligibility'">
+                                    <custom-ng-select [apiLink]="label.apiLink"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container class="align-items-center" *ngIf="label.type === 'leavePlan'">
+                                    <custom-ng-select [apiLink]="leavePlanCondition.length>0?label.apiLink:''"
+                                      [fetchCondition]="leavePlanCondition"
+                                      [ngClass]="{ 'invalid': submit && baseForm.controls['leaveSetupForm'].controls[label.labelName.defaultValue].invalid}"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                      [multiple]="label.multiple">
+                                    </custom-ng-select>
+                                  </ng-container>
+                                  <ng-container *ngFor="let validation of label.validations;">
+                                    <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                                  validation: validation.name, message: validation.message,control: baseForm.get(form.formName).get(label.labelName.defaultValue)
+                                              }">
+                                    </ng-container>
+                                  </ng-container>
+                                </div>
+                              </div>
+                            </ng-container>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                    </form>
+                  </div>
+                </div>
+              </ng-container>
+              <!-- </ng-container> -->
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <ng-container>
+          <div class=" p-md-0 ">
+            <div class="d-flex  flex-column flex-md-row justify-content-end gap-4">
+              <!-- <button *ngIf="currentStep>=1 && currentStep<=2" (click)="onSubmit()" type="button"
+              class="btn border border-2 border-{{theme}} btn-sm cursor-pointer">
+              Save as Draft
+            </button> -->
+              <button *ngIf="currentStep===1" (click)="onCancel()" type="button"
+                class="btn btn-sm cursor-pointer bg-{{theme}}-bright">
+                Cancel
+              </button>
+              <button *ngIf="currentStep>1 && currentStep<=2" (click)="onBack()" type="button"
+                class="btn btn-sm cursor-pointer bg-{{theme}}-bright">
+                Back
+              </button>
+              <button *ngIf="currentStep>=1 && currentStep<2" (click)="onNext()" type="button"
+                class="btn btn-sm cursor-pointer bg-{{theme}}">
+                Next
+              </button>
+              <ng-container *ngIf="currentStep===2">
+                <app-progress-button [isCancelBtn]="false" (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+              </ng-container>
+              <!-- <button type="submit" class="btn btn-{{theme}} btn-sm cursor-pointer" (click)="onSubmit()" [disabled]="isProcessing">
+                <ng-container *ngIf="!isProcessing">
+                  Submit
+                </ng-container>
+                <ng-container *ngIf="isProcessing">
+                  <div class="d-flex gap-3">
+                    Please wait
+                    <div class="spinner"></div>
+                  </div>
+                </ng-container>
+              </button> -->
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="(next || submit)&& control.hasError(validation)">
+    <div class="fv-plugins-message-container">
+      <span role="alert" class="fv-help-block fs-7 ">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
+<app-form-drawer [headerText]="headerText" [formTemplate]="formTemplate" (isSaved)="savePopupForm($event,headerText)"
+  (isCanceled)="cancelPopupForm($event,headerText)" [buttonDisable]="+componentTotal !== +baseForm.get('defineSalary').get('grossPay').value || baseForm.get('defineSalary').invalid " (click)="calculateTotal()">
+</app-form-drawer>
+
+<ng-template #defineSalary>
+  <form [formGroup]="baseForm">
+    <div class="row mt-4">
+      <ng-container *ngFor="let form of formData">
+        <ng-container *ngIf="form.formName==='defineSalary'">
+          <ng-container [formGroupName]="form.formName">
+            <ng-container *ngFor="let label of form.labels">
+              <div class="col-lg-{{ label.col ? label.col : col }} mb-2">
+                <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                  <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required,
+                'text-danger': next && baseForm.invalid}">{{
+                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                  <app-input-text-field [name]="label.labelName.alias"
+                    *ngIf="label.labelName.defaultValue!=='paymentId' && label.labelName.defaultValue !== 'probationPeriod'&& label.labelName.defaultValue !== 'grossPay'"
+                    [patchValue]="baseForm?.value[label.labelName.defaultValue!]"
+                    [formControlName]="label.labelName.defaultValue!"
+                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, baseForm) }"
+                    [type]="label.type"></app-input-text-field>
+
+                  <app-input-text-field [name]="label.labelName.alias" (inputValueChange)="totalGrossPay($event)"
+                    *ngIf="label.labelName.defaultValue==='grossPay'"
+                    [patchValue]="baseForm.value['defineSalary'].grossPay"
+                    [formControlName]="label.labelName.defaultValue!"
+                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, true, baseForm) }"
+                    [type]="label.type"></app-input-text-field>
+                  <!-- </ng-container> -->
+                  <ng-container class="align-items-center" *ngIf="label.type === 'salaryAllocation'">
+                    <custom-ng-select (onchange)="chooseComponentAllocationMethod($event)" [isSelectDisabled]="true"
+                      [jsonListName]="label.jsonListName"
+                      [ngClass]="{ 'invalid': submit && baseForm.controls['defineSalary'].controls[label.labelName.defaultValue].invalid}"
+                      [formControlName]="label.labelName.defaultValue!"
+                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                    </custom-ng-select>
+                  </ng-container>
+                  <ng-container class="align-items-center" *ngIf="label.type === 'expenseType'">
+                    <custom-ng-select 
+                      [apiLink]="label.apiLink"
+                      [ngClass]="{ 'invalid': submit && baseForm.controls['defineSalary'].controls[label.labelName.defaultValue].invalid}"
+                      [formControlName]="label.labelName.defaultValue!"
+                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') ">
+                    </custom-ng-select>
+                  </ng-container>
+                  <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                    <!-- ngb-bootstrap datepicker -->
+                    <ng-container *ngIf="label.labelName.defaultValue !== 'effectiveDate'">
+                      <input-date-picker [formControlName]="label.labelName.defaultValue!"
+                      [ngClass]="{ 'invalid': submit && baseForm.controls['defineSalary'].controls[label.labelName.defaultValue].invalid}"></input-date-picker>
+                      <!-- <div class="position-relative">
+                        <input (input)="sharedService.formatDate($event)" class="form-control form-control-sm" data-type="date"
+                          formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD" name="dp"
+                          ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                          [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, registerForm) }"
+                          (click)="d.toggle()"
+                          [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate"/>
+                        <span class="date-icon" (click)="d.toggle()"></span>
+                      </div> -->
+                    </ng-container>
+
+                    <input *ngIf="label.labelName.defaultValue === 'effectiveDate'" readonly type="text"
+                      [formControlName]="label.labelName.defaultValue!" class="form-control form-control-sm "
+                      [ngClass]="{ 'invalid': submit && baseForm.controls['defineSalary'].controls[label.labelName.defaultValue].invalid}">
+                    <!-- -- -->
+                  </ng-container>
+                </div>
+              </div>
+
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
+      </ng-container>
+    </div>
+  </form>
+  <div >
+    <table class="table large">
+      <thead>
+        <tr class="border-gray-500 border-left-0 border-right-0 border-top-2 border-bottom-2 m-0">
+          <th class="ps-2">Select</th>
+          <th>Component</th>
+          <th class="text-end pe-3">{{ isPercentageAllocation ? 'Rate(%)' : 'Rate' }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="vertical-middle" *ngFor="let component of componentItems; let i=index">
+          <td class="text-center ps-3">
+            <div class="form-check form-check-color-{{theme}}">
+              <input (change)="enableInputField($event,i,component)"
+                [disabled]="component?.disable && isPercentageAllocation" class="form-check-input h-25px w-25px ps-3"
+                type="checkbox" [id]="name" [checked]="component.checked" />
+            </div>
+          </td>
+          <td>
+            {{ component.label | changeCase : "capital" }}
+          </td>
+          <td class="max-w-50">
+            <app-input-text-field [max]="isPercentageAllocation?maxLimit:this.baseForm.value['defineSalary'].grossPay"
+              (inputValueChange)="calculateTotal($event,component)" [(ngModel)]="component.value"
+              [isFieldDisabled]="!component.checked || component?.disable" placeholder="xxxxx" [ngClass]="'text-end'"
+              type="number"></app-input-text-field>
+            <!-- <input type="number" (keyup)="calculateTotal(i)" [disabled]="!component.checked"
+               class="form-control form-control-sm "> -->
+          </td>
+        </tr>
+        <tr class="border-gray-500 border-left-0 border-right-0 border-top-2 border-bottom-2 m-0">
+          <td></td>
+          <td>
+            <p class="m-0 fw-bold">Total</p>
+          </td>
+          <td>
+            <p class="m-0 fw-bold text-end pe-3">{{componentTotal}}</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="!isPercentageAllocation && componentTotal > 0" class="border border-gray-300 rounded-1 bg-{{theme}}-bright">
+    <div *ngIf="componentTotal>baseForm.get('defineSalary').get('grossPay').value && saveButtonDisable" class="d-flex flex-column p-3 justify-content-between fs-8">
+      <div class="fs-6 fw-bold">Note:</div>
+      <div class="fs-6">Your Total {{componentTotal}} is more than Gross Pay</div>
+      <div  class="fs-6">Kindly Check</div>
+    </div>
+    <div *ngIf="componentTotal<baseForm.get('defineSalary').get('grossPay').value && saveButtonDisable" class="d-flex flex-column p-3 justify-content-between fs-8">
+      <div class="fs-6 fw-bold">Note:</div>
+      <div class="fs-6">Your Total {{componentTotal}} is less than Gross Pay</div>
+      <div  class="fs-6">Kindly Check</div>
+    </div>
+    <!-- <span *ngIf="componentTotal<baseForm.get('defineSalary').get('grossPay').value" class="text-danger fs-8">
+        is less than Gross</span> -->
+  </div>
+  <div *ngIf="this.baseForm.get('defineSalary').get('grossPay').value > 0 && componentTotal === 0"  class="border border-gray-300 rounded-1 bg-{{theme}}-bright">
+    <div class="d-flex flex-column p-3 justify-content-between fs-8" *ngIf="showNoComponentMsg">
+      <div class="fs-6 fw-bold">Note:</div>
+      <div class="fs-6">Component Split not Filled</div>
+      <div  class="fs-6">Kindly Check</div>
+    </div>
+  </div>
+  <div *ngIf="isPercentageAllocation && componentTotal > 0">
+
+    <span *ngIf="componentTotal>100" class="text-danger fs-8">
+      Total Amount <span class="fs-8">{{componentTotal}}</span> is more than Gross Percentage</span>
+    <!-- <span *ngIf="componentTotal<100" class="text-danger fs-8">
+        is less than Gross percentage</span> -->
+  </div>
+  <span *ngIf="baseForm.get('defineSalary').get('grossPay').value<minGrossPay" class="text-danger fs-6">
+    Gross amount can not be less than {{minGrossPay}}</span>
+</ng-template>
+
+<ng-template #skeleton>
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+
+<ng-template #customTemplate>
+  <div class="mb-2 d-flex gap-6 justify-content-center">
+    <button class="btn btn-{{theme}} btn-sm" (click)="goToList()">List</button>
+    <button class="btn btn-{{theme}} btn-sm" (click)="goToView()">View</button>
+    <button *ngIf="showContributionRegButton" class="btn btn-{{theme}} btn-sm" (click)="goToContributionRegister()">Register Contribution</button>
+  </div>
+</ng-template>

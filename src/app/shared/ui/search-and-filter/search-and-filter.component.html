@@ -1,0 +1,239 @@
+<div class="d-flex align-items-center">
+  <div class="d-flex flex-end gap-3 my-1 pe-3">
+    <div class="search-input-{{theme}} bg-white align-items-center border border-1 border-dark d-flex ps-3 rounded-1 min-w-225px h-36px">
+      <span [inlineSVG]="'./assets/media/icons/search-outline.svg'" class="svg-icon svg-icon-3"></span>
+      <input type="text" data-kt-permissions-table-filter="search"
+        class="border-0 w-100 p-1" placeholder="Enter atleast 3 characters..."
+        [(ngModel)]="searchText" name="searchText" (keyup)="applySearchFilter()" />
+    </div>
+    <ng-container *ngIf="multipleViewOptions">
+      <button class="btn btn-icon btn-36px bg-white btn-active-{{ theme }}" [ngClass]="{ 'active' : view === 'card' }" (click)="changeView('card')"><span [inlineSVG]="gridIcon"
+          class="svg-icon svg-icon-2"></span></button>
+      <button class="btn btn-icon btn-36px bg-white btn-active-{{ theme }}" [ngClass]="{ 'active' : view === 'table' }" (click)="changeView('table')"> <span [inlineSVG]="tableIcon"
+          class="svg-icon svg-icon-2"></span></button>
+    </ng-container>
+
+    <!-- <ng-container *ngIf="importExportOption">
+      <button class="btn btn-icon btn-36px bg-white btn-active-{{ theme }}" (click)="openModal('true')" data-kt-menu-trigger="click"
+      (click)="showExport=!showExport" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+        <img class="svg-icon svg-icon-2 invert" [src]="'./assets/media/icons/document-import-export-outline.svg'"/>
+      </button>
+      </ng-container> -->
+      <ng-container *ngIf="importExportOption">
+        <button class="btn btn-icon btn-36px bg-white btn-active-{{ theme }}" (click)="onOpenModal()"
+          data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+          <span class="svg-icon svg-icon-2" [inlineSVG]="'./assets/media/icons/document-import-export-outline.svg'" ></span>
+        </button>
+      </ng-container>
+      
+      
+    <ng-container *ngIf="filterButton===true">
+    <button class="btn btn-icon btn-36px bg-white btn-active-{{ theme }}" data-kt-menu-trigger="click"
+      (click)="filterToggle=!filterToggle" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+      <span class="svg-icon svg-icon-2" [inlineSVG]="'./assets/media/icons/funnel-outline.svg'"></span>
+    </button>
+    </ng-container>
+
+    <ng-container *ngIf="filterToggle">
+      <ng-container *ngTemplateOutlet="filterDropdown"></ng-container>
+    </ng-container>
+    <!-- <div *ngIf="showExport">
+      <ng-container *ngTemplateOutlet="fileUploadModal"></ng-container>
+    </div> -->
+    <ng-template [ngTemplateOutlet]="additionalOptions"></ng-template>
+  </div>
+  <div class="d-flex position-relative ms-auto gap-4">
+    <!-- <ng-container *ngIf="payrollBulkBtn">
+      <div class="me-0">
+        <button class="btn border border-primary">Bulk Edit</button>
+      </div>
+    </ng-container>
+    <div *ngIf="Dropdown" class="d-flex flex-row">
+      <ng-container>
+        <div class="me-2">
+          <ng-select placeholder="Designation">
+            <ng-option> </ng-option>
+          </ng-select>
+        </div>
+        <div class="me-2">
+          <ng-select placeholder="Date">
+            <ng-option> </ng-option>
+          </ng-select>
+        </div>
+        <div>
+          <ng-select placeholder="Department">
+            <ng-option> </ng-option>
+          </ng-select>
+        </div>
+      </ng-container>
+    </div> -->
+  </div>
+</div>
+<ng-template #filterDropdown>
+  <div class="mt-2 position-absolute bg-white  z-index-4 shadow rounded d-flex flex-column top-55px max-h-500px" appOutsideClick
+    [filterToggle]="filterToggle" (toggleFilter)="filterToggle=!filterToggle">
+    <div class="d-flex">
+      <!-- filter options -->
+      <div>
+        <div class="px-7 py-5">
+          <div class="fs-5 text-dark fw-bolder">Filter Options</div>
+        </div>
+        <div class="separator border-gray-200"></div>
+        <div class="px-7 py-5">
+          <div class="mb-10">
+            <label class="form-label fw-bold">Status:</label>
+            <div>
+              <select class="form-select form-select-solid" (change)="logSelectedValue($event)" data-kt-select2="true"
+                data-placeholder="Select option" data-allow-clear="true">
+                <option value="1" disabled selected>--select the options--</option>
+                <option value="2">Approved</option>
+                <option value="3">Pending</option>
+                <option value="4">In Process</option>
+                <option value="5">Rejected</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-10">
+            <label class="form-label fw-bold">Member Type:</label>
+            <div class="d-flex">
+              <label
+                class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}} me-5">
+                <input class="form-check-input " type="checkbox" value="Author" (change)="memberUpdate($event)" />
+                <span class="form-check-label">Author</span>
+              </label>
+              <label class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+                <input class="form-check-input" type="checkbox" value="Customer" defaultChecked="{true}"
+                  (change)="memberUpdate($event)" />
+                <span class="form-check-label">Customer</span>
+              </label>
+            </div>
+          </div>
+          <div class="mb-10">
+            <label class="form-label fw-bold">Notifications:</label>
+            <div
+              class="
+                    form-check form-switch form-switch-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+              <input class="form-check-input" type="checkbox" value="toggle" name="notifications"
+                defaultChecked="{true}" (change)="getNotificationStatus($event)" />
+              <label class="form-check-label">Enabled</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- show/hide column -->
+      <div *ngIf="headers$">
+        <div class="px-7 py-5">
+          <div class="fs-5 text-dark fw-bolder">Show / Hide Columns</div>
+        </div>
+        <div class="separator border-gray-200"></div>
+        <div class="max-h-350px overflow-auto">
+          <div *ngFor="let header of headers$; let i=index" class="d-flex">
+            <div class="px-7 py-5 border-start border-secondary border-1">
+              <label for="columnHide"
+                class="min-w-200px form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+                <input id="formchecked{{i}}" class="form-check-input" type="checkbox" value="" defaultChecked="{true}"
+                  (click)="checked(i)" [checked]="isChecked$[i]" [disabled]="onDisable(header)" />
+                <span class="form-check-label">{{header | changeCase:'capital'}}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-around">
+      <div class="py-5">
+        <button type="reset" class="btn btn-sm btn-light btn-active-light-{{theme}} me-2" data-kt-menu-dismiss="true">
+          Reset
+        </button>
+        <button type="submit" class="btn btn-sm btn-{{theme}}" data-kt-menu-dismiss="true"
+          (click)="filterToggle=!filterToggle">
+          Apply
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #filterDropdown>
+  <div class="mt-2 position-absolute bg-white  z-index-4 shadow rounded d-flex flex-column top-55px max-h-500px" appOutsideClick
+    [filterToggle]="filterToggle" (toggleFilter)="filterToggle=!filterToggle">
+    <div class="d-flex">
+      <!-- filter options -->
+      <div>
+        <div class="px-7 py-5">
+          <div class="fs-5 text-dark fw-bolder">Filter Options</div>
+        </div>
+        <div class="separator border-gray-200"></div>
+        <div class="px-7 py-5">
+          <div class="mb-10">
+            <label class="form-label fw-bold">Status:</label>
+            <div>
+              <select class="form-select form-select-solid" (change)="logSelectedValue($event)" data-kt-select2="true"
+                data-placeholder="Select option" data-allow-clear="true">
+                <option value="1" disabled selected>--select the options--</option>
+                <option value="2">Approved</option>
+                <option value="3">Pending</option>
+                <option value="4">In Process</option>
+                <option value="5">Rejected</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-10">
+            <label class="form-label fw-bold">Member Type:</label>
+            <div class="d-flex">
+              <label
+                class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}} me-5">
+                <input class="form-check-input " type="checkbox" value="Author" (change)="memberUpdate($event)" />
+                <span class="form-check-label">Author</span>
+              </label>
+              <label class="form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+                <input class="form-check-input" type="checkbox" value="Customer" defaultChecked="{true}"
+                  (change)="memberUpdate($event)" />
+                <span class="form-check-label">Customer</span>
+              </label>
+            </div>
+          </div>
+          <div class="mb-10">
+            <label class="form-label fw-bold">Notifications:</label>
+            <div
+              class="
+                    form-check form-switch form-switch-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+              <input class="form-check-input" type="checkbox" value="toggle" name="notifications"
+                defaultChecked="{true}" (change)="getNotificationStatus($event)" />
+              <label class="form-check-label">Enabled</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- show/hide column -->
+      <div *ngIf="headers$">
+        <div class="px-7 py-5">
+          <div class="fs-5 text-dark fw-bolder">Show / Hide Columns</div>
+        </div>
+        <div class="separator border-gray-200"></div>
+        <div class="max-h-350px overflow-auto">
+          <div *ngFor="let header of headers$; let i=index" class="d-flex">
+            <div class="px-7 py-5 border-start border-secondary border-1">
+              <label for="columnHide"
+                class="min-w-200px form-check form-check-sm form-check-custom form-check-solid form-check-color-{{theme}}">
+                <input id="formchecked{{i}}" class="form-check-input" type="checkbox" value="" defaultChecked="{true}"
+                  (click)="checked(i)" [checked]="isChecked$[i]" [disabled]="onDisable(header)" />
+                <span class="form-check-label">{{header | changeCase:'capital'}}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-around">
+      <div class="py-5">
+        <button type="reset" class="btn btn-sm btn-light btn-active-light-{{theme}} me-2" data-kt-menu-dismiss="true">
+          Reset
+        </button>
+        <button type="submit" class="btn btn-sm btn-{{theme}}" data-kt-menu-dismiss="true"
+          (click)="filterToggle=!filterToggle">
+          Apply
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

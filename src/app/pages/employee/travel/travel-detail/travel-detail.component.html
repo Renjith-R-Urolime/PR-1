@@ -1,0 +1,8 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true" [wizardData]="wizardData"
+    [formData]="formData" [formSection]="formSection"></app-page-title>
+
+<ng-container *ngFor="let deatilsCard of detailsCardList">
+    <details-card  [detailsCardData]="deatilsCard"></details-card>
+</ng-container>
+
+<!-- <details-card [detailsCard]="titleCard"></details-card> -->

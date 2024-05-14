@@ -1,0 +1,67 @@
+<app-page-title
+  [isEditDeleteBtn]="true"
+  [isGoBack]="true"
+></app-page-title>
+
+<div class="py-1 d-flex flex-row gap-4">
+ <div class="w-100">
+  <details-card
+  [detailsCardData]="detailsCardData"
+>
+<ng-template custom-element let-key="key$" let-data="data$">
+  <!-- Text -->
+  <ng-container *ngIf="key?.type==='text'">
+    <div class="fw-medium fs-6 text-dark px-0 mt-1" >
+      <ng-container *ngIf="data?.[key?.labelName.defaultValue]; else noInfo">
+      {{ data?.[key?.labelName.defaultValue] }}
+      </ng-container>
+      <ng-template #noInfo>
+        <div class="fw-medium fs-6 text-gray-300 px-0 mt-1">
+          Not Availaible
+        </div>
+      </ng-template>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="key?.type==='time'">
+    <div class="fw-medium fs-6 text-dark px-0 mt-1" >
+      <ng-container *ngIf="data?.[key?.labelName.defaultValue]; else noInfo">
+        <div class=" w-50px h-40px border-2 border-{{theme}} rounded-1 align-items-center pt-2 ps-1 fs-6">
+          <div> {{ data?.[key?.labelName.defaultValue] }}</div>
+        </div>
+      </ng-container>
+      <ng-template #noInfo>
+        <div class="fw-medium fs-6 text-gray-300 px-0 mt-1">
+          Not Availaible
+        </div>
+      </ng-template>
+    </div>
+  </ng-container>
+  </ng-template>
+</details-card>
+ </div>
+  <div class="card w-70 p-4">
+     <div class="d-flex align-items-center border-0">
+        <div class="fs-3 fw-bold">Location Information</div>
+        <div class="hr-side mt-3 ms-2">
+          <hr>
+        </div>
+      </div>
+    <div class="d-flex flex-column justify-content-center align-item-center">
+      <div>
+        <!-- <agm-map class="agm" [latitude]="Latitude" [longitude]="Longitude">
+          <agm-marker [latitude]="Latitude" [longitude]="Longitude"></agm-marker>
+        </agm-map> -->
+      </div>
+      <div class="row">
+        <ng-container *ngFor="let details of mapDetails">
+          <div class="col-md-6 col-lg-6 d-flex flex-column align-item-center justify-content-center p-4">
+            <div>{{details.name}}</div>
+            <div class="text-gray-300">{{details.value}}</div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-tab-data-table  [tabsMeta]="attendanceTabsMeta"></app-tab-data-table>

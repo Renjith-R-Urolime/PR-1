@@ -1,0 +1,135 @@
+<ng-container class="z-index-4" *ngIf="showEmployee" [ngTemplateOutlet]="( popupDropdown )"
+    [ngTemplateOutletContext]="{ data$:value}">
+</ng-container>
+
+
+
+<ng-template #popupDropdown let-data="data$">
+    <div class="card bs-dropdown p-3 position-absolute z-index-4 d-flex justify-content-around border-1 top-100 mt-3">
+        <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }} position-absolute right-0 top-0 m-1"
+            (click)="showEmployee=false">
+            <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+        </div>
+        <div class="d-flex flex-column justify-content-start m-1">
+            <div class="d-flex mb-2 mt-5 gap-2">
+                <div class="mb-3">
+                    <div class="symbol symbol-50px symbol-circle ">
+                        <ng-container *ngIf="data?.['image']; else noImage">
+                            <ng-container *ngIf="data?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+                                <ng-container *ngIf="imageData !=='null' ;else noImage">
+                                    <div class="symbol symbol-circle rounded-3" data-bs-toggle="tooltip"
+                                        data-bs-boundary="window" data-bs-placement="top"
+                                        [title]="data?.['firstName']+' '+data?.['lastName']">
+                                        <img class="object-fit-contain object-position-top" [src]="imageData"
+                                            [lazyLoad]="imageData" alt="profile" />
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+
+                        <ng-template #noImage>
+                            <div class="symbol-label fw-bolder symbol-color-size fs-5 bg-{{theme}}">
+                                {{data?.['firstName']?.[0] | changeCase : "capital"}}{{data?.['lastName']?.[0] |
+                                changeCase :
+                                "capital"}}
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="mx-4 d-flex flex-column gap-1">
+                    <div class="fs-5 text-nowrap">
+                        {{data?.['employeeId']}}: {{ data?.['firstName'] | changeCase : "capital" }} {{
+                        data?.['lastName'] |
+                        changeCase : "capital" }}
+                    </div>
+                    <div class="fs-6 text-gray-500">
+                        {{ data?.['designation']?.['name'] | changeCase : "capital" }}
+                    </div>
+                    <div class="d-grid gap-2 col-12 mx-auto">
+                        <a (click)="onViewEmployee(data?.id)" type="button"
+                            class="btn btn-lg btn-block btn-outline btn-{{theme}}">View Profile</a>
+                    </div>
+                </div>
+                <div>
+                </div>
+            </div>
+            <div class="d-flex flex-column gap-2">
+                <div class="d-flex flex-row fs-6 gap-9">
+                    <div class="d-flex flex-row justify-content-start">
+                        <div class="text-gray-500">Reporting To:</div>
+                    </div>
+                    <!-- class="col-md-6" -->
+                    <div class="d-flex flex-row justify-content-start">
+                        <div>
+                            <ng-container *ngIf="data?.supervisor?.image ; else noImageInPopup">
+                                <ng-container
+                                    *ngIf="data?.supervisor?.image | s3FileFetch | async as imageData; else: imageLoader">
+                                    <ng-container *ngIf="imageData !=='null' ;else noImageInPopup">
+                                        <div class="symbol symbol-circle symbol-22px rounded-3  bg-{{theme}}"
+                                            data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top">
+                                            <img class="object-fit-contain object-position-top" [src]="imageData"
+                                                [lazyLoad]="imageData" alt="profile" />
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+
+                            <!-- logo starts here -->
+                            <ng-template #noImageInPopup>
+                                <div class="symbol symbol-22px symbol-circle ">
+                                    <ng-container>
+                                        <div *ngIf="data?.supervisor"
+                                            class="symbol-label fs-9 symbol-color bg-{{theme}}">
+                                            {{data?.supervisor?.firstName?.[0] |
+                                            uppercase}}{{data?.supervisor?.lastName?.[0] | uppercase}}
+                                        </div>
+                                        <div *ngIf="!data?.supervisor" class="text-gray-500">
+                                            Not Available
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </ng-template>
+                            <!-- logo ends here -->
+                            <span class="text-nowrap"> {{data?.supervisor?.['firstName'] | changeCase : "capital"}}
+                                {{data?.supervisor?.['lastName'] | changeCase :
+                                "capital"}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row fs-6  gap-11">
+                    <div class="d-flex-flex-row justify-content-start">
+                        <div class="text-gray-500 ">Work Email:</div>
+                    </div>
+                    <div class="d-flex-flex-row justify-content-start">
+                        <div>
+                            <div *ngIf="data?.workEmail">{{data?.workEmail}}</div>
+                            <div *ngIf="!data?.workEmail" class="text-gray-500">Not Available</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row fs-6  gap-4">
+                    <div class="d-flex-flex-row justify-content-start">
+                        <div class="text-gray-500 ">Social Connect:</div>
+                    </div>
+                    <div class="d-flex-flex-row justify-content-start">
+                        <div>
+                            <a href="https://www.linkedin.com/" target="_blank">
+                                <span class="svg-icon svg-icon-2x me-2"
+                                    [inlineSVG]="'./assets/media/icons/linkedin.svg'"></span>
+                            </a>
+                            <a href="https://www.twitter.com/" target="_blank">
+                                <span class="svg-icon svg-icon-2x me-2"
+                                    [inlineSVG]="'./assets/media/icons/twitterx.svg'"></span>
+                            </a>
+                            <a href="https://www.gmail.com/" target="_blank"
+                                (click)="openDefaultMailBox($event,data?.workEmail)">
+                                <span class="svg-icon svg-icon-2x me-2"
+                                    [inlineSVG]="'./assets/media/icons/mail-outline.svg'"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

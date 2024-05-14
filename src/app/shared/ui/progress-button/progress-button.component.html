@@ -1,0 +1,23 @@
+<div class=" p-md-0 ">
+  <div class="d-flex flex-column flex-md-row justify-content-end gap-4">
+    <ng-container *ngIf="isDraftBtn">
+      <button class="btn btn-secondary">Save as Draft</button>
+    </ng-container>
+
+    <button type="button" *ngIf="isCancelBtn" class="btn cursor-pointer btn-secondary" (click)="goCancel()">
+      {{cancelBtnText}}
+    </button>
+
+    <button type="button" class="btn btn-{{theme}}  cursor-pointer" [disabled]="isProcessing || isSubmitBtnDisabled" (click)="onSubmit()">
+      <ng-container *ngIf="!isProcessing">
+        {{submitBtnText}}
+      </ng-container>
+      <ng-container *ngIf="isProcessing">
+        <div class="d-flex gap-3">
+          Please wait
+          <div class="spinner"></div>
+        </div>
+      </ng-container>
+    </button>
+  </div>
+</div>

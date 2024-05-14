@@ -1,0 +1,324 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+ <details-card [apiLink]="'/plan'" [detailsCardData]="detailsCardData">
+   <ng-template custom-element let-data="data$" let-key="key$">
+    <ng-container *ngIf="key.templateName === 'subsidiary'">
+      <ng-container *ngIf="data?.jurisdiction?.subsidiary?.length > 0; else noInfo">
+        <div class="gap-3">
+          <ng-container *ngFor="let entity of data?.jurisdiction?.subsidiary ; let i = index">
+            <ng-container *ngIf="(key.showMore|| i < 3)">
+              <a (click)="onRouterNavigate(key?.baseUrl, entity.id)"
+                class="text-hover-{{ theme }} fw-medium fs-6 text-dark px-0 mt-1 cursor-pointer">
+                {{ entity?.name }}
+                <span *ngIf="i !== data?.jurisdiction?.subsidiary?.length - 1">,</span>
+              </a> </ng-container>
+          </ng-container>
+          <ng-container *ngIf="!key.showMore && data?.jurisdiction?.subsidiary?.length > 3">
+            <span class="text-{{theme}}" (click)="key.showMore = true">
+              +{{ data?.jurisdiction?.subsidiary?.length - 3 }} <span>more</span>
+            </span>
+          </ng-container>
+          <ng-container *ngIf="key.showMore ">
+            <span (click)="key.showMore = false" class="text-{{theme}}">less</span>  
+          </ng-container>
+        </div>
+        <!-- {{getSubsidiary(data?.jurisdiction?.subsidiary)}} -->
+      </ng-container>
+  </ng-container>
+    <ng-template #noInfo>
+      <div class="fw-medium fs-6 text-gray-400 px-0 mt-1">
+        Not Availaible
+      </div>
+    </ng-template>
+    </ng-template>
+
+  <ng-template additional-view-temp let-item="data$">
+    <ng-container *ngIf="item?.leaveTypes?.length>0">
+    <div class="pb-2 mt-5 card">
+      <div class="my-0 p-0 card-body rounded-4">
+        <div class="d-flex h-55px position-relative nav-line">
+          <ul #listContainer class="nav  nav-stretch px-9 flex-nowrap overflow-hidden" style="width: 94%; margin-bottom: -4px;">
+            <ng-container *ngFor="let tab of item?.leaveTypes; let i = index;">
+              <li class="nav-item w-fit-content text-nowrap h-100">
+                <a class="nav-link nav-link-{{theme}} cursor-pointer" [ngClass]="selectedIndex === i ? 'active' : ''"
+            (click)="onTabClick(i)">
+            {{tab.name}}
+                </a>
+            </li>
+            </ng-container>
+            <hr class="hr-bottom"  />
+        </ul>
+        <div class="align-content-center align-items-center d-flex gap-2 justify-content-end pe-3 position-absolute pt-1 right-0 rounded w-150px" style="background-image: linear-gradient(to right, transparent 0%, white 30%);top: 3px;">
+          <button (click)="scrollLeft()" class="bg-gray-200 bg-purple border-0 h-40px rounded-circle w-40px btn-outline-h-{{theme}}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 14 15" fill="none"
+                  class="arrow-svg">
+                  <path d="M8.89062 11.439L5.11062 7.65896L8.89062 3.87896" stroke="#B5B5C3"
+                      stroke-linecap="round" fill="none" stroke-linejoin="round" />
+              </svg>
+          </button>
+          <button (click)="scrollRight()" class="bg-gray-200 bg-purple border-0 h-40px rounded-circle w-40px btn-outline-h-{{theme}}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 14 15" fill="none"
+                  class="arrow-svg">
+                  <path d="M5.10938 3.88135L8.88938 7.66135L5.10938 11.4413" stroke="#B5B5C3"
+                      stroke-linecap="round" fill="none" stroke-linejoin="round" />
+              </svg>
+          </button>
+      </div>
+         <!--  <ng-container *ngFor="let tab of item; let i = index;">
+              <div class="btn-group" role="group">
+                <button type="button"
+                    class="btn btn-active-{{theme}} rounded-0 "
+                    (click)="onTabClick(i)"
+                   >
+                    {{tab.name}}
+                </button>
+            </div>
+          </ng-container> -->
+      </div>
+        <ng-container >
+          <div class="pb-2">
+            <div class="my-0 p-0 rounded-4">
+              <ng-container *ngFor="let tabMeta of typeMeta; let i=index">
+                <div class="card-header d-flex align-items-center border-0" [ngClass]="{ 'mt-3' : i === 0 }" >
+                    <div class="fs-3 fw-bold">{{tabMeta.name}}</div>
+                    <div *ngIf="i !== 0" class="hr-side mt-3 ms-2">
+                      <hr>
+                    </div>
+                </div>
+                <div class="row gy-5 px-6 m-0 mt-1">
+                  <div class="col-4 m-0 mb-3" *ngFor="let key of tabMeta?.labels; let j = index;">
+                    <div class="d-flex" [ngClass]=" key.type === 'applicableForEncashment' || key.type === 'applicableForFullFinal' || key.type === 'entitlementPerPeriod' ? 'h-100 align-items-center gap-3' : 'flex-column'" >
+                      <!-- Key -->
+                      <div class="text-muted px-0" *ngIf="key.type !== 'checkbox'">
+                        {{key.labelName.alias | changeCase : "capital"}}
+                      </div>
+                      <!-- Value -->
+                      <ng-container *ngIf="tabMeta.name === 'Leave Type Information'">
+                      <ng-container *ngIf="item?.leaveTypes[selectedIndex][key.labelName.defaultValue] !== null; else noInfo">
+                        <ng-container [ngSwitch]="key.type">
+                          <ng-container *ngSwitchCase="'checkbox'">
+                            <input type="checkbox" [checked]="item?.leaveTypes[selectedIndex][key.labelName.defaultValue]">
+                          </ng-container>
+                          <ng-container *ngSwitchCase="'deductionValue'">
+                            <ng-container *ngIf="item?.leaveTypes[selectedIndex]?.leavePayType?.id === '1'">
+                              {{ item?.leaveTypes[selectedIndex]?.incrementValue }}
+                            </ng-container>
+                            <ng-container *ngIf="item?.leaveTypes[selectedIndex]?.leavePayType?.id !== '1'">
+                              {{ item?.leaveTypes[selectedIndex]?.decrementValue }}
+                            </ng-container>
+                          </ng-container>
+                          <ng-container *ngSwitchDefault>
+                            <div class="fw-medium fs-6 text-dark px-0 mt-1">
+                              {{ item?.leaveTypes[selectedIndex][key.labelName.defaultValue] | dataValue : key.labelName.defaultValue | async }}
+                            </div>
+                          </ng-container>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                    <ng-container *ngIf="(tabMeta.name === 'Leave Rule 1 Information' || tabMeta.name === 'Leave Rule 2 Information')">
+                      <ng-container *ngIf="item?.leaveTypes[selectedIndex]?.leaveRule !== '' && item?.leaveTypes[selectedIndex]?.leaveRule !== null && item.leaveTypes[selectedIndex]?.leaveRule !== undefined; else noInfo">
+                      <ng-container [ngSwitch]="key.type">
+                        <ng-container *ngSwitchCase="'applicableForEncashment'">
+                          <button (click)="getFormTemplate(encashment,'applicableForEncashment',item)" class="btn form-btn-icon btn-light mb-1 border border-1 ms-1" [id]="'kt_drawer_form_toggle'">
+                            <span [inlineSVG]="'./assets/media/icons/document-text-outline.svg'" class="svg-icon svg-icon-3 p-0 me-0"></span>
+                          </button>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'entitlementPerPeriod'">
+                          <button (click)="getFormTemplate(entitlementPerPeriod,'entitlementPerPeriod',item)" class="btn form-btn-icon btn-light mb-1 border border-1 ms-1" [id]="'kt_drawer_form_toggle'">
+                            <span [inlineSVG]="'./assets/media/icons/document-text-outline.svg'" class="svg-icon svg-icon-3 p-0 me-0"></span>
+                          </button>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'applicableForFullFinal'">
+                          <button (click)="getFormTemplate(fullNFinal,'applicableForFullFinal',item)" class="btn form-btn-icon btn-light mb-1 border border-1 ms-1" [id]="'kt_drawer_form_toggle'">
+                            <span [inlineSVG]="'./assets/media/icons/document-text-outline.svg'" class="svg-icon svg-icon-3 p-0 me-0"></span>
+                          </button>
+                        </ng-container>
+                        <ng-container *ngSwitchDefault>
+                          <ng-container *ngIf="item?.leaveTypes[selectedIndex]?.leaveRule[key.labelName.defaultValue] !== null; else noInfo">
+                            <ng-container *ngIf="key.type === 'checkbox'; else generalField">
+                             <!--  <input type="checkbox" [checked]="item[selectedIndex]?.leaveRule[key.labelName.defaultValue]"> -->
+                             <div class="form-check  form-check-color-{{theme}}">
+                              <input [checked]="item?.leaveTypes[selectedIndex]?.leaveRule[key.labelName.defaultValue]" class="form-check-input mt-2 mb-3" type="checkbox" disabled="true"/>
+                              <label class="form-label fs-6 mt-2 mb-1" for="flexCheckDefault">
+                                {{key.labelName.alias | changeCase : "capital"}}
+                              </label>
+                          </div>
+                            </ng-container>
+                            <ng-template #generalField>
+                              <ng-container *ngIf="key.type === 'list'; else default">
+                                <ng-container
+                                  *ngIf="item?.leaveTypes[selectedIndex]?.leaveRule[key.labelName.defaultValue] | dataValue : key.labelName.defaultValue | async as itemValue">
+                                  <ng-container *ngIf="!showAllItems[j]">
+                                    <div class="fw-medium fs-6 text-dark px-0 mt-1">
+                                      {{ itemValue.split(',')[0] }},
+                                      {{ itemValue.split(',')[1] }}
+                                    </div>
+
+                                  </ng-container>
+                                  <ng-container *ngIf="showAllItems[j]">
+                                    <div class="fw-medium fs-6 text-dark px-0 mt-1">
+                                      {{ itemValue}}
+                                    </div>
+
+                                  </ng-container>
+                                </ng-container>
+                            <span>
+                              <ng-container
+                              *ngIf="!showAllItems[j] && item?.leaveTypes[selectedIndex]?.leaveRule[key.labelName.defaultValue].length > 2">
+                              <span class="text-{{ theme }}" (click)="showAllItems[j] = true">
+                                +{{ item?.leaveTypes[selectedIndex]?.leaveRule[key.labelName.defaultValue].length - 2 }} <span>more</span>
+                              </span>
+                            </ng-container>
+                            </span>
+
+                                <ng-container *ngIf="showAllItems[j] ">
+                                  <span (click)="showAllItems[j] = false" class="text-{{theme}}">less</span>
+                                </ng-container>
+                              </ng-container>
+
+
+                              <ng-template #default>
+                                <div class="fw-medium fs-6 text-dark px-0 mt-1">
+                                  {{item?.leaveTypes[selectedIndex]?.leaveRule[key.labelName.defaultValue] | dataValue : key.labelName.defaultValue
+                                  | async}}
+                                </div>
+                              </ng-template>
+
+                            </ng-template>
+                          </ng-container>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                    </ng-container>
+                      <!-- No Information -->
+                      <ng-template #noInfo>
+                        <div *ngIf="key.type !== 'checkbox'" class="fw-medium fs-6 text-gray-400 px-0">
+                          Not Availaible
+                        </div>
+                        <ng-container *ngIf="key.type === 'checkbox'">
+                          <div class="form-check  form-check-color-{{theme}}">
+                            <input class="form-check-input mt-2 mb-3" type="checkbox" disabled="true"/>
+                            <label class="form-label fs-6 mt-2 mb-1" for="flexCheckDefault">
+                              {{key.labelName.alias | changeCase : "capital"}}
+                            </label>
+                        </div>
+                        </ng-container>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+  </ng-template>
+ </details-card>
+ <app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" [viewMode]="true"></app-form-drawer>
+ <div class="mt-5">
+   <app-tab-data-table [tabsMeta]="leaveTabsMeta"></app-tab-data-table>
+ </div>
+<ng-template #fullNFinal>
+  <div class="d-flex flex-column mt-5 gap-5">
+    <div class="d-flex gap-2 align-items-center position-relative" *ngFor="let label of encashmentFormMeta[1].labels">
+      <label class="form-label fs-6 mb-0 min-w-50"
+       >{{
+        label.labelName.alias | changeCase : "capital" }}</label>
+        <ng-container *ngIf="applicabilityFullAndFinalData; else noInfo">
+     <ng-container *ngIf="label.type !== 'checkbox'">
+      <ng-container *ngIf="applicabilityFullAndFinalData[label.labelName.defaultValue] !== null; else noInfo">
+        {{applicabilityFullAndFinalData[label.labelName.defaultValue.replace('Id','')] | dataValue : label.labelName.defaultValue | async}}
+     </ng-container>
+     </ng-container>
+      <div *ngIf="label.type === 'checkbox'"  class="form-check  form-check-color-{{theme}}">
+        <input [disabled]="true" class="form-check-input" type="checkbox"
+          [id]="label.labelName.alias!" [checked]="applicabilityFullAndFinalData[label.labelName.defaultValue]" />
+      </div>
+    </ng-container>
+      <ng-template #noInfo>
+        <div class="fw-medium fs-6 text-gray-400 px-0">
+          Not Availaible
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</ng-template>
+<ng-template #entitlementPerPeriod>
+  <div class="row mt-5">
+    <div class="col-12 mb-2 position-relative">
+      <div class="align-items-center d-flex justify-content-between mb-3">
+        <label class="form-label fs-7 mb-0">Applicable after Employment Days</label>
+        <ng-container *ngIf="selectedTabData?.leaveRule?.entitlementPerPeriod?.applicableAfterEmploymentDays !== null; else noInfo">
+        {{selectedTabData?.leaveRule?.entitlementPerPeriod?.applicableAfterEmploymentDays}}
+      </ng-container>
+      </div>
+    </div>
+    <div class="hr-full col-12">
+      <hr class="m-0">
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-4 mb-2 position-relative">
+      <label class="form-label fs-6 mb-1">Minimum(Years)</label>
+
+    </div>
+    <div class="col-4 mb-2 position-relative ">
+      <label class="form-label fs-6 mb-1">Maximum(Years)</label>
+
+    </div>
+    <div class="col-4 mb-2 position-relative">
+      <label class="form-label fs-6 mb-1">Entitlement</label>
+
+    </div>
+  </div>
+  <ng-container *ngFor="let entitlement of selectedTabData?.leaveRule?.entitlementPerPeriod?.perPeriodForm; let k=index">
+
+    <div class="row mt-5">
+      <div class="col-4 mb-2 position-relative">
+        {{entitlement.minimumYear}}
+      </div>
+      <div class="col-4 mb-2 position-relative ">
+        {{entitlement.maximumYear}}
+      </div>
+      <div class="col-4 mb-2 position-relative">
+        {{entitlement.entitlement}}
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noInfo>
+    <div class="fw-medium fs-6 text-gray-400 px-0">
+      Not Availaible
+    </div>
+  </ng-template>
+</ng-template>
+<ng-template #encashment>
+  <div class="d-flex flex-column mt-5 gap-5">
+    <div class="d-flex gap-2 align-items-center position-relative" *ngFor="let label of encashmentFormMeta[2].labels">
+      <!-- {{label | json}} -->
+      <label class="form-label fs-6 mb-0 min-w-50"
+        >{{
+        label.labelName.alias | changeCase : "capital" }}</label>
+        <ng-container *ngIf="applicabilityEncashmentData; else noInfo">
+        <ng-container *ngIf="label.type !== 'checkbox'">
+          <ng-container *ngIf="applicabilityEncashmentData[label.labelName.defaultValue] !== null; else noInfo">
+          {{applicabilityEncashmentData[label.labelName.defaultValue.replace('Id','')] | dataValue : label.labelName.defaultValue | async}}
+       </ng-container>
+      </ng-container>
+      <div *ngIf="label.type === 'checkbox'" class="form-check  form-check-color-{{theme}}">
+        <input [disabled]="true"  class="form-check-input" type="checkbox"
+          [id]="label.labelName.defaultValue!" [checked]="applicabilityEncashmentData[label.labelName.defaultValue]" />
+      </div>
+    </ng-container>
+      <ng-template #noInfo>
+        <div class="fw-medium fs-6 text-gray-400 px-0">
+          Not Availaible
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</ng-template>

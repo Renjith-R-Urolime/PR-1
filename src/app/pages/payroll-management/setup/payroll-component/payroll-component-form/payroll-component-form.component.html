@@ -1,0 +1,214 @@
+<app-page-title></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="!isLoading ; else skeleton">
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngIf="section.tabName === formData[0]?.tabName">
+              <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                <!--begin::Col-->
+                <div class="ps-9">
+                  <ng-container>
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+                <div class="card-body py-0">
+                  <form [formGroup]="componentForm">
+                    <div class="row">
+                      <ng-container *ngFor="let label of formData[0]?.labels">
+                        <ng-container *ngIf="label.sectionName === section.sectionName">
+                          <div class="position-relative col-lg-{{ label.col ? label.col : col }} mb-2">
+                            <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                              <ng-container *ngIf="label.type !== 'toggle'">
+                                <label *ngIf="label.labelName.defaultValue !=='tagGLAccount'"
+                                  class="form-label fs-6 mb-0" [ngClass]="{
+                                'required': label?.required,
+                                'invalid': sharedService.hasValidationErrors(label, submit, componentForm) }">{{
+                                  label.labelTransformationCancelled ? label.labelName.alias :
+                                  label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                <label *ngIf="label.labelName.defaultValue ==='tagGLAccount'"
+                                  class="form-label fs-6 mb-0 mt-8" [ngClass]="{
+                                      'required': label?.required,
+                                      'invalid': sharedService.hasValidationErrors(label, submit, componentForm) }">{{
+                                  label.labelTransformationCancelled ? label.labelName.alias :
+                                  label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                              </ng-container>
+                              <app-input-text-field [patchValue]="componentForm?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, componentForm) }"
+                                [type]="label.type" [name]="label.labelName.alias!"
+                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"></app-input-text-field>
+                              <ng-container *ngIf="label.type === 'item'">
+                                <custom-ng-select
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, componentForm) }"
+                                  [jsonListName]="label.jsonListName" [patchData]="componentData?.payrollItem"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                  [multiple]="false">
+                                </custom-ng-select>
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'payrollType'">
+                                <custom-ng-select
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, componentForm) }"
+                                  [jsonListName]="label.jsonListName" [patchData]="componentData?.type"
+                                  (onchange)="onTypeChange($event)" [formControlName]="label.labelName.defaultValue!"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                  [multiple]="false">
+                                </custom-ng-select>
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'tagGLAccount'">
+                                <button (click)="getFormTemplate(tagGLTemplate,'TagGLAccount')"
+                                  class="btn form-btn-icon btn-light mb-1 border border-1 ms-1 mt-1"
+                                  [id]="'kt_drawer_form_toggle'">
+                                  <span span *ngIf="!isTagGLSaved" [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                    class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                  <span span *ngIf="isTagGLSaved" [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                    class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                </button>
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'subType'">
+                                <custom-ng-select
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, componentForm) }"
+                                  [patchData]="componentData?.subType" [formControlName]="label.labelName.defaultValue!"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                  [multiple]="false" [fetchCondition]="payrollSubTypeCondition"
+                                  [jsonListName]="label.jsonListName">
+                                </custom-ng-select>
+                              </ng-container>
+                              <!-- </ng-container> -->
+                              <!-- <ng-container *ngIf="label.type === 'checkbox' && id">
+                                <div class="form-check mt-5  form-check-color-{{theme}}">
+                                  <input [formControlName]="label.labelName.defaultValue!" class="form-check-input mt-2"
+                                    type="checkbox" [id]="label.labelName.alias!" />
+                                  <label class="form-label fs-6 mt-2 mb-1" for="flexCheckDefault">
+                                    {{ label.labelName.alias | changeCase : "capital" }}
+                                  </label>
+                                </div>
+                              </ng-container> -->
+                              <ng-container *ngFor="let validation of label.validations;">
+                                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                            validation: validation.name,
+                            message: validation.message,
+                            control: componentForm.get(label.labelName.defaultValue)
+                          }"></ng-container>
+                              </ng-container>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <ng-container>
+          <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+
+          <!-- <div class=" p-md-0 ">
+            <div class="d-flex  flex-column flex-md-row justify-content-end gap-4">
+              <button (click)="onCancel()" type="button" class="btn btn-sm cursor-pointer bg-{{theme}}-bright">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-{{theme}} btn-sm cursor-pointer" (click)="onSubmit()">
+                <ng-container *ngIf="!isProcessing">
+                  Submit
+                </ng-container>
+                <ng-container *ngIf="isProcessing">
+                  <div class="d-flex gap-3">
+                    Please wait
+                    <div class="spinner"></div>
+                  </div>
+                </ng-container>
+              </button>
+            </div>
+          </div> -->
+        </ng-container>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+    <div class="fv-plugins-message-container ">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
+<ng-template #skeleton>
+  <app-edit-form-skeleton [isLoading]="isLoading"></app-edit-form-skeleton>
+</ng-template>
+
+<ng-template #tagGLTemplate>
+  <form [formGroup]="componentForm">
+    <div [formArrayName]="'tagAccount'">
+      <ng-container *ngFor="let account of detail.controls; let i = index">
+        <div [formGroupName]="i" class="d-flex flex-row justify-content-between my-3">
+          <div class="d-flex flex-row justify-content-between gap-4">
+            <ng-container *ngFor="let label of tagGLAccountFormData?.labels">
+              <div class="d-flex flex-column justify-content-between">
+                <div>
+                  <label [ngClass]="{
+                    'required': label?.required}" class="form-label fs-6 mb-0">{{
+                    label.labelTransformationCancelled ? label.labelName.alias :
+                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div>
+                  <ng-container class="align-items-center" *ngIf="label.type === 'expenseType'">
+                    <custom-ng-select [apiLink]="label.apiLink" [formControlName]="label.labelName.defaultValue!"
+                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                      [multiple]="false">
+                    </custom-ng-select>
+                  </ng-container>
+                  <ng-container *ngIf="label.type === 'debitAccount'">
+                    <custom-ng-select [apiLink]="label.apiLink" [patchData]="componentData?.debitAccount"
+                      [formControlName]="label.labelName.defaultValue!" [controlName]="label.labelName.defaultValue!"
+                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                      [multiple]="false">
+                    </custom-ng-select>
+                  </ng-container>
+                  <ng-container *ngIf="label.type === 'creditAccount'">
+                    <custom-ng-select [apiLink]="label.apiLink" [patchData]="componentData?.creditAccount"
+                      [formControlName]="label.labelName.defaultValue!" [controlName]="label.labelName.defaultValue!"
+                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                      [multiple]="false">
+                    </custom-ng-select>
+                  </ng-container>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div class="mt-1" *ngIf="i>0">
+            <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"
+              (click)="clearElement(i)"></span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </form>
+  <ng-container>
+    <button (click)="addMore()" type="button" class="btn btn-sm cursor-pointer bg-{{theme}}">
+      + Add more
+    </button>
+  </ng-container>
+  <ng-container>
+    <p class="text-danger fs-8 my-3" *ngIf="showErrorMessage">Please fill in all the mandate fields</p>
+  </ng-container>
+</ng-template>
+
+<app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" [buttonDisable]="checkIfDisabled()" (isSaved)="onDrawerSave($event)"
+  (isCanceled)="onDrawerCancel($event)"></app-form-drawer>

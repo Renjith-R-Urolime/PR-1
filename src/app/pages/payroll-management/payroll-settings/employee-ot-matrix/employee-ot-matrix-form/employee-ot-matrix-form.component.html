@@ -1,0 +1,113 @@
+<app-page-title></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+    <ng-container>
+        <div class="card bs-none p-4">
+            <app-breadcrumb></app-breadcrumb>
+            <ng-container *ngIf="!isLoading ; else skeleton">
+
+                <ng-container *ngIf="formSections.length>0">
+                    <ng-container *ngFor="let section of formSections; let i=index">
+                        <ng-container *ngIf="section.tabName === formMeta.tabName">
+                            <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                                <!--begin::Col-->
+                                <div class="ps-9">
+                                    <ng-container *ngIf="!isLoading;">
+                                        <div class="d-flex">
+                                            <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                            <div class="hr-side me-8 ms-2">
+                                                <hr class="mx-1">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+
+                                </div>
+                                <div class="card-body py-0">
+                                    <form [formGroup]="employeeOtMatrixForm">
+                                        <div class="row">
+                                            <ng-container *ngFor="let label of formMeta.labels">
+                                                <ng-container *ngIf="label.sectionName === section.sectionName">
+                                                    <div
+                                                        class="position-relative col-lg-{{ label.col ? label.col : col }} mb-2">
+                                                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                                            <ng-container *ngIf="label.type !== 'toggle'">
+                                                                <label class="form-label fs-6 mb-0"
+                                                                    [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, employeeOtMatrixForm) }">{{
+                                                                    label.labelTransformationCancelled ?
+                                                                    label.labelName.alias.replace('Id','') :
+                                                                    label.labelName.alias.replace('Id','') | changeCase
+                                                                    : "capital" }}</label>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'employee'">
+                                                                <employee-select
+                                                                [isDisabled]="id ? true : false"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [employeeFilterMeta]="employeeFilterMeta"
+                                                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, employeeOtMatrixForm)}"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "></employee-select>
+                                                            </ng-container>
+                                                            <app-input-text-field
+                                                                [patchValue]="employeeOtMatrixForm?.value[label.labelName.defaultValue!]"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, employeeOtMatrixForm) }"
+                                                                [type]="label.type"
+                                                                [name]="label.labelName.alias!"></app-input-text-field>
+                                                            <ng-container *ngFor="let validation of label.validations;">
+                                                                <ng-container [ngTemplateOutlet]="formError"
+                                                                    [ngTemplateOutletContext]="{
+                            validation: validation.name,
+                            message: validation.message,
+                            control: employeeOtMatrixForm.get(label.labelName.alias)
+                          }"></ng-container>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+
+
+
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+            </ng-container>
+        </div>
+
+
+
+
+
+        <ng-template #skeleton>
+            <app-edit-form-skeleton></app-edit-form-skeleton>
+
+        </ng-template>
+
+
+
+        <ng-template #formError let-control="control" let-message="message" let-validation="validation">
+            <ng-container *ngIf="submit && control?.hasError(validation)">
+                <div class="fv-plugins-message-container ">
+                    <span role="alert" class="fv-help-block fs-9">
+                        {{ message }}
+                    </span>
+                </div>
+            </ng-container>
+        </ng-template>
+
+
+
+        <ng-template #customTemplate>
+
+            <div class="mb-2 d-flex gap-6 justify-content-center">
+                <button class="btn border border-2 border-secondary text-dark btn-sm" (click)="goToCreateEmployeeOtMatrix()">Add Another</button>
+                <button class="btn btn-{{theme}} btn-sm" (click)="listAll()">List</button>
+
+            </div>
+        </ng-template>

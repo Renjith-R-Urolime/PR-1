@@ -1,0 +1,146 @@
+<app-page-title></app-page-title>
+
+<div class="card">
+  <div class="card bs-none p-4">
+    <app-breadcrumb></app-breadcrumb>
+    <ng-container *ngIf="!isLoading ; else skeleton">
+      <ng-container *ngIf="formSections.length>0">
+        <ng-container *ngFor="let section of formSections; let i=index">
+          <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+            <div class="ps-9 mt-2">
+              <div class="d-flex">
+                <div class="fs-5 fw-bold">{{ section?.sectionName }}</div>
+                <div class="hr-side me-8 ms-2">
+                  <hr class="mx-1">
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body py-0">
+              <form [formGroup]="registerForm">
+                <div class="row">
+                  <ng-container *ngFor="let label of registerFormData.labels">
+                    <ng-container *ngIf="section.sectionName === label.sectionName">
+                      <div class="col-lg-{{ label.col ? label.col : col }} mb-2  position-relative">
+                        <div class="max-w-90">
+                          <label
+                            *ngIf=" label.type !== 'checkbox' && label.labelName.defaultValue!=='employeeId' && !label?.hide"
+                            class="form-label fs-6 mb-0 text-nowrap" [ngClass]="{'required': label?.required}"><span
+                              *ngIf="label.labelName.defaultValue !== 'contributionTypeId'">{{contributionTypeName}}</span>
+                            {{
+                            label.labelTransformationCancelled ? label.labelName.alias :
+                            label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                          <!-- <ng-container class="align-items-center" *ngIf="
+                              [
+                                'text',
+                                'password',
+                                'email',
+                                'number',
+                                'tel',
+                                'url'
+                              ].includes(label.type)
+                            "> -->
+                          <app-input-text-field [name]="label.labelName.alias" *ngIf="!label?.hide"
+                            [isFieldDisabled]="label.labelName.defaultValue === 'subscriptionSalary'"
+                            [patchValue]="registerForm?.value[label.labelName.defaultValue!]"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [ngClass]="{'invalid':  sharedService.hasValidationErrors(label, submit, registerForm) }"
+                            [type]="label.type"></app-input-text-field>
+
+                          <!-- <input *ngIf="label.labelName.defaultValue  === 'subscriptionSalary'" readonly="true"
+                            [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                            [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, registerForm) }"
+                            class="form-control form-control-sm mb-3 bg-secondary"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " /> -->
+
+                          <!-- </ng-container> -->
+                          <ng-container
+                            class="align-items-center mb-4" *ngIf="label.type === 'employee'">
+                            <div class="d-flex flex-center flex-row  mb-2">
+                              <div class="mb-3">
+                                <div class="symbol symbol-70px symbol-circle ">
+                                  <ng-container *ngIf="!empImage;else default">
+                                    <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                                      {{empSelected?.firstName?empSelected?.firstName[0]:'' |
+                                      uppercase}}{{empSelected?.lastName? empSelected?.lastName[0] :'' |
+                                      uppercase}}
+                                    </div>
+
+                                  </ng-container>
+                                  <ng-template #default>
+                                    <div class="symbol symbol-70px symbol-circle "
+                                      [title]="empSelected?.firstName + ' ' + empSelected?.lastName">
+                                      <img [src]="empImage | s3FileFetch | async" alt="User Image"
+                                        class="symbol-label custom-ratio" />
+                                    </div>
+
+                                  </ng-template>
+                                </div>
+                              </div>
+                              <div class="mx-9 d-flex flex-column align-items-center fs-7 ">
+                                <div>
+                                  {{empSelected?.employeeId}}
+                                </div>
+                                <label class=" form-label">
+                                  {{ empSelected?.firstName | changeCase : "capital" }} {{ empSelected?.lastName |
+                                  changeCase : "capital" }}
+                                </label>
+                              </div>
+                              <div>
+                              </div>
+                            </div>
+
+                          </ng-container>
+                          <ng-container class="align-items-center" *ngIf="label.type === 'date'  && !label.hide">
+                            <!-- ngb-bootstrap datepicker -->
+                            <input-date-picker [formControlName]="label.labelName.defaultValue!"
+                              [minDate]="minEffectiveDate"
+                              [ngClass]="{'invalid': (sharedService.hasValidationErrors(label, submit, registerForm) && !labe?.hide) }"></input-date-picker>
+                            <!-- -- -->
+                          </ng-container>
+                          <ng-container class="align-items-center" *ngIf="label.type === 'contributionType'">
+                            <custom-ng-select (onchange)="getSubscriptionSalary($event)"
+                              [formControlName]="label.labelName.defaultValue!"
+                              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                              [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, registerForm) }"
+                              [multiple]="label.multiple"
+                              [items]="contributionTypeList.length>0 ? contributionTypeList : []"
+                              [patchData]="patchData?.contributionType?.id">
+                            </custom-ng-select>
+                          </ng-container>
+                          <ng-container *ngFor="let validation of label.validations;">
+                            <ng-container *ngIf="!label?.hide" [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: validation.name,
+                        message: validation.message,
+                        control: registerForm.get(label.labelName.defaultValue)
+                      }"></ng-container>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </form>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-container>
+      <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+    </ng-container>
+  </div>
+</div>
+<ng-template #skeleton>
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+    <div class="fv-plugins-message-container ">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>

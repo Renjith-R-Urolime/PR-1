@@ -1,0 +1,308 @@
+<app-page-title></app-page-title>
+<ng-container *ngIf="checkMsg">
+  <div class="mb-5 alert alert-danger">
+    <div class="alert-text font-weight-bold">
+      {{checkMsg}}
+    </div>
+  </div>
+</ng-container>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="!isLoading; else skeleton">
+
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngIf="section.tabName === formData.tabName">
+              <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                <!--begin::Col-->
+                <div class="ps-9">
+                  <ng-container *ngIf="!isLoading;">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+
+
+                </div>
+                <div class="card-body py-0">
+                  <form [formGroup]="timeoffAdjustmentForm">
+                    <div class="row">
+                      <ng-container *ngFor="let label of formData.labels">
+                        <ng-container *ngIf="!label?.hide">
+
+                          <div class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                            <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                              <label class="form-label fs-6 mb-0" [ngClass]="{
+                                 'required': label?.required,
+                                 'invalid': sharedService.hasValidationErrors(label, submit, timeoffAdjustmentForm)
+                               }">{{
+                                label.labelTransformationCancelled ? label.labelName.alias.replace('Id','') :
+                                label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                              <ng-container *ngIf="label.type === 'employee'">
+                                <employee-select [employeeFilterMeta]="employeeFilterMeta"
+                                  (onchange)="fetchSalaryDetails($event)" [scope]="label.scope"
+                                  [patchData]="timeoffAdjustmentData?.employee"
+                                  [isDisabled]="id ? true : false"
+                                  [filterDisabled]="id ? true : false"
+                                   [formControlName]="label.labelName.defaultValue!"
+                                  [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, timeoffAdjustmentForm)}"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital') "></employee-select>
+                                <!--  <custom-ng-select
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, timeoffAdjustmentForm)}"
+                                [apiLink]="label.apiLink"
+                                [formControlName]="label.labelName.defaultValue!"
+                                bindLabel="id"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [multiple]="false">
+                                <ng-template custom-ng-label-temp let-item$="item">
+                                  {{ item$?.employeeId }} : {{item$?.firstName}} {{item$?.lastName}}
+                                </ng-template>
+                              </custom-ng-select> -->
+                              </ng-container>
+
+
+                              <ng-container class="align-items-center" *ngIf="
+                              [
+                                'text',
+                                'password',
+                                'email',
+                                'number',
+                                'tel',
+                                'url',
+                              ].includes(label.type)
+                            ">
+                                <!-- <input *ngIf="label.type !== 'number'" [formControlName]="label.labelName.defaultValue!"
+                                [type]="label.type" class="form-control form-control-sm"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{
+                              'invalid': sharedService.hasValidationErrors(label, submit, timeoffAdjustmentForm)
+                            }" /> -->
+                                <!-- <input
+                                [readonly]="label.labelName.defaultValue === 'LOPDays' || label.labelName.defaultValue === 'days' || label.labelName.defaultValue === 'amount' "
+                                *ngIf="label.type === 'number'" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                [min]="label.min" [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                                class="form-control form-control-sm mb-3"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{
+                              'invalid': sharedService.hasValidationErrors(label, submit, timeoffAdjustmentForm)
+                            }" /> -->
+                              </ng-container>
+                              <app-input-text-field
+                                [patchValue]="timeoffAdjustmentForm?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, timeoffAdjustmentForm) }"
+                                [type]="label.type" [name]="label.labelName.alias!"
+                                [isFieldDisabled]="label.labelName.defaultValue === 'LOPDays' || label.labelName.defaultValue === 'days' || label.labelName.defaultValue === 'amount'?true:false"
+                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"></app-input-text-field>
+                              <ng-container *ngIf="label.type === 'date'">
+                                <!-- ngb-bootstrap datepicker -->
+                                <div class="position-relative">
+                                  <ng-container *ngIf="label.labelName.defaultValue === 'startDate'">
+                                    <!-- <input (input)="sharedService.formatDate($event)"  class="form-control form-control-sm" data-type="date"
+                                      formControlName="{{ label.labelName.defaultValue }}"
+                                      [maxDate]="timeoffAdjustmentForm.value.endDate | dateToJson "
+                                      placeholder="YYYY/MM/DD" name="dp" ngbDatepicker
+                                      datepickerClass="calendar-{{theme}}" #d="ngbDatepicker" (click)="d.toggle()"
+                                      [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate"/> -->
+                                    <input-date-picker [isDisabled]="lockTransaction" [maxDate]="timeoffAdjustmentForm.value.endDate"
+                                      [formControlName]="label.labelName.defaultValue!">
+                                    </input-date-picker>
+                                  </ng-container>
+
+                                  <ng-container *ngIf="label.labelName.defaultValue === 'endDate'">
+                                    <!-- <input (input)="sharedService.formatDate($event)"  class="form-control form-control-sm" data-type="date"
+                                      formControlName="{{ label.labelName.defaultValue }}"
+                                      [minDate]="timeoffAdjustmentForm.value.startDate | dateToJson"
+                                      placeholder="YYYY/MM/DD" name="dp" ngbDatepicker
+                                      datepickerClass="calendar-{{theme}}" #d="ngbDatepicker" (click)="d.toggle()"
+                                      [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate"/> -->
+                                    <input-date-picker [isDisabled]="lockTransaction" [minDate]="timeoffAdjustmentForm.value.startDate"
+                                      [formControlName]="label.labelName.defaultValue!">
+                                    </input-date-picker>
+                                    <span class="date-icon"></span>
+                                  </ng-container>
+
+                                  <span class="date-icon"></span>
+                                </div>
+                                <!-- -- -->
+                              </ng-container>
+
+
+                              <ng-container *ngIf="label.type === 'dropdown'">
+                                <custom-ng-select
+                                  [isSelectDisabled]="lockTransaction"
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, timeoffAdjustmentForm) }"
+                                  [apiLink]="label.apiLink" [maxLimit]="2" [formGroup]="timeoffAdjustmentForm"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [patchData]="timeoffAdjustmentData[label.labelName.defaultValue!] ? timeoffAdjustmentData[label.labelName.defaultValue!] : undefined"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                  [multiple]="label.multiple">
+                                </custom-ng-select>
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'type'">
+                                <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                  [controlName]="label.labelName.defaultValue!" (onchange)="requestTypeChange()"
+                                  [isSelectDisabled]="lockTransaction"
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, timeoffAdjustmentForm) }"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [patchData]="timeoffAdjustmentData[label.labelName.defaultValue!] ? timeoffAdjustmentData[label.labelName.defaultValue!] : undefined"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                </custom-ng-select>
+
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'timeOffType'">
+                                <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                [isSelectDisabled]="lockTransaction"
+                                  [fetchCondition]="label?.fetchCondition" [controlName]="label.labelName.defaultValue!"
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, timeoffAdjustmentForm) }"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [patchData]="timeoffAdjustmentData[label.labelName.defaultValue!] ? timeoffAdjustmentData[label.labelName.defaultValue!] : undefined"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                </custom-ng-select>
+
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'paymentMethod'">
+                                <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, timeoffAdjustmentForm) }"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [patchData]="timeoffAdjustmentData[label.labelName.defaultValue!] ? timeoffAdjustmentData[label.labelName.defaultValue!] : undefined"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                </custom-ng-select>
+
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'payrollType'">
+                                <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, timeoffAdjustmentForm) }"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [fetchCondition]="label?.fetchCondition"
+                                  [patchData]="timeoffAdjustmentData[label.labelName.defaultValue!] ? timeoffAdjustmentData[label.labelName.defaultValue!] : undefined"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                </custom-ng-select>
+
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'file'">
+                                <input-file-upload [allowPdf]="true" theme="light" fieldStyle="compact"
+                                  [formControlName]="label.labelName.defaultValue!"></input-file-upload>
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'transactionStatus'">
+                                <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, timeoffAdjustmentForm) }"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [patchData]="timeoffAdjustmentData[label.labelName.defaultValue!] ? timeoffAdjustmentData[label.labelName.defaultValue!] : undefined"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                </custom-ng-select>
+                              </ng-container>
+
+                              <ng-container *ngFor="let validation of label.validations;">
+                                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: validation.name,
+                          message: validation.message,
+                          control: timeoffAdjustmentForm.get(label.labelName.defaultValue)
+                        }"></ng-container>
+                              </ng-container>
+                            </div>
+                          </div>
+                        </ng-container>
+                        </ng-container>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <div class="me-9">
+          <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+<ng-template #skeleton>
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+    <div class="fv-plugins-message-container ">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
+<!-- upload file form -->
+<ng-template #uploadFormTemplate>
+  <form [formGroup]="uploadDocumentForm">
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <label class="form-label fs-6 mb-0 min-w-50">Document Type</label>
+      </div>
+      <div class="col-md-8">
+        <custom-ng-select [apiLink]="'core-hr/employee/settings/document-type'" [formControlName]="'type'"
+          [placeholder]="'Select document type'" [multiple]="false">
+        </custom-ng-select>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <label class="form-label fs-6 mb-0 min-w-50">Document Name</label>
+      </div>
+      <div class="col-md-8">
+        <input type="text" class="form-control form-control-sm " [formControlName]="'name'"
+          placeholder="Enter document name" />
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <label class="form-label fs-6 mb-0 min-w-50">Browse</label>
+      </div>
+      <div class="col-md-8">
+        <input-file-upload [allowPdf]="true" theme="light" fieldStyle="compact"
+          [formControlName]="files"></input-file-upload>
+        <!-- Browse field starts -->
+        <!--     <ng-container class="align-items-center">
+          <input id="upload" class="form-control form-control-sm"
+              [formControlName]="'files'" type="file" hidden
+              (change)="selectFile($event)">
+          <div
+              class="d-flex flex-column justify-content-center bg-{{theme}}-bright p-2  rounded uploadButton">
+              <label for="upload">
+                  <div class="d-flex flex-column justify-content-center py-6 align-items-center">
+                      <div><span span [inlineSVG]="'./assets/media/icons/cloud-upload-outline.svg'"
+                              class="svg-icon svg-icon-3 p-0 me-0"></span>
+                      </div>
+                      <div class="text-center fs-6">
+                          Upload File
+                      </div>
+                  </div>
+              </label>
+          </div>
+          <div class="my-1 d-flex flex-column">
+              <label for="" class="fs-8" *ngIf="uploadedDocuments.length>1">Uploading - {{uploadedDocuments.length-1}} files</label>
+              <div *ngFor="let file of uploadedDocuments; let i=index" class="d-flex gap-1">
+                 <ng-container *ngIf="i!==0">
+                  <input type="text" class="fs-7 mt-1 form-control form-control-sm" [value]="file.file.name">
+                  <span (click)="removeDocument(i)" [inlineSVG]="'./assets/media/icons/close-circle-outline.svg'"  class="svg-icon svg-icon-3 mt-3"></span>
+                 </ng-container>
+          </div>
+          </div>
+      </ng-container> -->
+        <!-- browse field ends -->
+      </div>
+    </div>
+  </form>
+</ng-template>
+<!-- <app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" (isSaved)="onDrawerSave($event)"
+  (isCanceled)="onDrawerCancel($event)"></app-form-drawer> -->

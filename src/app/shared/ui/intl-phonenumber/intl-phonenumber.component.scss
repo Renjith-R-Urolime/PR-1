@@ -1,0 +1,23 @@
+[ng-select-parent="true"]{
+    ::ng-deep{
+        ng-select{
+            position: static;
+        }
+    }
+
+}
+#infi_input_phonenumber{
+    input[type="number"]{
+        padding-left: 0!important;
+    }
+    ::ng-deep{
+        ng-select{
+            &.ng-select-single{
+                .ng-select-container{
+                    border: 0!important;
+                }
+            }
+        }
+
+    }
+}

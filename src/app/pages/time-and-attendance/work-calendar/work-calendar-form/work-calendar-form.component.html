@@ -1,0 +1,171 @@
+<app-page-title></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+    <ng-container>
+        <div class="card bs-none p-4">
+            <app-breadcrumb></app-breadcrumb>
+            <ng-container *ngIf="!isLoading ; else skeleton">
+
+                <ng-container *ngIf="formSections.length>0">
+                    <ng-container *ngFor="let section of formSections; let i=index">
+                        <ng-container *ngIf="section.tabName === formData.tabName">
+                            <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                                <!--begin::Col-->
+                                <div class="ps-9">
+                                    <ng-container *ngIf="!isLoading;">
+                                        <div class="d-flex">
+                                            <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                            <div class="hr-side me-8 ms-2">
+                                                <hr class="mx-1">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+
+                                </div>
+                                <div class="card-body py-0">
+                                    <form [formGroup]="workCalendarForm">
+                                        <div class="row">
+                                            <ng-container *ngFor="let label of formData.labels">
+                                                <ng-container *ngIf="label.sectionName === section.sectionName">
+                                                    <div
+                                                        class="position-relative col-lg-{{ label.col ? label.col : col }} mb-2">
+                                                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                                            <ng-container
+                                                                *ngIf="label.type !== 'checkbox' && label.type!== 'classificationApplicability'">
+                                                                <label class="form-label fs-6 mb-0"
+                                                                    [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, workCalendarForm) }">{{
+                                                                    label.labelName.alias.replace('Id','') | changeCase
+                                                                    : "capital" }}</label>
+                                                            </ng-container>
+                                                            <app-input-text-field
+                                                                [patchValue]="workCalendarForm?.value[label.labelName.defaultValue!]"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, workCalendarForm) }"
+                                                                [type]="label.type" [name]="label.labelName.alias!"
+                                                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true">
+                                                            </app-input-text-field>
+                                                            <ng-container class="align-items-center "
+                                                                *ngIf="label.type === 'classificationApplicability'">
+                                                                <div class="mt-7">
+                                                                    <label class="form-label fs-6 mb-0"
+                                                                        [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, subsidiaryForm) }">{{
+                                                                        label.labelName.alias.replace('Id','') |
+                                                                        changeCase
+                                                                        : "capital" }}</label>
+                                                                    <button
+                                                                        (click)="getFormTemplate(classificationApplicabilityTemplate,label.labelName.defaultValue,'classificationApplicability')"
+                                                                        class="btn form-btn-icon btn-light mb-1 border border-1 ms-1"
+                                                                        [id]="'kt_drawer_form_toggle'">
+                                                                        <span span
+                                                                            *ngIf="!classificationApplicabilityFormSaved"
+                                                                            [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                        <span span
+                                                                            *ngIf="classificationApplicabilityFormSaved"
+                                                                            [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                    </button>
+                                                                </div>
+
+                                                            </ng-container>
+                                                            <ng-container *ngFor="let validation of label.validations;">
+                                                                <ng-container [ngTemplateOutlet]="formError"
+                                                                    [ngTemplateOutletContext]="{
+                                                            validation: validation.name,
+                                                            message: validation.message,
+                                                            control: workCalendarForm.get(label.labelName.alias)
+                                                          }"></ng-container>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container ">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #classificationApplicabilityTemplate (isCanceled)="cancelFormSave($event)">
+    <form [formGroup]="classificationApplicabilityForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of classificationApplicabilityFormData.labels">
+                <div class="col-4 ">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+                    <ng-container *ngIf="label.type === 'country'">
+                        <custom-ng-select [multiple]="label?.multiple"
+                            (onchange)="onCountryChange($event)"
+                            [apiLink]="label.apiLink"
+                            [isSelectDisabled]="id"
+                            [patchData]="workCalendarData[label.labelName.defaultValue!] ? workCalendarData[label.labelName.defaultValue!] : undefined"
+                            [controlName]="label.labelName.defaultValue!"
+                            [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, contractMasterForm) }"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container *ngIf="label.type === 'subsidiary'">
+                        <custom-ng-select
+                        (onchange)="onSubsidiaryChange($event)"
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, classificationApplicabilityForm) }"
+                            [formGroup]="workCalendarForm"  [apiLink]="coutryFetchCondition?.length > 0 ? label.apiLink : ''"  [maxLimit]="2"
+                           [formControlName]="label.labelName.defaultValue!"
+                            [fetchCondition]="coutryFetchCondition"
+                            [patchData]="workCalendarData[label.labelName.defaultValue!] ? workCalendarData[label.labelName.defaultValue!] : undefined"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container *ngIf="label.type === 'dropdown'">
+                        <custom-ng-select
+                        [fetchCondition]="subsidiaryFilter"
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, classificationApplicabilityForm) }"
+                            [formGroup]="workCalendarForm" [apiLink]="classificationApplicabilityForm.value?.subsidiary === 'ALL' || subsidiaryFilter.length > 0 ? label.apiLink : ''" [maxLimit]="2"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [patchData]="workCalendarData[label.labelName.defaultValue!] ? workCalendarData[label.labelName.defaultValue!] : undefined"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+<app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" (isSaved)="onDrawerSave($event)"
+    (isCanceled)="onDrawerCancel($event)"></app-form-drawer>
+
+
+<ng-template #skeleton>
+    <app-edit-form-skeleton></app-edit-form-skeleton>
+
+</ng-template>

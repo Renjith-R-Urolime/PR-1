@@ -1,0 +1,97 @@
+<!--begin::Card widget 17-->
+<div class="card p-6 d-flex h-100 flex-column justify-content-between">
+    <!--begin::Header-->
+    <div class="card-header p-0 border-0">
+        <ng-container *ngIf="!isLoading; else skeleton">
+
+        <!--begin::Title-->
+        <div class="card-title d-flex flex-column">
+            <!--begin::Amount-->
+            <div class="d-flex flex-row">
+            <span class="fw-bolder fs-2tx me-2 lh-1 ls-n2">${{stats}}</span>
+            <div class="d-flex align-items-center rounded-0" style="background-color: #E8FFF3; color: #50CD89;">
+                <span
+                [inlineSVG]="'./assets/media/icons/duotune/arrows/arr066.svg'"
+                class="svg-icon svg-icon-5 svg-icon-success ms-1"
+              ></span>
+                <div class="fw-bolder fs-5 pe-1">2.2%</div>
+
+              </div>
+            </div>
+            <!--end::Amount-->
+
+            <!--begin::Subtitle-->
+            <span class="text-muted fs-5 fw-bolder mt-2">{{description}}</span>
+            <!--end::Subtitle-->
+        </div>
+        <!--end::Title-->
+    </ng-container>
+    </div>
+    <!--end::Header-->
+
+    <!--begin::Card body-->
+    <div class="card-body p-0 d-flex flex-wrap align-items-center">
+        <!--begin::Chart-->
+        <div class="d-flex flex-center me-5 pt-2">
+            <div id="kt_card_widget_17_chart"
+                [ngStyle]="{'min-width': chartSize + 'px', 'min-height': chartSize + 'px'}"
+                [attr.data-kt-size]="chartSize" [attr.data-kt-line]="chartLine">
+            </div>
+        </div>
+        <!--end::Chart-->
+
+        <!--begin::Labels-->
+        <!-- your-component.component.html -->
+        <ng-container *ngIf="!isLoading; else skeleton1">
+        <div class="d-flex flex-column content-justify-center flex-row-fluid">
+            <div *ngFor="let item of jsonData" class="d-flex fw-semibold align-items-center">
+                <div class="bullet w-20px h-5px rounded-2" [class.bg-success]="item.status === 'Active'"
+                    [class.bg-theme]="item.status === 'Inactive'"></div>
+                <div class="text-gray-500 flex-grow-1 fs-4 me-4 px-2">{{ item.status }}</div>
+                <div class="fw-bolder text-gray-700 fs-4 text-xxl-end">{{ item.count }}</div>
+            </div>
+
+
+
+        </div>
+    </ng-container>
+        <!--end::Labels-->
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card widget 17-->
+
+<ng-template #skeleton>
+    <div class="card-title d-flex flex-column">
+
+        <ngx-skeleton-loader [theme]="{ 'border-radius': '5px', height: '30px', width:'100px' }">
+        </ngx-skeleton-loader>
+
+        <ngx-skeleton-loader [theme]="{ 'border-radius': '5px', height: '10px', width:'100px' }">
+        </ngx-skeleton-loader>
+    </div>
+</ng-template>
+
+<ng-template #skeleton1>
+    <div class="d-flex flex-column content-justify-center flex-row-fluid">
+        <div class="d-flex justify-content-between">
+            <ngx-skeleton-loader [theme]="{ 'border-radius': '5px', height: '15px', width:'100px' }">
+            </ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{ 'border-radius': '5px', height: '15px', width:'30px' }">
+            </ngx-skeleton-loader>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <ngx-skeleton-loader [theme]="{ 'border-radius': '5px', height: '15px', width:'100px' }">
+            </ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{ 'border-radius': '5px', height: '15px', width:'30px' }">
+            </ngx-skeleton-loader>
+        </div>
+        <div class="d-flex justify-content-between">
+            <ngx-skeleton-loader [theme]="{ 'border-radius': '5px', height: '15px', width:'100px' }">
+            </ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{ 'border-radius': '5px', height: '15px', width:'30px' }">
+            </ngx-skeleton-loader>
+        </div>
+    </div>
+</ng-template>

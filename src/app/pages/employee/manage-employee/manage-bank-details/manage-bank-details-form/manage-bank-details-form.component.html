@@ -1,0 +1,19 @@
+<app-page-title ></app-page-title>
+
+<div class="card">
+
+  <app-wizard-tabs [wizardData]="wizardData"></app-wizard-tabs>
+  <ng-container *ngIf="currentStep !== wizardData.length">
+  </ng-container>
+  <ng-container *ngIf="currentStep === wizardData.length">
+  </ng-container>
+</div>
+
+<div class="card top-left-border-none">
+     <search-and-filter [tableData]="tableData"></search-and-filter>
+    <data-table-list [tableData]="tableData" ></data-table-list>
+</div>
+
+<ng-container>
+  <app-progress-button ></app-progress-button>
+</ng-container>

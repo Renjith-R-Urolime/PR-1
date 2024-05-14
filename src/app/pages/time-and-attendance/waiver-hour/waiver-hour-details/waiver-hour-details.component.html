@@ -1,0 +1,99 @@
+<app-page-title [isGoBack]="true" [isEditDeleteBtn]="true"></app-page-title>
+
+<details-card [detailsCardData]="detailsCardData">
+    <ng-template custom-element let-data$="data$" let-key$="key$">
+
+        <div class="d-flex">
+            <span class="text-muted me-5">Applies To</span>
+            <div class="d-flex flex-row me-3">
+                <ng-container *ngFor="let employee of data$?.employee; let i=index">
+                    <div class="symbol-group symbol-hover flex-nowrap m-0" *ngIf="i < 2 || i === classificationApplicabilityData?.employee.length - 1">
+                        <div class="symbol symbol-30px symbol-circle" data-bs-toggle="tooltip"
+                            [title]="employee.fullName">
+                            <ng-container *ngIf="employee.image" (click)="classificationApplicabilityData = data$ ;getFormTemplate(appliesTemplate,'Work Calendar' );">
+                                <img [src]="employee.image | s3FileFetch | async" alt="User Image"
+                                    class="symbol-label custom-ratio" />
+                            </ng-container>
+                            <ng-container *ngIf="!employee.image">
+                                <div class="symbol-label fw-bolder symbol-color fs-1 bg-{{theme}}"(click)="classificationApplicabilityData = data$ ;getFormTemplate(appliesTemplate,'Work Calendar' );" id="kt_drawer_form_toggle">
+                                    {{employee?.firstName[0] | uppercase}}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="data$?.employee.length > 2">
+                    <div class="symbol-group symbol-hover flex-nowrap m-0" (click)="getFormTemplate(toleranceModaTemplate,'Work Calendar' );">
+                        <div class="symbol symbol-30px symbol-circle bg-dark" >
+                            <div class="symbol-label fw-bolder symbol-color fs-1  bg-dark text-white" >
+                                +{{ data$?.employee.length - 3 }}
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <!-- <div>
+                <div class="symbol-group symbol-hover flex-nowrap m-0">
+                    <div class="symbol symbol-30px symbol-circle bg-dark"
+                    >
+                        <div class="symbol-label fw-bolder symbol-color fs-1  bg-{{theme}} text-white" (click)="getFormTemplate(toleranceModaTemplate,'Work Calendar' );" id="kt_drawer_form_toggle">
+                          +
+                        </div>
+                    </div>
+                </div>
+
+            </div> -->
+        </div>
+    </ng-template>
+</details-card>
+
+<ng-template #appliesTemplate>
+    <!-- <div class=" d-flex flex flex-row justify-content-between">
+        <div class="form-check form-check-sm form-check-custom my-3 form-check-solid form-check-color-{{theme}} ">
+            <input class="form-check-input" type="checkbox" value="1" data-kt-check="true"
+                data-kt-check-target=".widget-9-check" [(ngModel)]="selectAllChecked" (change)="onSelectAll()">
+            <span class="fw-bold">Select All</span>
+        </div>
+        <button class=" btn-icon btn-30px bg-white btn-active-{{ theme }} my-3"
+            (click)="getFormTemplate(filterTemplate,label.labelName.defaultValue,'classificationApplicability')"
+            class="btn form-btn-icon btn-light mb-1 border border-1 ms-1" [id]="'kt_drawer_form_toggle'"
+            data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+            <span class="svg-icon svg-icon-2" [inlineSVG]="'./assets/media/icons/funnel.svg'"></span>
+        </button>
+    </div>
+
+    <search-and-filter filterButton="false" [customWidth]="'477px'"></search-and-filter> -->
+
+<div *ngFor="let empInfo of classificationApplicabilityData?.employee" class="d-flex flex-row mt-2">
+    <!-- <div class="form-check form-check-sm form-check-custom my-3 form-check-solid form-check-color-{{theme}}">
+        <input class="form-check-input" type="checkbox" value="1" data-kt-check="true"
+            data-kt-check-target=".widget-9-check" [(ngModel)]="empInfo.isSelected" (change)="onCalendarSelect($event,i)">
+    </div> -->
+    <div class="card card-body p-5 border border-1 border-gray rounded-1">
+        <div class="d-flex flex-row">
+            <div class="symbol symbol-30px symbol-circle mt-2">
+                <ng-container *ngIf="empInfo.image">
+                    <img [src]="empInfo?.image | s3FileFetch | async" alt="User Image"
+                        class="symbol-label custom-ratio" />
+                </ng-container>
+                <ng-container *ngIf="!empInfo.image">
+                    <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                        {{empInfo?.["firstName"]?.[0] | uppercase}}
+                    </div>
+                </ng-container>
+            </div>
+            <div class="ms-5 d-flex flex-column">
+                <div class="text-dark fw-bold">
+                    {{empInfo?.employeeId}}:{{ empInfo?.fullName }}
+                </div>
+                <div class="text-muted">
+                    {{empInfo?.designation?.name}}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+  </ng-template>
+
+  <app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" [viewMode]="true"></app-form-drawer>

@@ -1,0 +1,27 @@
+p {
+    font-family: Lato;
+  }
+  
+  .tabs {
+    display: flex;
+    height: 80px;
+  }
+
+
+  .tab-label{
+color: #7E8299;
+font-size: 16px;
+font-weight: 500;
+line-height: 42px;
+cursor: pointer;
+  }
+
+
+  .tabs div {
+    margin-right: 30px; 
+  }
+
+
+  .tab-label:hover {
+    color: #482084; /* Change this to the color you want on hover */
+}

@@ -1,0 +1,323 @@
+<div class="row g-5 mb-1">
+    <div class="col-md-6" *ngIf="employeeInformationData">
+        <details-card [detailsCardData]="employeeInformationMeta" [data]="employeeInformationData"
+            (editEvent)="getFormTemplate(employeeInformationTemplate,'heading','employeeInformation')"[inlineWithLabel]="true" [col]="12"
+            [id]=" isDrawerOpen ?'kt_drawer_form_employee_information' :''" [isEditBtn]="true"></details-card>
+    </div>
+    <div class="col-md-6" *ngIf="classificationData">
+        <details-card [detailsCardData]="classificationMeta" [data]="classificationData"
+            (editEvent)="getFormTemplate(employeeInformationTemplate,'heading','employeeInformation')"
+            [id]=" isDrawerOpen ?'kt_drawer_form_employee_information' :''" [inlineWithLabel]="true" [isEditBtn]="true"
+            [col]="12" [fullHeight]="true"></details-card>
+    </div>
+</div>
+
+
+<app-form-drawer [formTemplate]="employeeInformationTemplate" [headerText]="'Employee Information'"
+    (isSaved)="onDrawerSaveEmployeeInformationForm($event)" (isCanceled)="cancelEmployeeInformationForm($event) "
+    [drawerWidth]="1100" [formDrawerId]="'#kt_drawer_form_employee_information'"
+    [formDrawerCloseId]="'kt_drawer_form_employee_information_close'"
+    [buttonDisable]="isEmployeeInformationFormSaveDisabled" [isProcessing]="isProcessing">
+</app-form-drawer>
+
+
+<app-form-drawer [formTemplate]="employeeBankInformationTemplate" [headerText]="'Active Bank Details'"
+    (isSaved)="onDrawerSaveEmployeeBankInformationForm($event)" (isCanceled)="cancelEmployeeBankInformationForm($event) "
+    [drawerWidth]="550" [formDrawerId]="'#kt_drawer_form_employee_bank_information'"
+    [formDrawerCloseId]="'kt_drawer_form_employee_bank_information_close'"
+    [buttonDisable]="isEmployeeBankInformationFormSaveDisabled" [isProcessing]="isProcessing">
+</app-form-drawer>
+
+<ng-template #employeeInformationTemplate>
+    <ng-container>
+        <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+            <div class="card-body pe-2 py-0 mt-3">
+                <form [formGroup]="employeeInformationForm">
+                    <div class="row">
+                        <ng-container *ngFor="let label of formData.labels;let k=index">
+                            <ng-container *ngIf="!label?.hide">
+                                <div class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                                    <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                        <ng-container>
+                                            <label class="form-label fs-6 mb-0"
+                                                [ngClass]="{'required': label?.required,'invalid': sharedService.hasValidationErrors(label, submit, employeeInformationForm) }">{{label.labelTransformationCancelled
+                                                ? label.labelName.alias.replace('Id','') :
+                                                label.labelName.alias.replace('Id','') | changeCase : "capital"
+                                                }}</label>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'grade'">
+                                            <custom-ng-select [apiLink]="label.apiLink"
+                                                (onchange)="filterDesignation($event)"
+                                                [ngClass]="{ 'invalid':employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple"
+                                                [patchData]="employeeInformationForm.value?.gradeId"
+                                                [controlName]="label.labelName.defaultValue!">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'designation'">
+                                            <custom-ng-select [items]="designationList"
+                                                [ngClass]="{ 'invalid':employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple"
+                                                [patchData]="employeeInformationForm.value?.designationId"
+                                                [controlName]="label.labelName.defaultValue!">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center"
+                                            *ngIf="label.type === 'employeeCategory'">
+                                            <custom-ng-select [apiLink]="label.apiLink"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple"
+                                                [patchData]="employeeInformationForm.value?.categoryId"
+                                                [controlName]="label.labelName.defaultValue!">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'subsidiary'">
+                                            <custom-ng-select (onchange)="filterBasedOnSubsidiarySelected($event)"
+                                                [apiLink]="label.apiLink" [isSelectDisabled]="isOnboarded"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple"
+                                                [patchData]="employeeInformationForm.value?.subsidiaryId"
+                                                [controlName]="label.labelName.defaultValue!">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'location'">
+                                            <custom-ng-select
+                                                [apiLink]="subsidiaryCondition.length > 0 ? label.apiLink : ''"
+                                                [fetchCondition]="subsidiaryCondition" [isSelectDisabled]="isOnboarded"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple"
+                                                [patchData]="employeeInformationForm.value?.locationId"
+                                                [controlName]="label.labelName.defaultValue!">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'department'">
+                                            <custom-ng-select
+                                                [apiLink]="subsidiaryCondition.length > 0 ? label.apiLink : ''"
+                                                [fetchCondition]="subsidiaryCondition" [isSelectDisabled]="isOnboarded"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple"
+                                                [patchData]="employeeInformationForm.value?.departmentId"
+                                                [controlName]="label.labelName.defaultValue!">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'class'">
+                                            <custom-ng-select
+                                                [apiLink]="subsidiaryCondition.length > 0 ? label.apiLink : ''"
+                                                [fetchCondition]="subsidiaryCondition" [isSelectDisabled]="isOnboarded"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple"
+                                                [patchData]="employeeInformationForm.value?.classId"
+                                                [controlName]="label.labelName.defaultValue!">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                                            <input-date-picker [isDisabled]="isOnboarded"
+                                                [formControlName]="label.labelName.defaultValue!"></input-date-picker>
+                                        </ng-container>
+                                        <ng-container *ngIf="label.type === 'currency'">
+                                            <custom-ng-select [isSelectDisabled]="true"
+                                                [formControlName]="label.labelName.defaultValue!" bindLabel="currency"
+                                                [items]="currencyData ? [currencyData] : undefined"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [patchData]="employeeInformationForm.value?.currency"
+                                                [multiple]="false">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+
+                                        <ng-container class="align-items-center"
+                                            *ngIf="label.labelName.alias === 'sponserSubsidiary'">
+                                            <custom-ng-select
+                                                [apiLink]="subsidiaryCountryFilter.length > 0 ? label.apiLink : ''"
+                                                [fetchCondition]="subsidiaryCountryFilter"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+                                        <ng-container class="align-items-center"
+                                            *ngIf="label.labelName.alias === 'expenseSubsidiary'">
+                                            <custom-ng-select
+                                                [apiLink]="subsidiaryCountryFilter.length > 0 ? label.apiLink : ''"
+                                                [fetchCondition]="subsidiaryCountryFilter"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'jurisdiction'">
+                                            <custom-ng-select [items]="jurisdictionList"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [isSelectDisabled]="isOnboarded"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'workCalendar'">
+                                            <custom-ng-select
+                                                [isSelectDisabled]="isOnboarded"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [items]="workCalendarList"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'shift'">
+                                            <custom-ng-select [formControlName]="label.labelName.defaultValue!"
+                                               [items]="shiftList"
+                                               [isSelectDisabled]="isOnboarded"
+                                                [ngClass]="{ 'invalid': employeeInformationForm.get(label.labelName.defaultValue).invalid }"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+
+
+
+                                        <ng-container *ngFor="let validation of label?.validations;">
+
+                                            <div>
+                                                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                                          validation: validation.name,
+                                                          message: validation.message,
+                                                          control: employeeInformationForm.get(label.labelName.defaultValue)
+                                                        }"></ng-container>
+                                            </div>
+
+
+
+                                        </ng-container>
+                                    </div>
+                                </div>
+
+
+
+                            </ng-container>
+
+
+
+
+                        </ng-container>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+    </ng-container>
+
+</ng-template>
+
+
+<ng-template #cardActiveBankDetailsTemplate>
+
+    <form [formGroup]="bankDetailsForm">
+        <div class="row mt-3">
+            <ng-container  *ngFor="let label of bankDetailsformData.labels;let k=index">
+                <div class="col-4">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mt-1"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4">
+                    <ng-container class="align-items-center"
+                    *ngIf="(label.type === 'text' || label.type === 'number')">
+                    <app-input-text-field [isFieldDisabled]="label?.disable" [max]="label?.max"
+                        [maxLength]="label?.maxLength"
+                        [patchValue]="bankDetailsForm.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, overViewForm) }"
+                        [type]="label.type"></app-input-text-field>
+                </ng-container>
+
+                <ng-container class="align-items-center" *ngIf="label.type === 'paymentMethod'">
+                    <custom-ng-select [apiLink]="label.apiLink"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [multiple]="label.multiple">
+                    </custom-ng-select>
+                </ng-container>
+
+
+                <ng-container class="align-items-center" *ngIf="label.type === 'accountType'">
+                    <custom-ng-select [apiLink]="label.apiLink"
+                      [formControlName]="label.labelName.defaultValue!"
+                      [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                      [multiple]="label.multiple">
+                    </custom-ng-select>
+                  </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+
+
+<div class="row g-5 pt-3">
+    <div class="col-md-6" *ngIf="cardActiveBankDetailsData">
+        <details-card [detailsCardData]="cardActiveBankDetailsMeta" [data]="cardActiveBankDetailsData"
+        (editEvent)="getFormTemplate(cardActiveBankDetailsTemplate,'heading','bankInformation')"
+        [id]=" (isBankDrawerOpened && isOnboarded ) ?'kt_drawer_form_employee_bank_information' :''"  [inlineWithLabel]="true" [isEditBtn]="true" [col]="12"></details-card>
+    </div>
+    <!-- <div class="col-md-6" *ngIf="fullFinalStatusData">
+        <details-card [detailsCardData]="fullFinalStatusMeta" [data]="fullFinalStatusData"
+            [nameHeadingColor]="'#482084'" [inlineWithLabel]="true" [isEditBtn]="true" [col]="12"></details-card>
+    </div> -->
+</div>
+
+
+<div class="row pt-3">
+    <app-tab-data-table [tabsMeta]="employeePillTabsMeta"></app-tab-data-table>
+
+</div>
+
+
+<ng-template #customTemplate>
+
+    <div class="mb-2 d-flex gap-6 justify-content-center">
+        <a [routerLink]="['/employee-hub/profiles/employee/view', this.id]" class="btn btn-{{theme}} btn-sm"
+            (click)="onViewClicked()">View</a>
+    </div>
+</ng-template>
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="control && control.hasError(validation)">
+      <div class="fv-plugins-message-container ps-4">
+        <span role="alert" class="fv-help-block fs-7 ">
+          {{ message }}
+        </span>
+      </div>
+    </ng-container>
+  </ng-template>

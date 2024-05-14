@@ -1,0 +1,540 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+  <div class="{{inlineWithLabel? '' :'mb-3'}}  pb-2 card {{fullHeight? 'h-100' :''}}">
+    <div class="my-0 p-0 card-body mb-3 rounded-4 ">
+      <ng-container *ngFor="let detailsItem of detailsCardData.meta; let i=index">
+        <div *ngIf="!(detailsItem.name===headingToHide)" class="card-header d-flex align-items-center border-0"
+          [ngClass]="{ 'mt-3' : i === 0 }">
+          <div class="fs-3 fw-bold ">{{detailsItem.name}}</div>
+          <div class="hr-side mt-3 ms-2">
+            <hr>
+            <div *ngIf="isEditBtn" (click)="emitEditEvent()">
+              <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                class="svg-icon svg-icon-3 cursor-pointer"></span>
+
+            </div>
+          </div>
+        </div>
+        <div class="{{inlineWithLabel? 'grid-wrapper-inline-label' :'grid-wrapper'}}  gy-5 px-9 m-0 mt-1">
+          <ng-container *ngFor="let key of detailsItem?.labels; let i = index;">
+            <div *ngIf="!key?.hide"
+              class="grid-item m-0 grid-row-{{key?.row ? key?.row : 1}} grid-col-{{key?.col ? key.col : (inlineWithLabel?col:4)}}">
+              <div class="d-flex {{inlineWithLabel? 'flex-row' : 'flex-column h-100' }} ">
+                <!-- Key -->
+                <div class="  text-muted px-0 text-nowrap {{inlineWithLabel? 'me-4 col-6' :''}}"
+                  *ngIf="key?.type !== 'checkbox' && key?.type !== 'toggle' ">
+                  <ng-container *ngIf="key?.labelName.alias !=='actualHour'">
+
+                    {{ key?.labelName?.labelTransformationCancelled ? (key?.labelName?.alias) : (key?.labelName?.alias |
+                    changeCase: 'capital') }}
+                  </ng-container>
+                </div>
+                <!-- Value -->
+                <div class="{{inlineWithLabel? 'flex-grow-1 text-start col-6' :''}}">
+                  <ng-container
+                    *ngIf="detailsCardData.data[key?.labelName.defaultValue] | dataValue : key?.labelName.defaultValue : 'view' : key?.type | async as value">
+                    <!--  <ng-container *ngIf="value !== 'Null'; else noInfo"> -->
+                    <ng-container [ngSwitch]="key?.type" *ngIf="!key?.custom">
+                      <!-- Checkbox -->
+                      <ng-container *ngSwitchCase="'checkbox'">
+                        <div class="d-flex flex-row gap-3">
+                          <input class="form-check-input form-check-input-sm mt-4 mb-3" type="checkbox"
+                            [checked]="detailsCardData?.data?.[key?.labelName.defaultValue]" disabled>
+                          <label class="mt-4 mx-3  mb-3 form-label fs-6 mb-1">
+                            {{ key?.labelName.alias.replace('Id', '') | changeCase: "capital" }}
+                          </label>
+                        </div>
+                      </ng-container>
+                      <!-- Toggle -->
+                      <ng-container *ngSwitchCase="'toggle'" class="form-check form-switch">
+                        <label class="switch">
+                          <input [id]="key?.labelName.defaultValue" type="checkbox"
+                            [checked]="detailsCardData?.data?.[key?.labelName.defaultValue]" disabled>
+                          <span class="slider round"
+                            [ngClass]="[detailsCardData?.data?.[key?.labelName.defaultValue] ?'bg-' + theme : '']"></span>
+                        </label>
+                        <label class="mt-4 mx-3  mb-3 form-label fs-6 mb-1">
+                          {{ key?.labelName.alias.replace('Id', '') | changeCase: "capital" }}
+                        </label>
+                      </ng-container>
+                      <!-- Text -->
+                      <ng-container *ngSwitchCase="'text'">
+                        <div class="  fs-6 text-dark px-0">
+                          <ng-container *ngIf="value !== 'Null'; else noInfo">
+                            {{ value }}
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'list'">
+                        <div class="  fs-6 text-dark px-0">
+                          <ng-container *ngIf="value !== 'Null'; else noInfo">
+                            <ng-container *ngFor="let entity of value; let i = index; let last = last">
+                              <ng-container *ngIf="(showAllItems[j] || i < 3)">
+                                {{ entity.name }}{{ !last ? ', ' : '' }}
+                              </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="!showAllItems[j] && value?.length > 3">
+                              <span class="text-{{theme}}" (click)="showAllItems[j] = true">
+                                +{{ value?.length - 3 }} <span>more</span>
+                              </span>
+                            </ng-container>
+                            <ng-container *ngIf="showAllItems[j] ">
+                              <span (click)="showAllItems[j] = false" class="text-{{theme}}">less</span>
+                            </ng-container>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                      <!-- Number -->
+                      <ng-container *ngSwitchCase="'number'">
+                        <div class="fw-medium fs-6 text-dark px-0">
+                          <ng-container *ngIf="value !== 'Null'; else noInfo">
+                            {{ value }}
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'status'">
+                        <div class="fw-medium fs-6 text-dark px-0 {{inlineWithLabel ? 'fw-bold' : 'mt-1 fw-medium'}}">
+                          <ng-container *ngIf="value !== 'Null'; else noInfo">
+                            {{ value === true ? 'Inactive' : 'Active' }}
+                          </ng-container>
+                        </div>
+                      </ng-container>
+
+                      <!-- Date -->
+                      <ng-container *ngSwitchCase="'date'">
+                        <div class="fw-medium fs-6 text-dark px-0 {{inlineWithLabel?'fw-bold':'mt-1 fw-medium'}}">
+                          <ng-container *ngIf="value !== 'Null'; else noInfo">
+                            {{ value | date: 'MMMM d, y' }}
+                          </ng-container>
+                        </div>
+                      </ng-container>
+
+
+                      <!-- Phone -->
+                      <ng-container *ngSwitchCase="'phoneNumber'">
+                        <div class="fw-medium fs-6 text-dark px-0">
+                          <ng-container *ngIf="value?.number; else noInfo">
+                            <div class="d-flex flex-row">
+                              <div class="flag fs-2 lh-1 me-2">
+                                {{value?.emoji}}
+                              </div>
+                              <div>
+                                +{{ value?.code }} {{ value?.number }}
+                              </div>
+                            </div>
+
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                      <!-- URL -->
+                      <ng-container *ngSwitchCase="'url'">
+                        <ng-container *ngIf="value !== 'Null'; else noInfo">
+                          <div class="d-flex gap-2 align-items-center cursor-pointer text-hover-{{theme}}"
+                            (click)="openUrlInNewWindow(value)">
+                            <a class="fw-medium fs-6 text-dark px-0 mt-1 ">
+                              {{ value }}
+                            </a>
+                            <span class="svg-icon scg-icon-3 text-muted "
+                              [inlineSVG]="'./assets/media/icons/open-outline.svg'"></span>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+
+
+                      <ng-container *ngSwitchCase="'amount'">
+                        <ng-container *ngIf="value !== 'Null'; else noInfo">
+                          <div class="d-flex gap-2 align-items-center cursor-pointer text-hover-{{theme}}">
+                            <div class="fw-medium fs-6 text-dark px-0 mt-1 ">
+                              {{getModifiedValue(value) }}
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                      <!-- logo -->
+                      <ng-container *ngSwitchCase="'logo'">
+                        <ng-container *ngIf="value | s3FileFetch : 'base64' | async as logo; else imageLoader">
+                          <div class="max-w-300px max-h-100px h-100 mt-2">
+                            <img class="h-100 w-100 object-fit-contain object-position-center rounded-1"
+                              *ngIf="logo !== 'null'; else noImg" [src]="logo" alt="image" />
+                          </div>
+                        </ng-container>
+                        <ng-template #noImg>
+                          <div
+                            class="d-flex bg-gray-200 w-100 h-100 text-gray-400 rounded-1 justify-content-center align-items-center w-100">
+                            Logo not available
+                          </div>
+                        </ng-template>
+                      </ng-container>
+                      <!-- file -->
+                      <ng-container *ngSwitchCase="'file'">
+                        <ng-container *ngIf="value !== 'Null'; else noInfo">
+                          <div class="fw-medium fs-6 text-dark px-0 mt-1 position-relative">
+                            <!-- <ng-container [ngSwitch]="checkFileExtension(value)">
+                              <ng-container *ngSwitchCase="'image'">
+                                <a class="fw-medium fs-6 px-0 mt-1* cursor-pointer" (click)="showImage = !showImage"
+                                  [ngClass]="{'text-{{theme}}':showImage, 'text-dark' : !showImage}">
+                                  View Image
+                                </a>
+                                <ng-container *ngIf="showImage" [ngTemplateOutlet]="( imagePopup )"
+                                  [ngTemplateOutletContext]="{key$: key, data$: value | s3FileFetch | async  }"></ng-container>
+
+                              </ng-container>
+                              <ng-container *ngSwitchCase="'file'">
+                                <a [href]="value | s3FileFetch | async" target="_blank"
+                                  class="fw-medium fs-6 text-dark px-0 mt-1 ">
+                                  View File
+                                </a>
+                              </ng-container>
+                            </ng-container> -->
+                            <ng-container
+                              *ngIf="['jpg', 'png', 'jpeg', 'svg'].includes(value.split('.').pop()); then imageBlock else fileBlock"></ng-container>
+
+                            <ng-template #imageBlock>
+                              <a class="fw-medium fs-6 px-0 mt-1* cursor-pointer" (click)="showImage = !showImage"
+                                [ngClass]="{'text-{{theme}}':showImage, 'text-dark' : !showImage}">
+                                View Image
+                              </a>
+                              <ng-container *ngIf="showImage" [ngTemplateOutlet]="( imagePopup )"
+                                [ngTemplateOutletContext]="{key$: key, data$: value | s3FileFetch | async  }"></ng-container>
+                            </ng-template>
+
+                            <ng-template #fileBlock>
+                              <a [href]="value | s3FileFetch | async" target="_blank"
+                                class="fw-medium fs-6 text-dark px-0 mt-1 ">
+                                View File
+                              </a>
+                            </ng-template>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                      <!-- Associated Entity -->
+                      <ng-container *ngSwitchCase="'associatedEntity'">
+                        <ng-container *ngIf="value !== 'Null'; else noAssociatedEntity">
+                          <ng-container *ngIf="Array.isArray(value); else associatedEntity">
+                            <div class="gap-3">
+                              <ng-container *ngFor="let entity of value; let j = index">
+                                <ng-container *ngIf="(key?.showMore || j < 3)">
+                                  <a (click)="onRouterNavigate(key?.baseUrl, entity.id)"
+                                    class="text-hover-{{ theme }} fw-medium fs-6 text-dark px-0 mt-1 cursor-pointer">
+                                    {{ entity?.name || value?.fullName || value?.id || value }}
+                                    <span *ngIf=" i !== value.length - 1">,</span>
+                                  </a>
+                                </ng-container>
+                              </ng-container>
+                              <ng-container *ngIf="!key.showMore && value.length > 3">
+                                <span class="text-{{theme}}" (click)="key.showMore=true">
+                                  +{{ value?.length - 3 }} <span>more</span>
+                                </span>
+                              </ng-container>
+                              <ng-container *ngIf="key?.showMore">
+                                <span (click)="key.showMore=false" class="text-{{theme}}">less</span>
+                              </ng-container>
+                            </div>
+                          </ng-container>
+
+                          <ng-template #associatedEntity>
+                            <a (click)="onRouterNavigate(key?.baseUrl, value.id)"
+                              class="text-hover-{{ theme }} fw-medium fs-6 text-dark px-0 mt-1 cursor-pointer">
+                              {{ value?.name || value?.fullName || value?.id || value }}
+                            </a>
+                          </ng-template>
+                        </ng-container>
+                        <ng-template #noAssociatedEntity>
+                          <p class="fw-medium fs-6 text-gray-300 mb-0 text-muted ">
+                            NONE
+                          </p>
+                        </ng-template>
+                      </ng-container>
+                      <!-- time -->
+                      <ng-container *ngIf="key?.type==='time'">
+                        <div class="fw-medium fs-6 text-dark px-0 mt-1">
+                          <ng-container *ngIf="value !== 'Null'; else noInfo">
+                            <div
+                              class=" w-50px h-40px border-2 border-{{theme}} rounded-1 align-items-center pt-2 ps-1 fs-6">
+                              <div> {{ value }}</div>
+                            </div>
+                          </ng-container>
+                          <ng-template #noInfo>
+                            <div class="fw-medium fs-6 text-gray-300 px-0 mt-1">
+                              Not Availaible
+                            </div>
+                          </ng-template>
+                        </div>
+                      </ng-container>
+                      <!-- Employee -->
+                      <ng-container *ngSwitchCase="'employee'">
+                        <ng-container *ngIf="value !== 'Null'; else noInfo">
+                          <div class="position-relative">
+                            <ng-container [ngTemplateOutlet]="employeePopup"
+                              [ngTemplateOutletContext]="{key$: key, data$: value}"></ng-container>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                    <!-- Cuatom -->
+                    <ng-container *ngIf="key?.custom">
+                      <ng-container [ngTemplateOutlet]="(customElement)"
+                        [ngTemplateOutletContext]="{key$: key, data$: detailsCardData.data}">
+                      </ng-container>
+                    </ng-container>
+                  </ng-container>
+                </div>
+
+
+                <!-- No Value -->
+                <ng-template #noInfo>
+                  <div class="fw-medium fs-6 text-gray-300 px-0 {{ inlineWithLabel ? '' : 'mt-1' }} ">
+                    Not Available
+                  </div>
+                </ng-template>
+
+              </div>
+
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <ng-template [ngTemplateOutlet]="viewTemplate" [ngTemplateOutletContext]="{ data$:detailsCardData.data }">
+  </ng-template>
+</ng-container>
+<ng-template #skeleton>
+  <div class="pt-3 pb-4 card">
+    <div class="my-0 p-0 card-body rounded-4">
+      <div class="card-header d-flex align-items-center border-0 mt-2">
+        <ngx-skeleton-loader [theme]="{ width: '10rem', height: '1.8em' }"></ngx-skeleton-loader>
+      </div>
+      <div class="row gy-5 px-6 m-0">
+        <div class="col-4" *ngFor="let row of [0, 0, 0, 0, 0, 0]">
+          <div class="d-flex flex-column">
+            <ng-container>
+              <ngx-skeleton-loader [theme]="{ width: '10rem', height: '1.3em' }"></ngx-skeleton-loader>
+              <ngx-skeleton-loader [theme]="{ width: '12rem', height: '1em' }"></ngx-skeleton-loader>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #popupDropdown let-key="key" let-data="data$">
+  <div class="card bs-dropdown p-3 position-absolute z-index-4 d-flex justify-content-around border-1 top-100 mt-3">
+    <div
+      class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }} position-absolute right-0 top-0 m-1"
+      (click)="showEmployee=false">
+      <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+    </div>
+    <div class="d-flex flex-column justify-content-start m-1">
+      <div class="d-flex mb-2 mt-5 gap-2">
+        <div class="mb-3">
+          <div class="symbol symbol-50px symbol-circle ">
+            <ng-container *ngIf="data?.['image']; else noImage">
+              <ng-container *ngIf="data?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+                <ng-container *ngIf="imageData !=='null' ;else noImage">
+                  <div class="symbol symbol-circle rounded-3" data-bs-toggle="tooltip" data-bs-boundary="window"
+                    data-bs-placement="top" [title]="data?.['firstName']+' '+data?.['lastName']">
+                    <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                      alt="profile" />
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+
+            <ng-template #noImage>
+              <div class="symbol-label fw-bolder symbol-color-size fs-5 bg-{{theme}}">
+                {{data?.['firstName']?.[0] | changeCase : "capital"}}{{data?.['lastName']?.[0] | changeCase :
+                "capital"}}
+              </div>
+            </ng-template>
+          </div>
+        </div>
+        <div class="mx-4 d-flex flex-column gap-1">
+          <div class="fs-5 text-nowrap">
+            {{data?.['employeeId']}}: {{ data?.['firstName'] | changeCase : "capital" }} {{
+            data?.['lastName'] |
+            changeCase : "capital" }}
+          </div>
+          <div class="fs-6 text-gray-500">
+            {{ data?.['designation']?.['name'] | changeCase : "capital" }}
+          </div>
+          <div class="d-grid gap-2 col-12 mx-auto">
+            <a (click)="onViewEmployee(data?.id)" type="button"
+              class="btn btn-lg btn-block btn-outline btn-{{theme}}">View Profile</a>
+          </div>
+        </div>
+        <div>
+        </div>
+      </div>
+      <div class="d-flex flex-column gap-2">
+        <div class="d-flex flex-row fs-6 gap-9">
+          <div class="d-flex flex-row justify-content-start">
+            <div class="text-gray-500">Reporting To:</div>
+          </div>
+          <!-- class="col-md-6" -->
+          <div class="d-flex flex-row justify-content-start">
+            <div>
+              <ng-container *ngIf="data?.supervisor?.image ; else noImageInPopup">
+                <ng-container *ngIf="data?.supervisor?.image | s3FileFetch | async as imageData; else: imageLoader">
+                  <ng-container *ngIf="imageData !=='null' ;else noImageInPopup">
+                    <div class="symbol symbol-circle symbol-22px rounded-3  bg-{{theme}}" data-bs-toggle="tooltip"
+                      data-bs-boundary="window" data-bs-placement="top">
+                      <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                        alt="profile" />
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+
+              <!-- logo starts here -->
+              <ng-template #noImageInPopup>
+                <div class="symbol symbol-22px symbol-circle ">
+                  <ng-container>
+                    <div *ngIf="data?.supervisor" class="symbol-label fs-9 symbol-color bg-{{theme}}">
+                      {{data?.supervisor?.firstName?.[0] | uppercase}}{{data?.supervisor?.lastName?.[0] | uppercase}}
+                    </div>
+                    <div *ngIf="!data?.supervisor" class="text-gray-500">
+                      Not Available
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-template>
+              <!-- logo ends here -->
+              <span class="text-nowrap"> {{data?.supervisor?.['firstName'] | changeCase : "capital"}}
+                {{data?.supervisor?.['lastName'] | changeCase :
+                "capital"}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-row fs-6  gap-11">
+          <div class="d-flex-flex-row justify-content-start">
+            <div class="text-gray-500 ">Work Email:</div>
+          </div>
+          <div class="d-flex-flex-row justify-content-start">
+            <div>
+              <div *ngIf="data?.workEmail">{{data?.workEmail}}</div>
+              <div *ngIf="!data?.workEmail" class="text-gray-500">Not Available</div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-row fs-6  gap-4">
+          <div class="d-flex-flex-row justify-content-start">
+            <div class="text-gray-500 ">Social Connect:</div>
+          </div>
+          <div class="d-flex-flex-row justify-content-start">
+            <div>
+              <a href="https://www.linkedin.com/" target="_blank">
+                <span class="svg-icon svg-icon-2x me-2" [inlineSVG]="'./assets/media/icons/linkedin.svg'"></span>
+              </a>
+              <a href="https://www.twitter.com/" target="_blank">
+                <span class="svg-icon svg-icon-2x me-2" [inlineSVG]="'./assets/media/icons/twitterx.svg'"></span>
+              </a>
+              <a href="https://www.gmail.com/" target="_blank" (click)="openDefaultMailBox($event,data?.workEmail)">
+                <span class="svg-icon svg-icon-2x me-2" [inlineSVG]="'./assets/media/icons/mail-outline.svg'"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<!-- <ng-template #customEmployee let-key="key" let-detailsCardData="detailsCardData">
+  <ng-container *ngIf="key?.type==='custom'">
+    <div class="d-flex flex-row mb-2" >
+      <div class="mb-3">
+        <div class="symbol symbol-40px symbol-circle ">
+          <ng-container>
+            <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+              {{detailsCardData[key?.labelName.defaultValue?.replace('Id','')]['firstName'][0] | changeCase : "capital"}}{{detailsCardData[key?.labelName.defaultValue?.replace('Id','')]['lastName'][0] | changeCase : "capital"}}
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="mx-9 d-flex flex-column align-items-center fs-7 mt-4">
+        <div>
+          {{detailsCardData[key?.labelName.defaultValue.replace('Id','')]['employeeId']}}
+        </div>
+        <label class=" form-label">
+          {{ detailsCardData[key?.labelName.defaultValue?.replace('Id','')]['firstName'] | changeCase : "capital" }} {{ detailsCardData[key?.labelName.defaultValue?.replace('Id','')]['lastName'] |
+          changeCase : "capital" }}
+        </label>
+      </div>
+      <div>
+      </div>
+    </div>
+  </ng-container>
+</ng-template> -->
+<ng-template #employeePopup let-key="key" let-data="data$">
+
+  <div class="d-flex gap-5 cursor-pointer" (click)="showEmployee=!showEmployee" data-kt-menu-trigger="click"
+    data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end" [ngClass]="{'text-primary':showEmployee}">
+    <ng-container *ngIf="data?.['image'] ; else noImageEmp">
+      <div class="symbol">
+        <ng-container *ngIf="data?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+          <ng-container *ngIf="imageData !=='null' ;else noImageEmp">
+            <div class="symbol symbol-circle rounded-3" data-bs-toggle="tooltip" data-bs-boundary="window"
+              data-bs-placement="top" [title]="data?.['firstName']+' '+data?.['lastName']">
+              <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                alt="profile" />
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
+    <ng-template #noImageEmp>
+      <div class="symbol symbol-circle symbol-50px">
+        <ng-container>
+          <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+            {{data?.['firstName']?.[0] | changeCase : "capital"}}{{data?.['lastName']?.[0] | changeCase : "capital"}}
+          </div>
+        </ng-container>
+      </div>
+    </ng-template>
+
+
+    <div class="d-flex flex-column align-items-center fs-6 mt-1">
+      <p class="m-0 fs-7">
+        {{data?.['employeeId']}}
+      </p>
+      <p class="m-0 fs-4">
+        {{ data?.['firstName'] | changeCase : "capital" }} {{ data?.['lastName'] |
+        changeCase : "capital" }}
+      </p>
+    </div>
+  </div>
+  <ng-container *ngIf="showEmployee">
+    <app-employee-profile-popup [value]="data" [showEmployee]="showEmployee"></app-employee-profile-popup>
+    <!-- <ng-container class="z-index-4" *ngIf="showEmployee" [ngTemplateOutlet]="( popupDropdown )"
+      [ngTemplateOutletContext]="{key:key, data$:data}">
+    </ng-container> -->
+  </ng-container>
+
+</ng-template>
+
+<ng-template #imagePopup let-key="key$" let-data="data$">
+  <div
+    class="card bs-dropdown overflow-hidden min-h-80px w-80 position-absolute z-index-4 d-flex justify-content-around border-1 top-100 mt-3">
+    <div
+      class="box-36px flex-center d-flex btn-icon text-hover-dark svg-icon-h-bg-dark position-absolute right-0 top-0 m-1"
+      (click)="showEmployee=false">
+      <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"
+        (click)="showImage = !showImage"></span>
+    </div>
+    <ng-container *ngIf="data">
+      <img class="object-fit-cover object-position-center" *ngIf="data !== 'null'; else noImg" [src]="data"
+        alt="image" />
+    </ng-container>
+    <ng-template #noImg>
+      <div class="d-flex justify-content-center align-items-center w-100">
+        Image could not be fetched
+      </div>
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template #imageLoader>
+  <ngx-skeleton-loader [theme]="{ width: '100%', height: '5rem' }"></ngx-skeleton-loader>
+</ng-template>

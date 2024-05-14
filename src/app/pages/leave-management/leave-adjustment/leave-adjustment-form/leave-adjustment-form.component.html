@@ -1,0 +1,181 @@
+<app-page-title></app-page-title>
+
+<div class="card">
+    <div class="card bs-none p-4">
+        <app-breadcrumb></app-breadcrumb>
+        <ng-container *ngIf="!isLoading ; else skeleton">
+            <ng-container *ngIf="formSections.length>0">
+                <ng-container *ngFor="let section of formSections; let i=index">
+                    <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                        <div class="ps-9 mt-2">
+                            <div class="d-flex">
+                                <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                <div class="hr-side me-8 ms-2">
+                                    <hr class="mx-1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body py-0">
+                            <form [formGroup]="leaveAdjustmentForm">
+                                <div class="row">
+                                    <ng-container *ngFor="let label of leaveAdjustmentFormData.labels">
+                                        <ng-container *ngIf="!label?.hide">
+                                            <ng-container *ngIf="section.sectionName === label.sectionName">
+                                                <div
+                                                    class="col-lg-{{ label.col ? label.col : col }} mb-2  position-relative">
+                                                    <div class="max-w-90">
+                                                        <ng-container *ngIf="label.type !== 'checkbox'">
+                                                            <label class="form-label fs-6 mb-0" [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, leaveAdjustmentForm) }">{{ label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                                              </ng-container>
+
+                                                        <app-input-text-field
+                                                        [isFieldDisabled]="lockTransaction"
+                                                        [patchValue]="leaveAdjustmentForm?.value[label.labelName.defaultValue!]" [formControlName]="label.labelName.defaultValue!"
+                                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                        [ngClass]="{ 'mb-3': true, 'invalid': sharedService.hasValidationErrors(label,submit, leaveAdjustmentForm) }"
+                                                        [type]="label.type"
+                                                        [name]="label.labelName.alias!"
+                                                        [min]="label?.min"
+                                                        [max]="label?.max"
+                                                        [maxLength]="label?.maxLength"
+                                                        ></app-input-text-field>
+                                                        <ng-container
+                                                            class="align-items-center"
+                                                            *ngIf="label.type === 'employee'">
+                                                            <employee-select (onchange)="fetchLeaveConfig($event)"
+                                                            [patchData]="patchData?.employee"
+                                                                [isDisabled]="id ? true : false"
+                                                                [filterDisabled]="id ? true : false"
+                                                                [scope]="label?.scope"
+                                                                [ngClass]="{ 'mb-3': true, 'invalid': sharedService.hasValidationErrors(label,submit, leaveAdjustmentForm) }"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital') ">
+                                                            </employee-select>
+                                                        </ng-container>
+                                                        <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                                                            <ng-container *ngIf="label.labelName.defaultValue === 'transactionDate'">
+                                                                <input-date-picker [isDisabled]="lockTransaction"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [minDate]="payrollOnboardDate"
+                                                              ></input-date-picker>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.labelName.defaultValue === 'startDate'">
+                                                                <input-date-picker [isDisabled]="lockTransaction"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [minDate]="payrollOnboardDate"
+                                                                [maxDate]="leaveAdjustmentForm?.value?.endDate"
+                                                              ></input-date-picker>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.labelName.defaultValue === 'endDate'">
+                                                                <input-date-picker [isDisabled]="lockTransaction"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [minDate]="leaveAdjustmentForm?.value?.startDate || payrollOnboardDate"
+                                                              ></input-date-picker>
+                                                            </ng-container>
+                                                        </ng-container>
+                                                        <ng-container class="align-items-center"
+                                                            *ngIf="label.type === 'leaveType'">
+                                                            <custom-ng-select
+                                                                [isSelectDisabled]="lockTransaction"
+                                                                [items]="leavePlanType"
+                                                                (onchange)="onLeaveTypeChange($event)"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [controlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                [multiple]="label.multiple"
+                                                                [patchData]="patchData?.leaveType">
+                                                            </custom-ng-select>
+                                                        </ng-container>
+                                                        <ng-container class="align-items-center"
+                                                            *ngIf="label.type === 'transactionType'">
+                                                            <custom-ng-select
+                                                            [isSelectDisabled]="lockTransaction"
+                                                            (onchange)="onTransactionTypeChange($event)"
+                                                            [jsonListName]="label.jsonListName"
+                                                            [ngClass]="{ 'mb-3': true, 'invalid': sharedService.hasValidationErrors(label,submit, leaveAdjustmentForm) }"
+                                                            [formControlName]="label.labelName.defaultValue!"
+                                                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                            [multiple]="label.multiple"
+                                                            [patchData]="patchData?.transactionType">
+                                                          </custom-ng-select>
+                                                          </ng-container>
+                                                          <ng-container class="align-items-center" *ngIf="label.type === 'transactionUnit'">
+                                                            <custom-ng-select
+                                                            [isSelectDisabled]="lockTransaction"
+                                                            [formControlName]="label.labelName.defaultValue!"
+                                                            (onchange)="onTransactionUnitChange($event)"
+                                                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                            [ngClass]="{ 'mb-3': true, 'invalid': sharedService.hasValidationErrors(label,submit, leaveAdjustmentForm) }"
+                                                            [jsonListName]="label.jsonListName"
+                                                            [multiple]="label.multiple"
+                                                            [patchData]="patchData?.transactionUnit"
+                                                            [fetchCondition]="transactionUnitCondition"
+                                                            >
+                                                          </custom-ng-select>
+                                                          </ng-container>
+                                                          <!-- <ng-container class="align-items-center" *ngIf="label.type === 'hour'">
+                                                            <input type="text">
+                                                          </ng-container> -->
+                                                        <ng-container class="align-items-center" *ngIf="label.type === 'file'">
+                                                            <input-file-upload theme="light" fieldStyle="compact" [allowPdf]="true"
+                                                                [formControlName]="label.labelName.defaultValue!"></input-file-upload>
+                                                        </ng-container>
+                                                        <ng-container class="align-items-center" *ngIf="label.type === 'hour'">
+                                                            <app-new-time-picker [isTimeIntervalMode]="true" [formControlName]="label.labelName.defaultValue!"></app-new-time-picker>
+                                                        </ng-container>
+                                                        <ng-container *ngFor="let validation of label.validations;" >
+                                                            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                                              validation: validation.name,
+                                                              message: validation.message,
+                                                              control: leaveAdjustmentForm.get(label.labelName.defaultValue)
+                                                            }"></ng-container>
+                                                          </ng-container>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </ng-container>
+
+                                    </ng-container>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+            <ng-container>
+                <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+                <!-- <div class=" p-md-0 ">
+                    <div class="d-flex  flex-column flex-md-row justify-content-end gap-4">
+                        <button (click)="onCancel()" type="button"
+                            class="btn border btn-sm cursor-pointer bg-{{theme}}-bright">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-{{theme}} btn-sm cursor-pointer" (click)="onSubmit()">
+                            <ng-container *ngIf="!isProcessing">
+                                Submit
+                            </ng-container>
+                            <ng-container *ngIf="isProcessing">
+                                <div class="d-flex gap-3">
+                                    Please wait
+                                    <div class="spinner"></div>
+                                </div>
+                            </ng-container>
+                        </button>
+                    </div>
+                </div> -->
+            </ng-container>
+        </ng-container>
+    </div>
+    <ng-template #skeleton>
+        <app-edit-form-skeleton></app-edit-form-skeleton>
+    </ng-template>
+    <ng-template #formError let-control="control" let-message="message" let-validation="validation">
+        <ng-container *ngIf="submit && control.hasError(validation)">
+          <div class="fv-plugins-message-container ">
+            <span role="alert" class="fv-help-block fs-9">
+              {{ message }}
+            </span>
+          </div>
+        </ng-container>
+      </ng-template>

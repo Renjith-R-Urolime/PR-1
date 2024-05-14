@@ -1,0 +1,54 @@
+<app-page-title [isNewButton]="false" [isEditDeleteBtn]="false" [isGoBack]="false" [title]="componentTitle"></app-page-title>
+
+<div class="d-flex flex-row justify-content-between align-items-center">
+    <app-breadcrumb></app-breadcrumb>
+    <search-and-filter [multipleViewOptions]="true" [importExportOption]="true" (openImportModal)="openModalFromEvent()"></search-and-filter>
+</div>
+
+<!-- If opted for card view -->
+<app-card-view-list *ngIf="view==='card'" [cardMetaData]="cardJsonData">
+    <ng-template card-header-temp let-item="item$">
+      <div class="d-flex flex-center flex-column justify-content-center mb-2 ">
+        <!-- Image -->
+        <ng-container *ngIf="item?.['image'] ; else noImage">
+        <div class="symbol">
+          <ng-container *ngIf="item?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+            <ng-container *ngIf="imageData !=='null' ;else noImage">
+              <div class="symbol symbol-70px symbol-circle rounded-3" data-bs-toggle="tooltip"
+                data-bs-boundary="window" data-bs-placement="top" [title]="item?.['firstName']+' '+item?.['lastName']">
+                <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                  alt="profile" />
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+        <ng-template #noImage>
+          <div class="symbol symbol-70px symbol-circle ">
+            <ng-container *ngIf="item.firstName">
+              <div class="symbol-label fs-2qx fw-bolder symbol-color bg-{{theme}} cursor-pointer" (click)="viewEmployee(item.id)">
+                {{item?.firstName[0] | uppercase}}
+              </div>
+            </ng-container>
+          </div>
+          </ng-template>
+        <!-- Name -->
+        <div class="text-center">
+          <div [title]="item.firstName +' '+ item.lastName" class="line-clamp-1 fs-6 fw-bolder cursor-pointer" (click)="viewEmployee(item.id)"> {{
+            item.firstName +' '+ item.lastName }}
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template card-footer-temp let-item="item$">
+      <div class="d-flex flex-row gap-4 justify-content-center">
+          <button *ngIf="!item.isOnboarded" class="btn btn-sm btn-primary"
+            (click)="onBoardEmployee(item.id,item)">Onboard</button>
+          <button *ngIf="item.isOnboarded" class="btn btn-sm btn-primary my-2" (click)="viewEmployee(item.id)">View</button>
+      </div>
+    </ng-template>
+  </app-card-view-list>
+<!-- if opted for table view -->
+<div class="card overflow-hidden" *ngIf="view==='table'">
+    <data-table-list   ></data-table-list>
+</div>

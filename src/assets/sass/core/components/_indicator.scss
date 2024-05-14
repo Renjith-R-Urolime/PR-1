@@ -1,0 +1,18 @@
+//
+// Indicator
+//
+
+.indicator-progress {
+    display: none;
+    font-size: 18px;
+    [data-kt-indicator="on"] > & {
+        display: inline-block;
+    }
+}
+
+.indicator-label {
+    font-size: 18px;
+    [data-kt-indicator="on"] > & {
+        display: none;
+    }
+}

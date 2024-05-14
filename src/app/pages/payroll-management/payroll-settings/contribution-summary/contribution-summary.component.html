@@ -1,0 +1,48 @@
+<app-page-title [isGoBack]="true" [isNewButton]="false" [isEditDeleteBtn]="false">
+</app-page-title>
+
+<div class="card" [ngClass]="{ 'bg-transparent bs-none' : view==='card' }">
+  <div class="d-flex flex-row justify-content-between align-items-center">
+    <app-breadcrumb [breadcrumbs]="['List']"></app-breadcrumb>
+    <div>
+      <search-and-filter (viewSelected)="changeView($event)" [multipleViewOptions]="true"></search-and-filter>
+    </div>
+  </div>
+  <div *ngIf="view==='table'">
+    <data-table-list [metaData]="tableMetaData">
+    <ng-template action-btn-temp let-id="id" let-item="item$">
+      <a class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0" (click)="open('view',id)">
+        <span [inlineSVG]="'./assets/media/icons/document-text-outline.svg'
+          " class="svg-icon svg-icon-3"></span>
+      </a>
+  </ng-template>
+    </data-table-list>
+  </div>
+  <div *ngIf="view==='card'" class="mt-1">
+    <app-card-view-list [cardMetaData]="cardJsonData">
+      <ng-template card-header-temp let-item="item$">
+        <div class="d-flex flex-center flex-column justify-content-center mb-2 ">
+
+            <!-- Image -->
+            <div class="mb-3">
+              <div class="symbol symbol-70px symbol-circle ">
+                <ng-container *ngIf="item['employee']['firstName'] ">
+                  <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                    {{item['employee']['firstName'][0] | uppercase}}
+                  </div>
+                </ng-container>
+
+              </div>
+            </div>
+            <!-- Name -->
+            <div class="text-center">
+              <div  [title]="item['employee']['firstName'] +' '+ item['employee']['lastName']"
+                class="line-clamp-1 fs-6 fw-bolder cursor-pointer"> {{ item['employee']['firstName'] +' '+ item['employee']['lastName'] }}
+              </div>
+            </div>
+          </div>
+    </ng-template>
+    </app-card-view-list>
+  </div>
+
+</div>

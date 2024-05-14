@@ -1,0 +1,94 @@
+<app-page-title [isGoBack]="true" [isEditDeleteBtn]="true" title="User Profile">
+    <ng-template additional-options>
+        <!-- Your custom template content goes here -->
+            <button *ngIf="!isOnboarded && !isEmployeeExit" (click)="open('onboard')" class="btn btn-hover-gray-200 rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+                <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                    class="svg-icon svg-icon-3 "></span>
+                Onboard
+            </button>
+            <button *ngIf="isOnboarded && isContributionApplied && !isEmployeeExit" (click)="open('contributionRegister')" class="btn btn-hover-gray-200 rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+                <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                    class="svg-icon svg-icon-3 "></span>
+                Register Contribution
+            </button>
+    </ng-template>
+</app-page-title>
+<app-user-details btnPrefix="edit" [id]="id" (fetchedData)="fetchedData($event)"></app-user-details>
+<!-- <ng-container *ngIf="selectedTabIndex === 5">
+    <div class=" p-0 card mb-5">
+        <div class="my-0 p-0 card-body rounded-4 app-container table-responsive" style="background-color: #Ffff;">
+            <div class="card-header align-items-center border-right d-flex gap-6">
+                <h4 class="fw-bolder m-0 pt-1 flex-grow-1">Register Two Factor Authentication</h4>
+            </div>
+            <div class="mb-5">
+                <div class="row m-5" *ngIf="!mfaEnabled">
+                    <div class="col-4">
+                        <qrcode [qrdata]="qrCodeUrl" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-3">Pin Code</label>
+                        <input [(ngModel)]="verificationCode" type="text" class="form-control form-control-sm mb-3">
+                        <button (click)="activateMfa()" class="btn  btn-{{theme}} bg-A162FF">Register with two-factor app </button>
+                    </div>
+                </div>
+                <div class="row m-5"  *ngIf="mfaEnabled">
+                    <div class="col-md-4">
+                        <h2>Two Factor Authentication</h2>
+                        <p>Increase your accounts security by enabling Two-Factor Authentication(2FA)</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p>Status : Enabled</p>
+                        <p *ngIf="mfaCode">Secret Key : {{hideVerificationCode(mfaCode)}}
+                            <button (click)="copyCode()"
+                            type="button"
+                            class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
+                          >
+                            <span
+                              [inlineSVG]="'./assets/media/icons/duotune/general/gen054.svg'"
+                              class="svg-icon svg-icon-2"
+                            ></span>
+                          </button>
+
+                        </p>
+                        <button (click)="deactivateMFA()" class="btn  btn-{{theme}} bg-A162FF">Disable two-factor authentication</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</ng-container> -->
+<!-- <div class="pt-8" *ngFor="let detailsCard of detailsCardList"> -->
+<!-- <details-card [detailsCardData]="detailsCardList" [inlineWithLabel]="true" [id]="id"></details-card> -->
+<!-- </div> -->
+
+<ng-container *ngIf="selectedTabIndex === 0 && dataFetched">
+    <div class="row mt-cust g-5 mb-1">
+        <app-overview-pill-tab></app-overview-pill-tab>
+    </div>
+</ng-container>
+
+
+<ng-container *ngIf="selectedTabIndex === 1">
+    <div class="row mt-cust g-5 mb-1">
+        <app-employee-pill-tab></app-employee-pill-tab>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="selectedTabIndex === 2">
+    <div class="row mt-cust g-5 mb-1">
+        <app-payroll-pill-tab></app-payroll-pill-tab>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="selectedTabIndex === 3">
+    <div class="row mt-cust g-5 mb-1">
+        <app-leave-pill-tab></app-leave-pill-tab>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="selectedTabIndex === 4">
+    <div class="row mt-cust g-5 mb-1">
+        <app-documents-credentials-pill-tab></app-documents-credentials-pill-tab>
+    </div>
+</ng-container>

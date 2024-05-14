@@ -1,0 +1,190 @@
+<app-page-title></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+    <ng-container>
+        <div class="card bs-none p-4">
+            <app-breadcrumb></app-breadcrumb>
+            <ng-container *ngIf="!isLoading ; else skeleton">
+
+                <ng-container *ngIf="formSections.length>0">
+                    <ng-container *ngFor="let section of formSections; let i=index">
+                        <ng-container *ngIf="section.tabName === formData.tabName">
+                            <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                                <!--begin::Col-->
+                                <div class="ps-9">
+                                    <ng-container *ngIf="!isLoading;">
+                                        <div class="d-flex">
+                                            <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                            <div class="hr-side me-8 ms-2">
+                                                <hr class="mx-1">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <div class="card-body py-0">
+                                    <form [formGroup]="holidayForm">
+                                        <div class="row">
+                                            <ng-container *ngFor="let label of formData.labels">
+                                                <ng-container *ngIf="label.sectionName === section.sectionName">
+                                                    <div
+                                                        class="position-relative col-lg-{{ label.col ? label.col : col }} mb-2">
+                                                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                                            <ng-container
+                                                                *ngIf="label.type !== 'checkbox' && label.type!== 'appliesTo'">
+                                                                <label class="form-label fs-6 mb-0"
+                                                                    [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, holidayForm) }">{{
+                                                                    label.labelName.alias.replace('Id','') | changeCase
+                                                                    : "capital" }}</label>
+                                                            </ng-container>
+                                                            <app-input-text-field
+                                                                [patchValue]="holidayForm?.value[label.labelName.defaultValue!]"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, holidayForm) }"
+                                                                [type]="label.type" [name]="label.labelName.alias!"
+                                                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true">
+                                                            </app-input-text-field>
+                                                            <ng-container *ngIf="label.type === 'date'">
+                                                                <!-- ngb-bootstrap datepicker -->
+                                                                <input-date-picker
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, holidayForm) }"></input-date-picker>
+
+                                                            </ng-container>
+                                                            <ng-container class="align-items-center "
+                                                                *ngIf="label.type === 'appliesTo'">
+                                                                <div class="mt-7">
+                                                                    <label class="form-label fs-6 mb-0"
+                                                                        [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, holidayForm) }">{{
+                                                                        label.labelName.alias.replace('Id','') |
+                                                                        changeCase
+                                                                        : "capital" }}</label>
+                                                                    <button
+                                                                        (click)="getFormTemplate(classificationApplicabilityTemplate,label.labelName.defaultValue,'classificationApplicability')"
+                                                                        class="btn form-btn-icon btn-light mb-1 border border-1 ms-1"
+                                                                        [id]="'kt_drawer_form_toggle'">
+                                                                        <span span
+                                                                            *ngIf="!classificationApplicabilityFormSaved"
+                                                                            [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                        <span span
+                                                                            *ngIf="classificationApplicabilityFormSaved"
+                                                                            [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                    </button>
+                                                                </div>
+
+                                                            </ng-container>
+                                                            <ng-container *ngFor="let validation of label.validations;">
+                                                                <ng-container [ngTemplateOutlet]="formError"
+                                                                    [ngTemplateOutletContext]="{
+                                                            validation: validation.name,
+                                                            message: validation.message,
+                                                            control: holidayForm.get(label.labelName.alias)
+                                                          }"></ng-container>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container ">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+<ng-template #filterTemplate>
+
+    <div class="fv-plugins-message-container ">
+        <span role="alert" class="fv-help-block fs-9">
+            working
+        </span>
+    </div>
+
+</ng-template>
+
+
+<ng-template #classificationApplicabilityTemplate (isCanceled)="cancelFormSave($event)">
+    <div class=" d-flex flex flex-row justify-content-between">
+        <div class="form-check form-check-sm form-check-custom my-3 form-check-solid form-check-color-{{theme}} ">
+            <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target=".widget-9-check"
+                [(ngModel)]="selectAllChecked" (change)="onSelectAll()">
+            <span class="fw-bold">Select All</span>
+        </div>
+        <!-- <app-response-filter [responseFilterMeta]="employeeFilterMeta" (onSubmit)="filteredData($event)" ></app-response-filter> -->
+    </div>
+    <search-and-filter filterButton="false" [customWidth]="'477px'"></search-and-filter>
+
+    <div *ngFor="let calendarItem of calendarData" class="d-flex flex-row mt-2">
+        <div class="form-check form-check-sm form-check-custom my-3 form-check-solid form-check-color-{{theme}}">
+            <input class="form-check-input" type="checkbox" value="1" data-kt-check="true"
+                data-kt-check-target=".widget-9-check" [(ngModel)]="calendarItem.isSelected"
+                (change)="onCalendarSelect($event,i)">
+        </div>
+        <div class="card card-body p-5 border border-1 border-gray rounded-1">
+            <div class="d-flex flex-row">
+                <span [inlineSVG]="'./assets/media/icons/calendar-outline.svg'"
+                    class="svg-icon svg-icon-3 svg-icon-{{ theme }}"></span>
+                <div class="ms-5">
+                    {{ calendarItem.name }}
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+
+
+<!-- <form [formGroup]="classificationApplicabilityForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of classificationApplicabilityFormData.labels">
+                <div class="col-4 ">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+                    <ng-container *ngIf="label.type === 'dropdown'">
+                        <custom-ng-select
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, classificationApplicabilityForm) }"
+                            [formGroup]="contractMasterForm" [apiLink]="label.apiLink" [maxLimit]="2"
+                            [fetchCondition]="label.fetchCondition" [formControlName]="label.labelName.defaultValue!"
+                            [fetchCondition]="classificationApplicabilityFetchCondition"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form> -->
+
+
+<app-form-drawer [headerText]="'workCalendar'" [formTemplate]="formTemplateRef" (isSaved)="onDrawerSave($event)"
+    (isCanceled)="onDrawerCancel($event)"></app-form-drawer>
+
+
+<ng-template #skeleton>
+    <app-edit-form-skeleton></app-edit-form-skeleton>
+
+</ng-template>

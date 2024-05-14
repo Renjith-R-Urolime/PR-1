@@ -1,0 +1,14 @@
+[
+    {
+        "id": "1",
+        "name": "Employee Wise"
+    },
+    {
+        "id": "2",
+        "name": "Role Wise"
+    },
+    {
+        "id": "3",
+        "name": "Designation Wise"
+    }
+]

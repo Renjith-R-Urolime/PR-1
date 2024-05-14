@@ -1,0 +1,281 @@
+<app-page-title></app-page-title>
+
+<div class="card">
+    <ng-container>
+        <div class="card bs-none p-4">
+            <app-breadcrumb></app-breadcrumb>
+            <ng-container *ngIf="!isLoading; else skeleton">
+
+                <ng-container *ngIf="formSections.length>0">
+                    <ng-container *ngFor="let section of formSections; let i=index">
+                        <ng-container *ngIf="section.tabName === formData.tabName">
+                            <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                                <!--begin::Col-->
+                                <div class="ps-9">
+                                    <ng-container *ngIf="!isLoading;">
+                                        <div class="d-flex">
+                                            <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                            <div class="hr-side me-8 ms-2">
+                                                <hr class="mx-1">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+
+                                </div>
+                                <div class="card-body py-0">
+                                    <form [formGroup]="eosRequestForm">
+                                        <div class="row">
+                                            <ng-container *ngFor="let label of formData.labels">
+                                                <ng-container *ngIf="!label?.hide">
+                                                    <div
+                                                        class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                                                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                                            <label *ngIf="label.type !== 'employee' && label.type !== 'status' " class="form-label fs-6 mb-0" [ngClass]="{
+                          'required': label?.required,
+                          'invalid': sharedService.hasValidationErrors(label, submit, eosRequestForm)
+                        }">{{
+                                                                label.labelTransformationCancelled ?
+                                                                label.labelName.alias.replace('Id','') :
+                                                                label.labelName.alias.replace('Id','') | changeCase :
+                                                                "capital" }}</label>
+                                                                <label
+                                                                *ngIf="(label.type == 'employee' && !empSelected ) || (label.type == 'status' && id )"
+                                                                class="form-label fs-6 mb-0" [ngClass]="{
+                                                                    'required': label?.required,
+                                                                    'invalid': sharedService.hasValidationErrors(label, submit, leaveApplicationForm)
+                                                                  }">{{
+                                                                label.labelTransformationCancelled ?
+                                                                label.labelName.alias.replace('Id','') :
+                                                                label.labelName.alias.replace('Id','') | changeCase :
+                                                                "capital" }}</label>
+                                                            <ng-container *ngIf="label.type === 'employee'">
+                                                                <ng-container *ngIf="!empSelected">
+                                                                    <employee-select [isDisabled]="id ? true : false"
+                                                                        (onchange)="onEmployeeChange($event)"
+                                                                        [patchData]="eosRequestData?.employee"
+                                                                        [employeeFilterMeta]="employeeFilterMeta"
+                                                                        [formControlName]="label.labelName.defaultValue!"
+                                                                        [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, eosRequestForm)}"
+                                                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "></employee-select>
+
+                                                                </ng-container>
+
+                                                                    <ng-container *ngIf="empSelected">
+                                                                        <div class="d-flex align-items-center flex-row">
+                                                                          <ng-container *ngIf="empSelected?.['image'] ; else noImage">
+                                                                            <div class="symbol">
+                                                                                <ng-container
+                                                                                    *ngIf="empSelected?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+                                                                                    <ng-container
+                                                                                        *ngIf="imageData !=='null' ;else noImage">
+                                                                                        <div class="symbol symbol-70px symbol-circle rounded-3"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-boundary="window"
+                                                                                            data-bs-placement="top"
+                                                                                            [title]="item?.['firstName']+' '+item?.['lastName']">
+                                                                                            <img class="object-fit-contain object-position-top"
+                                                                                                [src]="imageData"
+                                                                                                [lazyLoad]="imageData"
+                                                                                                alt="profile" />
+                                                                                        </div>
+                                                                                    </ng-container>
+                                                                                </ng-container>
+                                                                            </div>
+                                                                        </ng-container>
+                                                                        <ng-template #noImage>
+                                                                            <div
+                                                                                class="symbol symbol-70px symbol-circle ">
+                                                                                <div
+                                                                                    class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                                                                                    {{empSelected?.["firstName"][0] |
+                                                                                    uppercase}}{{empSelected?.["lastName"][0]
+                                                                                    |
+                                                                                    uppercase}}
+                                                                                </div>
+                                                                            </div>
+                                                                        </ng-template>
+                                                                        <div
+                                                                            class="mx-9 d-flex flex-column align-items-center">
+                                                                            <div>
+                                                                                {{empSelected?.["employeeId"]}}
+                                                                            </div>
+                                                                            <label class=" form-label fs-7 ">
+                                                                                {{ empSelected?.["firstName"] |
+                                                                                changeCase : "capital" }} {{
+                                                                                empSelected?.["lastName"] |
+                                                                                changeCase : "capital" }}
+                                                                            </label>
+                                                                        </div>
+                                                                        <div>
+                                                                        </div>
+                                                                    </div>
+                                                                </ng-container>
+
+                                                            </ng-container>
+
+                                                            <ng-container *ngIf="label.type === 'supervisor'">
+                                                                <ng-container *ngIf="!supervisorData">
+                                                                    <custom-ng-select
+                                                                    [isSelectDisabled]="true"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [items]="supervisorData"
+                                                                     class="w-100"
+                                                                     [placeholder]="'select employee'"
+                                                                     [patchData]="supervisorData"
+                                                                       >
+                                                                    </custom-ng-select>
+                                                                </ng-container>
+
+                                                                <ng-container *ngIf="supervisorData">
+                                                                    <div class="d-flex align-items-center flex-row">
+                                                                        <ng-container
+                                                                            *ngIf="supervisorData?.['image'] ; else noImage">
+                                                                            <div class="symbol">
+                                                                                <ng-container
+                                                                                    *ngIf="supervisorData?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+                                                                                    <ng-container
+                                                                                        *ngIf="imageData !=='null' ;else noImage">
+                                                                                        <div class="symbol symbol-70px symbol-circle rounded-3"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-boundary="window"
+                                                                                            data-bs-placement="top"
+                                                                                            [title]="item?.['firstName']+' '+item?.['lastName']">
+                                                                                            <img class="object-fit-contain object-position-top"
+                                                                                                [src]="imageData"
+                                                                                                [lazyLoad]="imageData"
+                                                                                                alt="profile" />
+                                                                                        </div>
+                                                                                    </ng-container>
+                                                                                </ng-container>
+                                                                            </div>
+                                                                        </ng-container>
+                                                                        <ng-template #noImage>
+                                                                            <div
+                                                                                class="symbol symbol-70px symbol-circle ">
+                                                                                <div
+                                                                                    class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                                                                                    {{supervisorData?.["firstName"][0] |
+                                                                                    uppercase}}{{supervisorData?.["lastName"][0]
+                                                                                    |
+                                                                                    uppercase}}
+                                                                                </div>
+                                                                            </div>
+                                                                        </ng-template>
+                                                                        <div
+                                                                            class="mx-9 d-flex flex-column align-items-center">
+                                                                            <div>
+                                                                                {{supervisorData?.["employeeId"]}}
+                                                                            </div>
+                                                                            <label class=" form-label fs-7 ">
+                                                                                {{ supervisorData?.["firstName"] |
+                                                                                changeCase : "capital" }} {{
+                                                                                    supervisorData?.["lastName"] |
+                                                                                changeCase : "capital" }}
+                                                                            </label>
+                                                                        </div>
+                                                                        <div>
+                                                                        </div>
+                                                                    </div>
+                                                                </ng-container>
+                                                            </ng-container>
+
+                                                            <ng-container class="align-items-center"
+                                                                *ngIf="label.type === 'file'">
+                                                                <input-file-upload [allowPdf]="true" theme="light"
+                                                                    fieldStyle="compact"
+                                                                    [formControlName]="label.labelName.defaultValue!"></input-file-upload>
+                                                            </ng-container>
+
+                                                            <app-input-text-field
+                                                                [patchValue]="eosRequestForm?.value[label.labelName.defaultValue!]"
+                                                                [formControlName]="label.labelName.defaultValue!"
+                                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, eosRequestForm) }"
+                                                                [type]="label.type" [name]="label.labelName.alias!"
+                                                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"></app-input-text-field>
+                                                            <ng-container *ngIf="label.type === 'date'">
+                                                                <!-- ngb-bootstrap datepicker -->
+                                                                <ng-container
+                                                                    *ngIf="label.labelName.defaultValue === 'dateOfNotice' || label.labelName.defaultValue === 'lastWorkingDay' ">
+                                                                    <div class="position-relative">
+                                                                        <input-date-picker [minDate]="minEffectiveDate"
+                                                                            [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, eosRequestForm) }"
+                                                                            [formControlName]="label.labelName.defaultValue!"></input-date-picker>
+                                                                    </div>
+                                                                </ng-container>
+
+                                                                <!-- -- -->
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'type'">
+
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [jsonListName]="'eosType'"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'subTypeId'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [apiLink]="label?.apiLink"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+
+
+
+
+
+
+                                                            <ng-container *ngIf="label.type === 'status' && id">
+
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [patchValue]="eosRequestForm?.value[label.labelName.defaultValue!]"
+                                                                    [jsonListName]="'transactionStatus'"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngFor="let validation of label.validations;">
+                                                                <ng-container [ngTemplateOutlet]="formError"
+                                                                    [ngTemplateOutletContext]="{
+                            validation: validation.name,
+                            message: validation.message,
+                            control: eosRequestForm.get(label.labelName.defaultValue)
+                          }"></ng-container>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <div class="me-9">
+                    <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+
+<ng-template #skeleton>
+    <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container ">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>

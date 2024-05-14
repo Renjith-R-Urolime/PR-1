@@ -1,0 +1,18 @@
+<!--begin::Primary-->
+<div class="aside-primary d-flex flex-column align-items-lg-center flex-row-auto">
+  <!--begin::Nav-->
+  <app-tabs-aside [activeTab]="activeTab" [setActiveTab]="setActiveTab"
+    class="aside-nav d-flex flex-column align-items-center flex-column-fluid w-100 " id="kt_aside_nav">
+  </app-tabs-aside>
+  <!--end::Nav-->
+</div>
+<!--end::Primary-->
+<!--begin::Secondary-->
+<div [@slideInOut] class="aside-secondary overflow-hidden d-flex flex-row-fluid custom-aside" [ngClass]="{ 'visibility-hidden': !asideMenuSecondary }" [@slideInOut]="asideMenuSecondary ? 'in' : 'out'">
+  <!--begin::Workspace-->
+  <div class="aside-workspace pt-5 overflow-auto" id="kt_aside_wordspace">
+    <app-tabs-aside-inner [activeTab]="activeTab" class="d-flex flex-column"></app-tabs-aside-inner>
+  </div>
+  <!--end::Workspace-->
+</div>
+<!--end::Secondary-->

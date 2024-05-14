@@ -1,0 +1,529 @@
+<app-page-title></app-page-title>
+<app-error-popup *ngIf="detectedError"></app-error-popup>
+<div class="card">
+    <ng-container>
+        <div class="card bs-none p-4">
+            <app-breadcrumb></app-breadcrumb>
+            <ng-container *ngIf="!isLoading; else skeleton">
+
+                <ng-container *ngIf="formSections.length>0">
+                    <ng-container *ngFor="let section of formSections; let i=index">
+                        <ng-container *ngIf="section.tabName === formData.tabName">
+                            <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                                <!--begin::Col-->
+                                <div class="ps-9">
+                                    <ng-container *ngIf="!isLoading;">
+                                        <div class="d-flex">
+                                            <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                            <div class="hr-side me-8 ms-2">
+                                                <hr class="mx-1">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+
+                                </div>
+                                <div class="card-body py-0">
+                                    <form [formGroup]="overtimeSetupForm">
+                                        <div class="row">
+                                            <ng-container *ngFor="let label of formData.labels;let k=index">
+                                                <ng-container *ngIf="!label?.hide">
+                                                    <div
+                                                        class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                                                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                                            <ng-container
+                                                                *ngIf="label.type !== 'checkbox' && label.type !== 'classificationApplicability' && label.type !== 'defineRange'  && label.type !== 'employeeOtMatrix' && label.type!=='overtimeCalculationCustomFormula'">
+                                                                <label class="form-label fs-6 mb-0" [ngClass]="{
+'required': label?.required,
+'invalid': sharedService.hasValidationErrors(label, submit, overtimeSetupForm)
+}">{{
+    label.labelTransformationCancelled ?
+    label.labelName.alias.replace('Id','') :
+    label.labelName.alias.replace('Id','') | changeCase :
+    "capital" }}</label>
+                                                            </ng-container>
+
+
+
+                                                            <ng-container
+                                                                *ngIf="label.type=== 'classificationApplicability' || label.type=== 'defineRange' || label.type=== 'employeeOtMatrix' || label.type==='overtimeCalculationCustomFormula'">
+                                                                <label class="form-label fs-6 mt-7" [ngClass]="{
+    'required': label?.required,
+    'invalid': sharedService.hasValidationErrors(label, submit, overtimeSetupForm)
+    }">{{
+        label.labelTransformationCancelled ?
+        label.labelName.alias.replace('Id','') :
+        label.labelName.alias.replace('Id','') | changeCase :
+        "capital" }}</label>
+
+                                                                <ng-container class="align-items-center "
+                                                                    *ngIf="label.type === 'classificationApplicability'">
+                                                                    <ng-container
+                                                                        *ngIf="label.labelName.defaultValue === 'classificationApplicability'">
+                                                                        <button
+                                                                            class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                                            (click)="getFormTemplate(classificationApplicabilityTemplate,label.labelName.defaultValue,'classificationApplicability')"
+                                                                            [id]="'kt_drawer_form_toggle'">
+                                                                            <span span
+                                                                                *ngIf="!classificationApplicabilityFormSaved"
+                                                                                [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                                class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                            <span span
+                                                                                *ngIf="classificationApplicabilityFormSaved"
+                                                                                [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                                class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                        </button>
+
+                                                                    </ng-container>
+
+                                                                </ng-container>
+                                                            </ng-container>
+
+                                                            <ng-container class="align-items-center"
+                                                                *ngIf="label.type === 'text'||label.type === 'number'|| label.type ==='decimal' ">
+                                                                <app-input-text-field [max]="label.max"
+                                                                    [maxLength]="label?.maxLength"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, overtimeSetupForm) }"
+                                                                    [type]="label.type"></app-input-text-field>
+                                                            </ng-container>
+
+                                                            <ng-container *ngIf="label.type === 'checkbox'">
+                                                                <div class="form-check  form-check-color-{{theme}}">
+                                                                    <input
+                                                                        [formControlName]="label.labelName.defaultValue!"
+                                                                        (change)="onCheckboxTypeChange($event,label.labelName.defaultValue!)"
+                                                                        class="form-check-input mt-7 mb-3"
+                                                                        type="checkbox" [id]="label.labelName.alias!" />
+                                                                    <label class="form-label fs-6 mt-2 mt-7"
+                                                                        for="flexCheckDefault">
+                                                                        {{ label.labelName.alias | changeCase :
+                                                                        "capital" }}
+                                                                    </label>
+                                                                </div>
+                                                            </ng-container>
+
+                                                            <ng-container *ngIf="label.type === 'maxOt'">
+                                                                <app-new-time-picker [isTimeIntervalMode]="true"
+                                                                    [formControlName]="label.labelName.defaultValue!"></app-new-time-picker>
+                                                            </ng-container>
+
+
+                                                            <ng-container *ngIf="label.type === 'hour'">
+                                                                <app-new-time-picker
+                                                                    [formControlName]="label.labelName.defaultValue!"></app-new-time-picker>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'payrollComponent'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [apiLink]="label?.apiLink"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [fetchCondition]="label.fetchCondition"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overtimeSetupForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="overtimeSetupData?.payrollComponent?.id"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'otType'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [jsonListName]="'overtimeTypeList'"
+                                                                    (onchange)="onOtTypeChange($event)"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overtimeSetupForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="overtimeSetupData[label.labelName.defaultValue!] ? overtimeSetupData[label.labelName.defaultValue!] : undefined"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'calendarDay'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [jsonListName]="'calendarDay'"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    (onchange)="onCalendarDayChange($event)"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overtimeSetupForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="overtimeSetupData[label.labelName.defaultValue!] ? overtimeSetupData[label.labelName.defaultValue!] : undefined"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'baseComponent'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [apiLink]="label?.apiLink"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overtimeSetupForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [fetchCondition]="label.fetchCondition"
+                                                                    [patchData]="overtimeSetupData[label.labelName.defaultValue!] ? overtimeSetupData[label.labelName.defaultValue!] : undefined"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'payableCycle'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [jsonListName]="'payableCycleList'"
+                                                                    (onchange)="onPayableCycleChange($event)"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overtimeSetupForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="overtimeSetupForm?.value[label.labelName.defaultValue!] ? overtimeSetupForm?.value[label.labelName.defaultValue!] : undefined"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="label.type === 'overtimeCalculation'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [jsonListName]="'formulaTypeList'"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    (onchange)="onOvertimeCalculationChange($event)"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overtimeSetupForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="overtimeSetupForm?.value[label.labelName.defaultValue!] ? overtimeSetupForm?.value[label.labelName.defaultValue!] : undefined"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+
+                                                            <ng-container *ngIf="label.type === 'infithraFormula'">
+                                                                <custom-ng-select [multiple]="label?.multiple"
+                                                                    [jsonListName]="'infithraFormulaList'"
+                                                                    [fetchCondition]="formulaCondition"
+                                                                    [controlName]="label.labelName.defaultValue!"
+                                                                    (onchange)="onInfithraFormulaChange($event)"
+                                                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overtimeSetupForm) }"
+                                                                    [formControlName]="label.labelName.defaultValue!"
+                                                                    [patchData]="overtimeSetupForm?.value[label.labelName.defaultValue!] ? overtimeSetupForm?.value[label.labelName.defaultValue!] : undefined"
+                                                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                                                </custom-ng-select>
+                                                            </ng-container>
+
+                                                            <ng-container class="align-items-center "
+                                                                *ngIf="label.type === 'defineRange'">
+                                                                <ng-container
+                                                                    *ngIf="label.labelName.defaultValue === 'defineRange'">
+                                                                    <button
+                                                                        class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                                        (click)="newModel(otRange ,'Define Range')">
+                                                                        <span span *ngIf="!defineRangeFormSaved"
+                                                                            [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                        <span span *ngIf="defineRangeFormSaved"
+                                                                            [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                    </button>
+
+                                                                </ng-container>
+
+                                                            </ng-container>
+
+                                                            <ng-container class="align-items-center "
+                                                                *ngIf="label.type === 'overtimeCalculationCustomFormula'">
+                                                                <ng-container
+                                                                    *ngIf="label.labelName.defaultValue === 'overtimeCalculationCustomFormula'">
+                                                                    <button
+                                                                        class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                                        (click)="getFormTemplate(overtimeCalculationTemplate,label.labelName.defaultValue,'overtimeCalculationCustomFormula')"
+                                                                        [id]="'kt_drawer_form_toggle'">
+                                                                        <span span *ngIf="!formulaMakerStatus"
+                                                                            [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                        <span span *ngIf="formulaMakerStatus"
+                                                                            [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                                    </button>
+
+                                                                </ng-container>
+
+                                                            </ng-container>
+                                                            <ng-container class="align-items-center "
+                                                                *ngIf="label.type === 'employeeOtMatrix'">
+                                                                <ng-container
+                                                                    *ngIf="label.labelName.defaultValue === 'employeeOtMatrix'">
+                                                                    <button
+                                                                        class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                                        (click)="employeeOtMatrixModal(employeeOtMatrix ,'employeeOtMatrix')">
+                                                                        <span
+                                                                            [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                                                                            class="me-0 p-half svg-white-600 svg-icon svg-icon-4"></span>
+                                                                    </button>
+
+                                                                </ng-container>
+
+                                                            </ng-container>
+
+
+
+
+
+
+
+
+
+
+
+                                                            <ng-container *ngFor="let validation of label.validations;">
+
+                                                                <div>
+                                                                    <ng-container [ngTemplateOutlet]="formError"
+                                                                        [ngTemplateOutletContext]="{
+                                                              validation: validation.name,
+                                                              message: validation.message,
+                                                              control: overtimeSetupForm.get(label.labelName.alias)
+                                                            }"></ng-container>
+                                                                </div>
+
+
+
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+
+
+
+                                                </ng-container>
+
+
+
+
+                                            </ng-container>
+                                        </div>
+
+
+                                    </form>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <div class="me-9">
+                    <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+
+
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #skeleton>
+    <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="submit && control.hasError(validation)">
+        <div class="fv-plugins-message-container ">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+
+
+<ng-template #classificationApplicabilityTemplate (isCanceled)="cancelFormSave($event)">
+    <form [formGroup]="classificationApplicabilityForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of classificationApplicabilityFormData.labels">
+                <div class="col-4 ">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+                    <ng-container *ngIf="label.type === 'subsidiary'">
+                        <custom-ng-select (onchange)="onSubsidiaryChange($event)"
+                            [patchData]="overtimeSetupData[label.labelName.defaultValue!] ? overtimeSetupData[label.labelName.defaultValue!] : undefined"
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, classificationApplicabilityForm) }"
+                            [formGroup]="overtimeSetupForm" [apiLink]="label.apiLink" [maxLimit]="2"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                    <ng-container *ngIf="label.type === 'dropdown'">
+                        <custom-ng-select [fetchCondition]="subsidiaryFilter"
+                            [patchData]="overtimeSetupData[label.labelName.defaultValue!] ? overtimeSetupData[label.labelName.defaultValue!] : undefined"
+                            [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, classificationApplicabilityForm) }"
+                            [formGroup]="overtimeSetupForm"
+                            [apiLink]="classificationApplicabilityForm.value?.subsidiary === 'ALL' || subsidiaryFilter.length > 0 ? label.apiLink : ''"
+                            [maxLimit]="2" [formControlName]="label.labelName.defaultValue!"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+<app-form-drawer [headerText]="headerText  | changeCase : 'capital'" [formTemplate]="formTemplate"
+    (isSaved)="onDrawerSave($event)" (isCanceled)="onDrawerCancel($event)" [buttonDisable]="saveButtonDisable">
+</app-form-drawer>
+
+
+<ng-template #otRange let-modal>
+
+    <div class="mx-5">
+        <form [formGroup]="overtimeSetupForm">
+            <div class="modal-header py-4">
+                <h4 class="modal-title" id="modal-basic-title">{{headerText}}</h4>
+                <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+                    (click)="handleCancelModalClick()">
+                    <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+                </div>
+
+            </div>
+            <div [formArrayName]="'ranges'">
+
+                <div class="row">
+                    <label class="form-label fs-6 mb-0 mt-1 col-4">Range From</label>
+                    <label class="form-label fs-6 mb-0 mt-1 col-4">Range To </label>
+                    <label class="form-label fs-6 mb-0 mt-1 col-4">Overtime Rate</label>
+                </div>
+                <ng-container *ngFor="let item of this.overtimeSetupForm.get('ranges')?.controls; let k=index">
+
+                    <div [formGroupName]="k" class="row mt-3">
+
+                        <div class="col-4 ">
+                            <app-new-time-picker [isDisabled]="true" [isTimeIntervalMode]="true"
+                            [formControlName]="'from'"></app-new-time-picker>
+
+                            <!-- <app-input-text-field [isFieldDisabled]="true" [max]="24" [formControlName]="'from'"
+                                [placeholder]="'Enter hours'" [type]="'number'"></app-input-text-field> -->
+
+                        </div>
+                        <div class="col-4 ">
+                            <!-- <app-input-text-field [max]="24" [formControlName]="'to'" [placeholder]="'Enter hours'"
+                                [type]="'number'"></app-input-text-field> -->
+                                <app-new-time-picker [isTimeIntervalMode]="true"
+                                [formControlName]="'to'"></app-new-time-picker>
+                        </div>
+                        <div class="col-4 d-flex align-items-center">
+                            <app-input-text-field [formControlName]="'otRate'" [maxLength]="3"
+                                [placeholder]="'Enter Overtime rate'" [type]="'decimal'"></app-input-text-field>
+                            <button *ngIf="k ===this.overtimeSetupForm.get('ranges')?.controls.length - 1"
+                                class="btn btn-icon btn-36px border-gray-500 ms-1" (click)="remove(k)">
+                                <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                                    class="svg-icon svg-icon-2 svg-icon-danger py-1"></span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                </ng-container>
+                <div *ngIf="!rangeStatus" class="warning_class">
+                    <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                        class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Error-Ensure all fields are
+                    entered and it satisfies the Graduated tiering model
+                </div>
+            </div>
+        </form>
+
+
+        <div class="row mt-3">
+            <button class="btn btn-sm btn-{{theme}}-bright mt-4 mb-3 ms-3 w-auto" (click)="addMore()">Add
+                More</button>
+        </div>
+
+        <div class="modal-footer py-3">
+            <app-progress-button (submitEvent)="onModelSubmit()" [isProcessing]="isProcessing" [submitBtnText]="'Save'"
+                (cancelEvent)="handleCancelModalClick()" [modal]="true"></app-progress-button>
+        </div>
+    </div>
+
+</ng-template>
+
+
+
+
+
+<ng-template #employeeOtMatrix let-modal>
+
+    <div class="mb-4 me-9">
+        <div class="modal-header py-4">
+            <h4 class="modal-title" id="modal-basic-title">Employee Overtime Matrix</h4>
+            <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+                (click)="handleCancelModalClickEmplyeeMatrix()">
+                <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+            </div>
+
+        </div>
+        <div class="modal-body p-0 px-7">
+            Refer Employee Overtime Matrix defined under Payroll Settings
+        </div>
+    </div>
+</ng-template>
+
+
+
+<ng-template #overtimeCalculationTemplate (isCanceled)="cancelFormSave($event)">
+    <div>
+        <ng-container>
+            <div>
+                <label class="form-label fs-6 mt-3">Define Formula</label>
+                <!-- <input [(ngModel)]="formula.expression" readonly class="custom-input"> -->
+                <div class="button-container min-h-100px">
+                    <div [innerHTML]="formattedExpression" class="custom-formula"></div>
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label fs-6 mt-3">Num Pad</label>
+                <div class="number-pad">
+                    <!-- Operators -->
+                    <div class="button-group">
+                        <button (click)="addOperator('+')">+</button>
+                        <button (click)="addOperator('-')">-</button>
+                        <button (click)="addOperator('*')">*</button>
+                        <button (click)="addOperator('/')">/</button>
+                        <button (click)="addOperator('(')">(</button>
+                        <button (click)="addOperator(')')">)</button>
+                        <button (click)="addOperator('^')">^</button>
+                        <button (click)="addOperator('\u005C')">\</button>
+                        <button (click)="addOperator('%')">%</button>
+                        <button *ngFor="let num of [1, 2, 3, 4, 5,6,7,8,9,0]" (click)="addNumber(num)">{{ num
+                            }}</button>
+                        <button (click)="clearFormula()">C</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label fs-6">Variables</label>
+                <div class="button-container">
+                    <div *ngFor="let variable of availableVariables" class="button-wrapper">
+                        <button class="button-border bg-{{theme}}" (click)="addVariable(variable)">
+                            {{ variable.name }}
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </ng-container>
+
+    </div>
+
+</ng-template>
+
+
+
+<ng-template #customTemplate>
+
+    <div class="mb-2 d-flex gap-6 justify-content-center">
+        <button class="btn border border-2 border-secondary text-dark btn-sm"
+            (click)="goToCreateEmployeeOtMatrix()">Create Employee Overtime Matrix</button>
+        <button class="btn btn-{{theme}} btn-sm" (click)="listAll()">List</button>
+
+    </div>
+</ng-template>

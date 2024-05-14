@@ -1,0 +1,185 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+<details-card [detailsCardData]="detailsCardData">
+    <ng-template custom-element let-data$="data$" let-key$="key$">
+        <ng-container *ngIf="key$.templateName  ===  'classificationApplicability'">
+            <span class="mt-5"> <span class="text-muted">Classification Applicability</span> <button
+                    class="bg-white border-gray-600 btn-light  p-0 ms-1" id="kt_drawer_form_toggle"
+                    (click)="classificationApplicabilityData = data$ ; assignTemplate('Classification Applicability',classificationApplicabilityTemp );">
+                    <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                        class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                </button> </span>
+        </ng-container>
+        <ng-container *ngIf="key$.templateName === 'defineRange'">
+            <span class="mt-5"> <span class="text-muted">Define Range</span> <button
+                    class="bg-white border-gray-600 btn-light  p-0 ms-1" id="kt_drawer_form_toggle"
+                    (click)="defineRangeData = data$.ranges ; assignTemplate('Define Range',defineRangeTemp );">
+                    <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                        class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                </button> </span>
+        </ng-container>
+        <ng-container *ngIf="key$.templateName === 'employeeOtMatrix'">
+            <span class="mt-5"> <span class="text-muted">Employee Overtime Matrix</span> <button
+                    class="bg-white border-gray-600 btn-light  p-0 ms-1"
+                    (click)="employeeOtMatrixModal(employeeOtMatrix ,'employeeOtMatrix')">
+                    <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                        class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                </button> </span>
+        </ng-container>
+
+        <ng-container *ngIf="key$.templateName === 'overTimeCalculation'">
+            <div class="  text-muted px-0 text-nowrap">
+                <ng-container>
+                    Overtime Calculation
+                </ng-container>
+            </div>
+            <ng-container *ngIf="formattedExpression; else noInfo">
+                <div class="fw-medium fs-6 text-dark px-0 mt-1 fw-medium">
+                  {{formattedExpression}}
+                </div>
+              </ng-container>
+        </ng-container>
+    </ng-template>
+</details-card>
+
+<app-tab-data-table [tabsMeta]="overtimeSetupTabsMeta"></app-tab-data-table>
+
+
+<app-form-drawer [headerText]="headerText" [formTemplate]="formTemplate" [viewMode]="true"></app-form-drawer>
+
+
+<ng-template #classificationApplicabilityTemp>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Subsidiary</label>
+        </div>
+        <div class="col-md-8">
+            <div>
+                <ng-container *ngFor="let item of classificationApplicabilityData.subsidiary; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Jurisdiction</label>
+        </div>
+        <div class="col-md-8">
+            <div>
+                <ng-container *ngFor="let item of classificationApplicabilityData.jurisdiction; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Location</label>
+        </div>
+        <div class="col-md-8">
+            <div>
+                <ng-container *ngFor="let item of classificationApplicabilityData.location; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Department</label>
+        </div>
+        <div class="col-md-8">
+            <div>
+                <ng-container *ngFor="let item of classificationApplicabilityData.department; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Class</label>
+        </div>
+        <div class="col-md-8">
+            <div>
+                <ng-container *ngFor="let item of classificationApplicabilityData.class; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #defineRangeTemp>
+    <div class="row border-top border-bottom mt-5">
+        <div class="col-4 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">Range From</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative ">
+            <label class="form-label fs-6 fw-bolder mb-1">Range To</label>
+        </div>
+        <div class="col-5 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">Overtime Rate</label>
+        </div>
+    </div>
+    <div class="row mt-5" *ngFor="let comp of defineRangeData">
+        <div class="col-4 mb-2 position-relative">
+            {{comp.from}}
+        </div>
+        <div class="col-3 mb-2 position-relative ">
+            {{comp.to}}
+        </div>
+        <div class="col-5 mb-2 position-relative">
+            {{comp.otRate}}
+
+        </div>
+    </div>
+</ng-template>
+
+
+
+<ng-template #employeeOtMatrix let-modal>
+    <div class="mb-4 me-9">
+        <div class="modal-header py-4">
+            <h4 class="modal-title" id="modal-basic-title">Employee Overtime Matrix</h4>
+            <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+                (click)="handleCancelModalClickEmplyeeMatrix()">
+                <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+            </div>
+
+        </div>
+        <div class="modal-body p-0 px-7">
+            Refer Employee Overtime Matrix defined under Payroll Settings
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #overTimeCalculation>
+    <div class="mb-4 me-9">
+        <div class="modal-header py-4">
+            <h4 class="modal-title" id="modal-basic-title">Employee Overtime Matrix</h4>
+            <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+                (click)="handleCancelModalClickEmplyeeMatrix()">
+                <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+            </div>
+
+        </div>
+        <div class="modal-body p-0 px-7">
+            Refer Employee Overtime Matrix defined under Payroll Settings
+        </div>
+    </div>
+</ng-template>
+
+
+
+<ng-template #noInfo>
+    <div class="fw-medium fs-6 text-gray-300 px-0 {{ inlineWithLabel ? '' : 'mt-1' }} ">
+      Not Availaible
+    </div>
+  </ng-template>

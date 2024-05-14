@@ -1,0 +1,25 @@
+
+<h3>Policy And Handbook</h3>
+<div style="background-color: white;" class="d-flex justify-content-center align-items-center ">
+
+<div class="p-10"    id="book">
+
+</div>
+
+
+</div>
+
+<div class=" d-flex justify-content-center ">
+    <div>
+        <button type="button" class="btn btn-primary btn-prev" (click)="pageFlipPrev()">Previous page</button>
+        [<span class="page-current"></span>{{ currentPageIndex }} <span class="page-total">- {{pageCount}}</span>]
+        <button type="button" class="btn btn-primary btn-next"  (click)="pageFlipNext()">Next page</button>
+    </div>
+
+    <!-- <div>
+        State: <i class="page-state">read</i>, orientation: <i class="page-orientation">landscape</i>
+    </div> -->
+</div>
+
+
+<!-- <app-pdf-viewer [pdfSrc]="pdfUrl"></app-pdf-viewer> -->

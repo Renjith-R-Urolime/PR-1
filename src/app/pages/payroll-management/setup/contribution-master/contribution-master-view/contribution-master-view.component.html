@@ -1,0 +1,261 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+<details-card [detailsCardData]="detailsCardData">
+    <ng-template custom-element let-data$="data$">
+        <span class="mt-5"> <span class="text-muted">Classification Applicability</span> <button
+                class="bg-white border-gray-600 btn-light  p-0 ms-1" id="kt_drawer_form_toggle"
+                (click)="classificationApplicabilityData = data$ ; assignTemplate('Classification Applicability',classificationApplicabilityTemp );">
+                <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                    class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+            </button> </span>
+    </ng-template>
+</details-card>
+
+<app-tab-data-table [tabsMeta]="contributionMasterTabsMeta">
+
+
+    <ng-template data-cell-temp let-data="data" let-column="column" let-index="index">
+        <ng-container *ngIf="(data[column.name] | dataValue : column.name | async) as value">
+            <ng-container *ngIf="value !== 'Null' ; else noInfo">
+                <ng-container [ngSwitch]="column?.template">
+                    <ng-container *ngSwitchCase="'employerDetails_temp'" >
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="d-flex h-100 align-items-center justify-content-center">
+                                {{data.employerContribution}}</div>
+                            <button class="bg-white border-gray-600 btn-light d-flex p-0" id="kt_drawer_form_toggle"
+                                *ngIf="data?.employerContributionDetails[0].name!=null"
+                                (click)="employerContributionDetails = data?.employerContributionDetails ;  assignTemplate('Define Breakup',employerContributionDetailsTemp );">
+                                <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                                    class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                            </button>
+                        </div>
+
+                    </ng-container>
+                </ng-container>
+                <ng-container [ngSwitch]="column?.template">
+                    <ng-container *ngSwitchCase="'employeeDetails_temp'">
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="d-flex h-100 align-items-center justify-content-center">
+                                {{data.employeeContribution}}</div>
+                            <button class="bg-white border-gray-600 btn-light d-flex p-0" id="kt_drawer_form_toggle"
+                                *ngIf="data?.employeeContributionDetails[0].name!=null"
+                                (click)="employeeContributionDetails = data?.employeeContributionDetails ; assignTemplate('Define Breakup',employeeContributionDetailsTemp );">
+                                <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                                    class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+            <ng-template #noInfo>
+                <ng-container [ngSwitch]="column?.template">
+                    <ng-container *ngSwitchCase="'employerDetails_temp'" >
+                        <div class="d-flex gap-3 align-items-center">
+                            <button class="bg-white border-gray-600 btn-light d-flex p-0" id="kt_drawer_form_toggle"
+                                *ngIf="data?.employerContributionDefineRange[0].maximumYear!=null"
+                                (click)="employerContributionDefineRange = data?.employerContributionDefineRange ;  assignTemplate('Define Range',employerContributionDefineRangeTemp );">
+                                <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                                    class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                            </button>
+                        </div>
+
+                    </ng-container>
+                </ng-container>
+                <ng-container [ngSwitch]="column?.template">
+                    <ng-container *ngSwitchCase="'employeeDetails_temp'">
+                        <div class="d-flex gap-3 align-items-center">
+                            <button class="bg-white border-gray-600 btn-light d-flex p-0" id="kt_drawer_form_toggle"
+                            *ngIf="data?.employeeContributionDefineRange[0].maximumYear!=null"
+                                (click)="employeeContributionDefineRange = data?.employeeContributionDefineRange ; assignTemplate('Define Range',employeeContributionDefineRangeTemp );">
+                                <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                                    class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+                <!-- <p class="fw-medium fs-6 text-gray-400 mb-0 ">
+                    Not Available
+                </p> -->
+            </ng-template>
+        </ng-container>
+    </ng-template>
+
+</app-tab-data-table>
+
+<app-form-drawer [headerText]="headerText" [formTemplate]="formTemplate" [viewMode]="true"></app-form-drawer>
+
+
+<ng-template #employerContributionDetailsTemp>
+    <div class="row border-top border-bottom mt-5">
+        <div class="col-4 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">SI No</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative ">
+            <label class="form-label fs-6 fw-bolder mb-1">Name</label>
+        </div>
+        <div class="col-5 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">Percentage</label>
+        </div>
+    </div>
+    <div class="row mt-5" *ngFor="let comp of employerContributionDetails">
+        <div class="col-4 mb-2 position-relative">
+            {{comp.sno}}
+        </div>
+        <div class="col-3 mb-2 position-relative ">
+            {{comp.name}}
+        </div>
+        <div class="col-5 mb-2 position-relative">
+            {{comp.percentage}}
+
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #employeeContributionDetailsTemp>
+    <div class="row border-top border-bottom mt-5">
+        <div class="col-4 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">SI No</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative ">
+            <label class="form-label fs-6 fw-bolder mb-1">Name</label>
+        </div>
+        <div class="col-5 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">Percentage</label>
+        </div>
+    </div>
+    <div class="row mt-5" *ngFor="let comp of employeeContributionDetails">
+        <div class="col-4 mb-2 position-relative">
+            {{comp.sno}}
+        </div>
+        <div class="col-3 mb-2 position-relative ">
+            {{comp.name}}
+        </div>
+        <div class="col-5 mb-2 position-relative">
+            {{comp.percentage}}
+
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #classificationApplicabilityTemp>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Subsidiary</label>
+        </div>
+        <div class="col-md-8">
+            <div class="mb-5">
+                <ng-container *ngFor="let item of classificationApplicabilityData.subsidiary; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Jurisdiction</label>
+        </div>
+        <div class="col-md-8">
+            <div class="mb-5">
+                <ng-container *ngFor="let item of classificationApplicabilityData.jurisdiction; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Location</label>
+        </div>
+        <div class="col-md-8">
+            <div class="mb-5">
+                <ng-container *ngFor="let item of classificationApplicabilityData.location; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Department</label>
+        </div>
+        <div class="col-md-8">
+            <div class="mb-5">
+                <ng-container *ngFor="let item of classificationApplicabilityData.department; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label fs-6 mb-0 text-nowrap">Class</label>
+        </div>
+        <div class="col-md-8">
+            <div class="mb-5">
+                <ng-container *ngFor="let item of classificationApplicabilityData.class; let last = last">
+                    {{ item.name }}
+                    <ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #employerContributionDefineRangeTemp>
+    <div class="row border-top border-bottom mt-5">
+        <div class="col-4 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">Minimum Year</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative ">
+            <label class="form-label fs-6 fw-bolder mb-1">Maximum Year</label>
+        </div>
+        <div class="col-5 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">Percentage</label>
+        </div>
+    </div>
+    <div class="row mt-5" *ngFor="let comp of employerContributionDefineRange">
+        <div class="col-4 mb-2 position-relative">
+            {{comp.minimumYear}}
+        </div>
+        <div class="col-3 mb-2 position-relative ">
+            {{comp.maximumYear}}
+        </div>
+        <div class="col-5 mb-2 position-relative">
+            {{comp.percentage}}
+
+        </div>
+    </div>
+</ng-template>
+
+
+
+<ng-template #employeeContributionDefineRangeTemp>
+    <div class="row border-top border-bottom mt-5">
+        <div class="col-4 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">Minimum Year</label>
+        </div>
+        <div class="col-3 mt-2 mb-2 position-relative ">
+            <label class="form-label fs-6 fw-bolder mb-1">Maximum Year</label>
+        </div>
+        <div class="col-5 mt-2 mb-2 position-relative">
+            <label class="form-label fs-6 fw-bolder mb-1">Percentage</label>
+        </div>
+    </div>
+    <div class="row mt-5" *ngFor="let comp of employeeContributionDefineRange">
+        <div class="col-4 mb-2 position-relative">
+            {{comp.minimumYear}}
+        </div>
+        <div class="col-3 mb-2 position-relative ">
+            {{comp.maximumYear}}
+        </div>
+        <div class="col-5 mb-2 position-relative">
+            {{comp.percentage}}
+
+        </div>
+    </div>
+</ng-template>

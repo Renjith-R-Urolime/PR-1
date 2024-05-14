@@ -1,0 +1,874 @@
+<div class="row">
+    <div class="col-12">
+        <div class="notice d-flex bg-{{theme}}-bright  rounded border-primary border border-dashed p-6">
+            <!--begin::Icon-->
+
+            <span class="svg-icon svg-icon-3tx svg-icon-{{theme}} mt-1 me-4"
+                [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'">
+            </span>
+            <!--end::Svg Icon-->
+            <!--end::Icon-->
+            <!--begin::Wrapper-->
+            <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
+                <!--begin::Content-->
+                <div class="mb-3 mb-md-0 fw-semibold">
+                    <h4 class="text-gray-900 fw-bold">Action Pending for Employee</h4>
+                    <div class="fs-6 text-gray-700 pe-7">Action pending to be addressed
+                        2 Leave Requests , 1 Aproval is Pending</div>
+                </div>
+                <!--end::Content-->
+                <!--begin::Action-->
+                <a href="#" class="blue-border btn btn-outline px-6 align-self-center text-nowrap"
+                    data-bs-toggle="modal" data-bs-target="#kt_modal_two_factor_authentication">More</a>
+                <!--end::Action-->
+            </div>
+            <!--end::Wrapper-->
+        </div>
+    </div>
+</div>
+
+<div class="row pt-4 g-5" *ngIf="employeeOverviewPillTabData">
+    <details-card [detailsCardData]="employeeOverviewMeta" [data]="employeeOverviewPillTabData"
+        [id]=" openOverViewTab ?'kt_drawer_form_overview_employee' :''"
+        [inlineWithLabel]="true" [isEditBtn]="true"
+        (editEvent)="getFormTemplate(overViewFormTemplate,'overView','overView')"></details-card>
+
+</div>
+
+
+
+<app-form-drawer [formTemplate]="formTemplate" [headerText]="'Personal Details'" [ngClass]="{'invisible': openedFormDrawerId !== 'kt_drawer_form_overview_employee' }"
+    (isSaved)="onDrawerSaveOverViewEmployeeForm($event)" (isCanceled)="cancelOverViewEmployeeForm($event) "
+    [drawerWidth]="1100" [formDrawerId]="'#kt_drawer_form_overview_employee'"
+    [formDrawerCloseId]="'kt_drawer_form_overview_employee_close'" [buttonDisable]="isOverViewFormSaveDisabled"
+    [isProcessing]="isProcessing">
+</app-form-drawer>
+
+<app-form-drawer [ngClass]="{'invisible': openedFormDrawerId !== 'kt_drawer_form_currentAddress' }" [formTemplate]="formTemplateCurrentAddress" [formDrawerCloseId]
+="'kt_drawer_form_currentAddress_close'"
+    (isSaved)="onDrawerSaveCurrentAddress($event)" [drawerWidth]="600" [formDrawerId]="'#kt_drawer_form_currentAddress'"
+    [headerText]="'Current Address'" (isCanceled)="cancelCurrentAddressForm($event) ">
+</app-form-drawer>
+
+<app-form-drawer [ngClass]="{'invisible': openedFormDrawerId !== 'kt_drawer_form_homeAddress' }" [formTemplate]="formTemplateHomeAddress" [formDrawerCloseId]="'kt_drawer_form_homeAddress_close'"
+    (isSaved)="onDrawerSaveHomeAddress($event)" [drawerWidth]="600" [formDrawerId]="'#kt_drawer_form_homeAddress'"
+    [headerText]="'Home Address'" (isCanceled)="cancelHomeAddressForm($event) ">
+</app-form-drawer>
+
+
+<ng-template #overViewFormTemplate>
+    <ng-container *ngIf="!isLoading; else skeleton">
+        <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+            <div class="card-body pe-2 py-0 mt-3">
+                <form [formGroup]="overViewForm">
+                    <div class="row">
+                        <ng-container *ngFor="let label of formData.labels;let k=index">
+                            <ng-container *ngIf="!label?.hide">
+                                <div class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                                    <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                        <ng-container
+                                            *ngIf="label.type !== 'currentAddress' && label.type !== 'homeAddress' ">
+                                            <label class="form-label fs-6 mb-0"
+                                                [ngClass]="{'required': label?.required,'invalid': sharedService.hasValidationErrors(label, submit, overViewForm) }">{{label.labelTransformationCancelled
+                                                ? label.labelName.alias.replace('Id','') :
+                                                label.labelName.alias.replace('Id','') | changeCase : "capital"
+                                                }}</label>
+                                        </ng-container>
+
+
+
+
+
+                                        <ng-container
+                                            *ngIf="label.type === 'currentAddress' || label.type === 'homeAddress'">
+                                            <label class="form-label fs-6 mt-7" [ngClass]="{
+'required': label?.required,
+'invalid': sharedService.hasValidationErrors(label, submit, overViewForm)
+}">{{
+                                                label.labelName.alias.replace('Id','') |
+                                                changeCase : "capital" }}</label>
+
+                                            <ng-container class="align-items-center "
+                                                *ngIf="label.type === 'currentAddress'">
+                                                <ng-container *ngIf="label.labelName.defaultValue === 'currentAddress'">
+                                                    <button
+                                                        class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                        (click)="getFormTemplate(currentAddress,label.labelName.defaultValue,'currentAddress')"
+                                                        [id]="'kt_drawer_form_currentAddress'">
+                                                        <span span *ngIf="!currentAddressFormSaved"
+                                                            [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                        <span span *ngIf="currentAddressFormSaved"
+                                                            [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                    </button>
+
+                                                </ng-container>
+
+                                            </ng-container>
+
+
+                                            <ng-container class="align-items-center "
+                                                *ngIf="label.type === 'homeAddress'">
+                                                <ng-container *ngIf="label.labelName.defaultValue === 'homeAddress'">
+                                                    <button
+                                                        class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                                        (click)="getFormTemplate(homeAddressTemplate,label.labelName.defaultValue,'homeAddress')"
+                                                        [id]="'kt_drawer_form_homeAddress'">
+                                                        <span span *ngIf="!homeAddressFormSaved"
+                                                            [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                        <span span *ngIf="homeAddressFormSaved"
+                                                            [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                                    </button>
+
+                                                </ng-container>
+
+                                            </ng-container>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center"
+                                            *ngIf="(label.type === 'text' || label.type === 'number' || label.type === 'days' || label.type === 'weight' || label.type === 'height' || label.labelName.defaultValue === 'personalEmail' || label.type === 'decimal')">
+                                            <app-input-text-field [isFieldDisabled]="label?.disable" [max]="label?.max"
+                                                [maxLength]="label?.maxLength"
+                                                [patchValue]="overViewForm.value[label.labelName.defaultValue!]"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, overViewForm) }"
+                                                [type]="label.type"></app-input-text-field>
+                                        </ng-container>
+                                        <app-input-text-field *ngIf="label.labelName.defaultValue === 'workEmail'"
+                                            [emailVerify]="emailLoader" [name]="label.labelName.alias"
+                                            [formControlName]="label.labelName.defaultValue!"
+                                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                            [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, overViewForm) }"
+                                            [type]="label.type"></app-input-text-field>
+
+                                        <ng-container *ngIf="label.labelName.defaultValue=== 'workEmail' && emailExist">
+                                            <div class="fv-plugins-message-container">
+                                                <span role="alert" class="fv-help-block fs-9">
+                                                    Email already exist
+                                                </span>
+                                            </div>
+                                        </ng-container>
+                                        <ng-container
+                                            *ngIf="next && emailLoader && label.labelName.defaultValue=== 'workEmail'">
+                                            <div class="fv-plugins-message-container">
+                                                <span role="alert" class="fv-help-block fs-9">
+                                                    Verifying Email. Please Wait..
+                                                </span>
+                                            </div>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="label.type === 'nationality'">
+                                            <custom-ng-select [multiple]="label?.multiple"
+                                                [jsonListName]="'nationality'" [isSelectDisabled]="isOnboarded"
+                                                [patchData]="employeeOverviewPillTabData?.nationality?.id"
+                                                [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overViewForm) }"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                            </custom-ng-select>
+                                        </ng-container>
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'salutation'">
+                                            <custom-ng-select [jsonListName]="label.jsonListName"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [isSelectDisabled]="isOnboarded"
+                                                [patchData]="employeeOverviewPillTabData?.salutation?.id"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'gender'">
+                                            <custom-ng-select [jsonListName]="label.jsonListName"
+                                                [isSelectDisabled]="isOnboarded"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [patchData]="employeeOverviewPillTabData?.gender?.id"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple"
+                                                [controlName]="label.labelName.defaultValue!">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'bloodGroup'">
+                                            <custom-ng-select [jsonListName]="label.jsonListName"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [patchData]="employeeOverviewPillTabData?.bloodGroup?.id"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'maritalStatus'">
+                                            <custom-ng-select [jsonListName]="label.jsonListName"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [patchData]="employeeOverviewPillTabData?.maritalStatus?.id"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'religion'">
+                                            <custom-ng-select
+                                                [ngClass]="{  'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid  }"
+                                                [jsonListName]="label.jsonListName" [isSelectDisabled]="isOnboarded"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [patchData]="employeeOverviewPillTabData?.religion?.id"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'ethnicity'">
+                                            <custom-ng-select
+                                                [ngClass]="{  'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid  }"
+                                                [jsonListName]="label.jsonListName"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [patchData]="employeeOverviewPillTabData?.ethnicity?.id"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [multiple]="label.multiple">
+                                            </custom-ng-select>
+                                        </ng-container>
+
+                                        <ng-container class="align-items-center"
+                                            *ngIf="label.labelName.defaultValue=== 'indirectReportingId'">
+                                            <custom-ng-select [apiLink]="label.apiLink" [scope]="label.scope"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [patchData]="employeeOverviewPillTabData?.indirectReportingId?.id"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [bindLabel]="'firstName'" [multiple]="label.multiple">
+
+                                                <ng-template custom-ng-label-temp let-item$="item">
+                                                    {{item$.employeeId+' - '+item$.firstName +' '+item$.lastName}}
+                                                </ng-template>
+
+                                            </custom-ng-select>
+                                        </ng-container>
+
+
+
+                                        <ng-container class="align-items-center"
+                                            *ngIf="label.labelName.defaultValue=== 'supervisorId'">
+                                            <custom-ng-select [apiLink]="label.apiLink" [scope]="label.scope"
+                                                [formControlName]="label.labelName.defaultValue!"
+                                                [patchData]="employeeOverviewPillTabData?.supervisorId?.id"
+                                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                [bindLabel]="'firstName'" [multiple]="label.multiple">
+
+                                                <ng-template custom-ng-label-temp let-item$="item">
+                                                    {{item$.employeeId+' - '+item$.firstName +' '+item$.lastName}}
+                                                </ng-template>
+
+                                            </custom-ng-select>
+                                        </ng-container>
+
+
+                                        <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                                            <input-date-picker
+                                                [formControlName]="label.labelName.defaultValue!"></input-date-picker>
+                                        </ng-container>
+
+
+
+                                        <ng-container *ngIf="label.type === 'phoneNumber'">
+                                            <app-intl-phonenumber [formControlName]="label.labelName.defaultValue!"
+                                                [isFirstChange]="'true'"
+                                                [controlName]="label.labelName.defaultValue!"></app-intl-phonenumber>
+                                        </ng-container>
+
+                                        <ng-container *ngFor="let validation of label?.validations;">
+
+                                            <div>
+                                                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                                          validation: validation.name,
+                                                          message: validation.message,
+                                                          control: overViewForm.get(label.labelName.defaultValue)
+                                                        }"></ng-container>
+                                            </div>
+
+
+
+                                        </ng-container>
+                                    </div>
+                                </div>
+
+
+
+                            </ng-container>
+
+
+
+
+                        </ng-container>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+    </ng-container>
+
+</ng-template>
+
+
+
+<ng-template #currentAddress>
+    <form [formGroup]="currentAddressForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of currentAddressFormData.labels">
+                <div class="col-4 ">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit , 'optional': label?.optional}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+                    <app-input-text-field [name]="label.labelName.alias" *ngIf="label.type!=='number'"
+                        [patchValue]="currentAddressForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && currentAddressForm.get(label.labelName.defaultValue).invalid }"
+                        [type]="label.type" [max]="label?.max" [maxLength]="label?.maxLength"></app-input-text-field>
+                    <app-input-text-field [name]="label.labelName.alias" *ngIf="label.type==='number'"
+                        [patchValue]="currentAddressForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && currentAddressForm.get(label.labelName.defaultValue).invalid }"
+                        [type]="label.type" [max]="label?.max" [maxLength]="label?.maxLength"></app-input-text-field>
+                    <ng-container *ngIf="label.type === 'country'">
+                        <custom-ng-select [jsonListName]="label.jsonListName"
+                            [patchData]="currentAddressForm?.value[label.labelName.defaultValue!]"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [controlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #homeAddressTemplate>
+    <form [formGroup]="homeAddressForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of homeAddressFormData.labels">
+                <div class="col-4">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4">
+                    <ng-container *ngIf="label.labelName.alias ==='sameAsCurrentAddress'">
+                        <div class="form-check mt-5 form-check-color-{{theme}}">
+                            <input (click)="onCopyCurrentToHomeClick($event)" class="form-check-input mt-2 mb-3"
+                                type="checkbox" [formControlName]="label.labelName.defaultValue!"
+                                [id]=" label.labelName.alias" />
+                            <label class="form-label fs-6 mt-2 mb-1" [for]=" label.labelName.alias">
+                                {{ label.labelName.alias | changeCase : "capital" }}
+                            </label>
+                        </div>
+                    </ng-container>
+                    <app-input-text-field
+                        *ngIf="label.labelName.alias !=='sameAsCurrentAddress' && label.type!=='number'"
+                        [name]="label.labelName.alias" [isFieldDisabled]="sameAsCurrentAddress"
+                        [patchValue]="homeAddressForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && homeAddressForm.get(label.labelName.defaultValue).invalid}"
+                        [type]="label.type" [max]="label?.max" [maxLength]="label?.maxLength"></app-input-text-field>
+                    <app-input-text-field
+                        *ngIf="label.labelName.alias !=='sameAsCurrentAddress'  && label.type==='number'"
+                        [name]="label.labelName.alias" [isFieldDisabled]="sameAsCurrentAddress"
+                        [patchValue]="homeAddressForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && homeAddressForm.get(label.labelName.defaultValue).invalid}"
+                        [type]="label.type" [max]="label?.max" [maxLength]="label?.maxLength"></app-input-text-field>
+                    <ng-container *ngIf="label.type === 'country'">
+                        <custom-ng-select [isSelectDisabled]="sameAsCurrentAddress" [jsonListName]="label.jsonListName"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [patchData]="homeAddressForm?.value[label.labelName.defaultValue!]"
+                            [multiple]="label.multiple" [controlName]="label.labelName.defaultValue!">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #customTemplate>
+
+    <div class="mb-2 d-flex gap-6 justify-content-center">
+        <a [routerLink]="['/employee-hub/profiles/employee/view', this.id]" class="btn btn-{{theme}} btn-sm"
+            (click)="onViewClicked()">View</a>
+    </div>
+</ng-template>
+
+
+
+
+
+
+
+
+<div class="row pt-4">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body py-17">
+                <!--begin::Users group-->
+                <div class="d-flex align-items-center mb-8">
+                    <h3 class="card-title float-start me-6 mt-4">
+                        <span class="fw-bold mb-2 heading-style">Direct Subordiantes</span>
+                    </h3>
+                    <div class="symbol-group symbol-hover">
+                        <ng-container *ngIf="employeeSubordinates && employeeSubordinates.length>0; else noInfo">
+                            <ng-container *ngFor="let employeeSubordinate of employeeSubordinates">
+                                <div class="symbol symbol-34px symbol-circle" data-bs-toggle="tooltip"
+                                    data-bs-original-title="Alan Warden" data-kt-initialized="1">
+                                    <span class="symbol-label bg-warning text-inverse-warning fw-bold">{{
+                                        employeeSubordinate.firstName.charAt(0)}}</span>
+                                </div>
+                            </ng-container>
+
+
+                            <!-- <div class="symbol symbol-34px symbol-circle" data-bs-toggle="tooltip"
+                                aria-label="Michael Eberon" data-bs-original-title="Michael Eberon"
+                                data-kt-initialized="1">
+                                <img alt="Pic" src="assets/media/avatars/300-11.jpg">
+                            </div>
+                            <div class="symbol symbol-34px symbol-circle" data-bs-toggle="tooltip"
+                                aria-label="Melody Macy" data-bs-original-title="Melody Macy" data-kt-initialized="1">
+                                <img alt="Pic" src="assets/media/avatars/300-2.jpg">
+                            </div>
+                            <div class="symbol symbol-34px symbol-circle" data-bs-toggle="tooltip"
+                                data-bs-original-title="Perry Matthew" data-kt-initialized="1">
+                                <span class="symbol-label bg-info text-inverse-info fw-bold">P</span>
+                            </div>
+                            <div class="symbol symbol-34px symbol-circle" data-bs-toggle="tooltip"
+                                aria-label="Barry Walter" data-bs-original-title="Barry Walter" data-kt-initialized="1">
+                                <img alt="Pic" src="assets/media/avatars/300-12.jpg">
+                            </div>
+                            <a href="#" class="symbol symbol-34px symbol-circle" data-bs-toggle="modal"
+                                data-bs-target="#kt_modal_view_users">
+                                <span class="symbol-label bg-dark text-gray-300 fs-8 fw-bold">+42</span>
+                            </a> -->
+                        </ng-container>
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="d-flex align-items-center pt-4">
+                    <h3 class="card-title float-start me-2 mt-4">
+                        <span class="fw-bold mb-2 heading-style">Indirect Subordiantes</span>
+                    </h3>
+                    <div class="symbol-group symbol-hover"
+                        *ngIf="employeeIndirectSubordinates && employeeIndirectSubordinates.length>0; else noInfoIndirectSubordinates">
+                        <div class="symbol symbol-34px symbol-circle" data-bs-toggle="tooltip"
+                            data-bs-original-title="Alan Warden" data-kt-initialized="1">
+                            <span class="symbol-label bg-warning text-inverse-warning fw-bold">+</span>
+                        </div>
+
+                    </div>
+                    <!--end::Users group-->
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <!--end::Col-->
+    <!--begin::Col-->
+    <div class="col-xl-6">
+        <!--begin::List Widget 5-->
+        <div class="card ">
+            <!--begin::Header-->
+            <div class="card-header align-items-center border-0 mt-4">
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="fw-bold mb-2 heading-style">Recent Activities</span>
+                </h3>
+                <div class="hr-side mt-3 ms-2">
+                    <hr>
+                </div>
+            </div>
+            <!--end::Header-->
+            <!--begin::Body-->
+            <div class="card-body pt-5">
+                <!--begin::Timeline-->
+                <div class="timeline-label timeline-scroll">
+                    <!--begin::Item-->
+                    <div class="timeline-item">
+                        <!--begin::Label-->
+                        <div class="timeline-label fw-bold text-gray-800 fs-6">08:42
+                        </div>
+                        <!--end::Label-->
+                        <!--begin::Badge-->
+                        <div class="timeline-badge">
+                            <i class="fa fa-genderless text-warning fs-1"></i>
+                        </div>
+                        <!--end::Badge-->
+                        <!--begin::Text-->
+                        <div class="fw-mormal timeline-content text-muted ps-3">New Travel Request has been
+                            submitted</div>
+                        <!--end::Text-->
+                    </div>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <div class="timeline-item">
+                        <!--begin::Label-->
+                        <div class="timeline-label fw-bold text-gray-800 fs-6">10:00
+                        </div>
+                        <!--end::Label-->
+                        <!--begin::Badge-->
+                        <div class="timeline-badge">
+                            <i class="fa fa-genderless text-success fs-1"></i>
+                        </div>
+                        <!--end::Badge-->
+                        <!--begin::Content-->
+                        <div class="timeline-content d-flex">
+                            <span class="fw-bold text-gray-800 ps-3">Announcement Made</span>
+                        </div>
+                        <!--end::Content-->
+                    </div>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <div class="timeline-item">
+                        <!--begin::Label-->
+                        <div class="timeline-label fw-bold text-gray-800 fs-6">14:37
+                        </div>
+                        <!--end::Label-->
+                        <!--begin::Badge-->
+                        <div class="timeline-badge">
+                            <i class="fa fa-genderless text-danger fs-1"></i>
+                        </div>
+                        <!--end::Badge-->
+                        <!--begin::Desc-->
+                        <div class="timeline-content fw-bold text-gray-800 ps-3">Approved salary increment for
+                            employee EMP0184 Abdul Jaber Mohammed Ali
+                        </div>
+                        <!--end::Desc-->
+                    </div>
+                    <div class="timeline-item">
+                        <!--begin::Label-->
+                        <div class="timeline-label fw-bold text-gray-800 fs-6">14:37
+                        </div>
+                        <!--end::Label-->
+                        <!--begin::Badge-->
+                        <div class="timeline-badge">
+                            <i class="fa fa-genderless text-danger fs-1"></i>
+                        </div>
+                        <!--end::Badge-->
+                        <!--begin::Desc-->
+                        <div class="timeline-content fw-bold text-gray-800 ps-3">New Travel Request has been
+                            submitted
+
+                        </div>
+                        <!--end::Desc-->
+                    </div>
+                    <div class="timeline-item">
+                        <!--begin::Label-->
+                        <div class="timeline-label fw-bold text-gray-800 fs-6">14:37
+                        </div>
+                        <!--end::Label-->
+                        <!--begin::Badge-->
+                        <div class="timeline-badge">
+                            <i class="fa fa-genderless text-danger fs-1"></i>
+                        </div>
+                        <!--end::Badge-->
+                        <!--begin::Desc-->
+                        <div class="timeline-content fw-bold text-gray-800 ps-3">Announcement Made
+
+                        </div>
+                        <!--end::Desc-->
+                    </div>
+                    <div class="timeline-item">
+                        <!--begin::Label-->
+                        <div class="timeline-label fw-bold text-gray-800 fs-6">14:37
+                        </div>
+                        <!--end::Label-->
+                        <!--begin::Badge-->
+                        <div class="timeline-badge">
+                            <i class="fa fa-genderless text-danger fs-1"></i>
+                        </div>
+                        <!--end::Badge-->
+                        <!--begin::Desc-->
+                        <div class="timeline-content fw-bold text-gray-800 ps-3">Announcement Made
+
+                        </div>
+                        <!--end::Desc-->
+                    </div>
+
+
+                    <!--end::Item-->
+                </div>
+                <!--end::Timeline-->
+            </div>
+            <!--end: Card Body-->
+        </div>
+        <!--end: List Widget 5-->
+    </div>
+</div>
+
+
+<div class="row pt-3" *ngIf="!tabLoading ; else skeleton">
+    <app-tab-data-table [tabsMeta]="overViewTabsMeta" key="employee-overview">
+        <ng-template action-btn-temp let-id="id" let-meta="meta" let-item="item" let-tab="tab">
+            <ng-container>
+                <a [ngbTooltip]="'Edit'" class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+                    [id]="'kt_drawer_form_tab'" (click)="open('edit',id,item,tab,meta)">
+                    <span [inlineSVG]="'./assets/media/icons/create-outline.svg'" class="svg-icon svg-icon-2"></span>
+                </a>
+                <a [ngbTooltip]="'View'" class=" btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+                [id]="'kt_drawer_form_tab'" (click)="open('view',id,item,tab,meta)">
+                    <span [inlineSVG]="
+                        './assets/media/icons/document-text-outline.svg'
+                      " class="svg-icon svg-icon-3"></span>
+                </a>
+            </ng-container>
+        </ng-template>
+
+    </app-tab-data-table>
+
+</div>
+
+
+<ng-template #noInfo>
+    <div class="fw-medium fs-6 text-gray-500 pt-2">
+        Not Availaible
+    </div>
+</ng-template>
+
+
+<ng-template #noInfoIndirectSubordinates>
+    <div class="fw-medium fs-6 text-gray-500 pt-2 ps-3">
+        Not Availaible
+    </div>
+</ng-template>
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="control.hasError(validation)">
+        <div class="fv-plugins-message-container">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+
+
+
+
+
+
+
+
+<!-- Emergency contact tab -->
+
+<ng-template #emergencyContactTemplate>
+    <form [formGroup]="emergencyContactForm" class="mt-1 mb-4">
+
+        <div class="d-flex flex-column"  [ngClass]="{'disable-interaction': viewMode}">
+            <div class="row mb-4">
+
+                    <div class="col-4">
+                        <label class="form-label fs-6 mb-1 required text-nowrap min-w-35">Name</label>
+                    </div>
+                    <div class="col-8">
+                        <fieldset>   <input [formControlName]="'name'" type="text" class="form-control form-control-sm  "
+                            placeholder="Enter Name"
+                            [ngClass]="{  'invalid' :emergencyContactForm.get('name').invalid   }" /></fieldset>
+
+                        <ng-container *ngIf=" emergencyContactForm.get('name').errors?.required">
+                            <div class="fv-plugins-message-container">
+                                <span role="alert" class="fv-help-block fs-9">
+                                    Name Required
+                                </span>
+                            </div>
+                        </ng-container>
+                    </div>
+
+
+            </div>
+            <div class="row mb-4">
+                <div class="col-4">
+                    <label class="form-label fs-6 mb-1 text-nowrap min-w-35">Relationship</label>
+                </div>
+                <div class="col-8">
+                    <custom-ng-select [jsonListName]="'relationship'" [formControlName]="'relationship'"
+                        [patchData]="emergencyContactForm.get('relationship').value"
+                        [placeholder]="'Select Relationship'" [multiple]="false">
+                    </custom-ng-select>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-4">
+                    <label class="form-label fs-6 mb-1 text-nowrap min-w-35">Emergency Address</label>
+                </div>
+                <div class="col-8">
+                    <fieldset>
+                        <textarea id="address" name="address" rows="4" cols="50" [formControlName]="'address'"
+                        type="textarea" class="form-control form-control-sm " placeholder="Enter Address"></textarea> </fieldset>
+
+                    <!-- <input [formControlName]="'emergencyAddress'" type="textarea"
+                                    class="form-control form-control-sm " placeholder="Enter Address" /> -->
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-4">
+                    <label class="form-label fs-6 mb-1 required text-nowrap min-w-35">Emergency
+                        Phone</label>
+                </div>
+                <div class="col-8">
+                    <app-intl-phonenumber [isRequired]="true" [formControlName]="'phoneNumber'"
+                        [countryCode]="newCountryCode" (onPhoneChange)="onPhoneUpdate($event,i)"
+                        [isFirstChange]="'true'"></app-intl-phonenumber>
+                    <ng-container *ngIf="emergencyContactForm.get('phoneNumber').errors?.required">
+                        <div class="fv-plugins-message-container">
+                            <span role="alert" class="fv-help-block fs-9">
+                                Phone Number Required
+                            </span>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+
+
+    </form>
+</ng-template>
+
+
+
+<app-form-drawer [formTemplate]="formTemplateTabs" [formDrawerCloseId]="'kt_drawer_form_tab_close'" [viewMode]="viewMode"
+    (isSaved)="onDrawerSavetabsForm($event)" [drawerWidth]="600" [formDrawerId]="'#kt_drawer_form_tab'"
+    [headerText]="tabHeaderText" (isCanceled)="cancelTabsForm($event) " [buttonDisable]="isTabsFormSaveDisabled">
+</app-form-drawer>
+
+
+
+
+
+
+
+
+
+<!-- Roles  -->
+
+
+<ng-template #rolesTemplate>
+    <form [formGroup]="rolesForm">
+
+        <div class="row mt-3" [ngClass]="{'disable-interaction': viewMode}">
+            <ng-container *ngFor="let label of rolesFormData.labels">
+                <div class="col-4 mt-2">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                    <span *ngIf="i===0" class="badge mb-0 bg-{{theme}}-bright ms-4 fs-9 p-2">Active</span>
+                </div>
+
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+                    <ng-container *ngIf="label.type === 'roles'">
+                        <custom-ng-select [items]="rolesList"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple"
+                         >
+                        </custom-ng-select>
+                    </ng-container>
+
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ng-template #skeleton>
+    <div class="p-0">
+        <div class="card-body p-0 border-bottom-4">
+            <div class="table-skeleton">
+                <!-- begin::Table -->
+                <table class="table standard align-middle table-striped">
+                    <thead>
+                        <tr>
+                            <th class="ps-5 pt-6 pb-2 bg-gray-400" *ngFor="let header of [0, 0, 0, 0, 0,0]">
+                                <div class="d-flex align-items-center h-100">
+                                    <ngx-skeleton-loader [theme]="{
+                        height: '1.1rem',
+                        width: '7rem',
+                        'margin-right': '0.5rem'
+                      }"></ngx-skeleton-loader>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of [0,0,0,0,0]">
+                            <td class="ps-5 bg-white">
+                                <div class="d-flex gap-5">
+                                    <a *ngFor="let row of [0,0]">
+                                        <ngx-skeleton-loader
+                                            [theme]="{ width: '1.2rem', height: '1.2rem' }"></ngx-skeleton-loader>
+                                    </a>
+                                </div>
+                            </td>
+                            <td *ngFor="let col of [0,0,0,0,0]">
+                                <a class="text-dark fw-medium text-hover-primary d-block fs-6">
+                                    <ngx-skeleton-loader
+                                        [theme]="{ width: '80%', height: '1em' }"></ngx-skeleton-loader>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="app-container">
+            <div class="d-flex flex-stack flex-wrap pb-0 px-3 mb-1 flex-column flex-md-row">
+                <div >
+                    <ngx-skeleton-loader [theme]="{ width: '18em', height: '1.6em' }"></ngx-skeleton-loader>
+                </div>
+                <!--begin::Pages-->
+                <ul class="pagination p-md-0 pt-4 gap-3">
+                    <ngx-skeleton-loader [theme]="{ width: '2em', height: '2em' }"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader [theme]="{ width: '2em', height: '2em' }"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader [theme]="{ width: '2em', height: '2em' }"></ngx-skeleton-loader>
+                </ul>
+                <!--end::Pages-->
+            </div>
+        </div>
+    </div>
+</ng-template>

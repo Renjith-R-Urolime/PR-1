@@ -1,0 +1,12 @@
+<app-page-title
+  [isEditDeleteBtn]="true"
+  [isGoBack]="true"
+></app-page-title>
+
+<div class="py-1">
+  <details-card (detailsCardDataChange)="handleDetailsCardDataChange($event)"
+    [detailsCardData]="detailsCardData"
+  ></details-card>
+</div>
+
+<app-tab-data-table  [tabsMeta]="leaveAdjustmentTabsMeta"></app-tab-data-table>

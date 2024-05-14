@@ -1,0 +1,74 @@
+.search-dropdown {
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    border-radius: 18px;
+    padding: 8px;
+    scrollbar-width: none;
+    width: 1030px !important;
+    scrollbar-color: transparent transparent; /* Firefox */
+    background-color: var(--gray-200);
+    transition: transform 0.3s, width 0.3s;
+    transform: translateX(-30%);
+    &.single-row{
+        width: 516px !important;
+        transform: translateX(-3.25rem)!important;
+    }
+}
+.right-section-margin{
+    margin-left: 513px;
+    &.animation{
+        animation: slideMarginLeft 0.3s ease forwards;
+    }
+}
+.left-section-margin{
+    margin-right: 513px;
+    &.animation{
+        animation: slideMarginRight 0.3s ease forwards;
+    }
+}
+// .mx-auto{
+//     margin:auto;
+// }
+
+@keyframes slideMarginLeft {
+    from {
+      margin-left: 513px;
+    }
+    to {
+      margin-left: 0px;
+    }
+  }
+
+@keyframes slideMarginRight {
+    from {
+      margin-right: 513px;
+    }
+    to {
+      margin-right: 0px;
+    }
+  }
+
+.margin-transition{
+    transition: margin 0.3s;
+}
+
+.btn{
+    &.search-box-icon{
+        border-radius: 50%!important;
+        padding: 1px 0px!important;
+    }
+
+}
+hr{
+    height: 1px;
+}
+.svg-icon{
+color: white !important;
+fill: #ffff !important;
+}
+
+.highlight {
+    color: rgb(0, 0, 0); /* or any other highlighting style */
+  }
+

@@ -1,0 +1,19 @@
+<div class="mb-10">
+  <ul class="nav flex-column" id="kt_aside_nav_tabs">
+    <li *ngFor="let tab of allTabs" class="d-flex flex-column justify-content-center mt-3 mb-1" [title]="tab.mainMenuTooltip" [ngbTooltip]="tab.mainMenuTooltip"
+      placement="end">
+      <a class="nav-link btn btn-icon p-0 bg-hover-{{tab.mainMenuColor}} glow-h-{{ tab.mainMenuColor }}"
+        [ngClass]="{ 'active' : tab.mainMenuLink === activeTab.mainMenuLink }"
+        (click)="setActiveTab(tab.mainMenuLink)"
+        >
+        <span [inlineSVG]="tab.mainMenuIcon" class="svg-icon svg-icon-2x"></span>
+      </a>
+      <!-- Separator -->
+      <div class="menu-item" *ngIf="tab.mainMenuIsSeparator">
+        <div class="px-0">
+          <div class="separator mx-1 mt-3 border-gray-400"></div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

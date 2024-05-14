@@ -1,0 +1,21 @@
+<div class=" p-0">
+    <div class="d-flex h-42px flex-wrap rounded-bottom tab-style">
+        <div class="btn-group mx-10" role="group">
+            <div class="tabs d-flex flex-row">
+                <div *ngFor='let tab of pillLabel; let i = index'>
+                    <div class="tab-label" (click)=onTabSelect(tab.tabIndex) [ngStyle]="selectedTab === i && {'border-bottom':'5px solid #482084', 'color':'#482084','margin-bottom':'20px','font-weight': 'bold'}"> &nbsp;&nbsp;{{tab.label}}&nbsp;&nbsp;</div>
+                </div>
+              </div>     
+        </div>
+    </div>
+</div>
+
+<ng-template #skeleton>
+    <div class="d-flex flex-row ps-5 my-0 gap-5 btn-group align-items-center">
+        <ngx-skeleton-loader [theme]="skeletonTheme"></ngx-skeleton-loader>
+        <ngx-skeleton-loader [theme]=" skeletonTheme"></ngx-skeleton-loader>
+        <ngx-skeleton-loader [theme]=" skeletonTheme"></ngx-skeleton-loader>
+        <ngx-skeleton-loader [theme]=" skeletonTheme"></ngx-skeleton-loader>
+        <ngx-skeleton-loader [theme]=" skeletonTheme"></ngx-skeleton-loader>
+    </div>
+</ng-template>

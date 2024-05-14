@@ -1,0 +1,387 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "infithra": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "customWebpackConfig": {
+              "path": "./custom-webpack.config.js",
+              "replaceDuplicatePlugins": true
+           },
+            "outputPath": "dist/infithra",
+            "allowedCommonJsDependencies": [
+              "angular-slickgrid",
+              "object-path",
+              "apexcharts",
+              "prismjs",
+              "phone",
+              "sweetalert2",
+              "aws-sdk",
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts",
+              "google-libphonenumber",
+              "@aws-crypto/sha256-js",
+              "isomorphic-unfetch",
+              "js-cookie",
+              "qrcode",
+              "dompurify",
+              "buffer",
+              "autocompleter",
+              "@agm/core",
+              "moment-mini",
+              "filepond-plugin-image-crop",
+              "filepond",
+              "filepond-plugin-file-validate-type",
+              "filepond-plugin-image-edit",
+              "filepond-plugin-image-exif-orientation",
+              "filepond-plugin-image-preview",
+              "filepond-plugin-pdf-preview",
+              "core-js/modules/es.array.index-of.js",
+              "core-js/modules/es.array.iterator.js",
+              "core-js/modules/es.array.reduce.js",
+              "core-js/modules/es.array.reverse.js",
+              "core-js/modules/es.promise.js",
+              "core-js/modules/es.regexp.to-string.js",
+              "core-js/modules/es.string.ends-with.js",
+              "core-js/modules/es.string.includes.js",
+              "core-js/modules/es.string.match.js",
+              "core-js/modules/es.string.replace.js",
+              "core-js/modules/es.string.split.js",
+              "core-js/modules/es.string.starts-with.js",
+              "core-js/modules/es.string.trim.js",
+              "core-js/modules/web.dom-collections.iterator.js",
+              "raf",
+              "rgbcolor",
+              "change-case-all",
+              "moment",
+              "dom-to-image",
+              "lodash",
+              "@editorjs/editorjs",
+              "@editorjs/header",
+              "@editorjs/image",
+              "@editorjs/simple-image",
+              "@editorjs/table"
+            ],
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/assets",
+              {
+                       "glob": "**/*",
+                    "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                      "output": "/assets/"
+                     }
+            ],
+            "styles": [
+              "src/styles.scss",
+              "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css"
+            ],
+            "scripts": [
+              "node_modules/sortablejs/Sortable.js",
+              "src/assets/js/jquery-3.1.0.js",
+              "node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js",
+              "node_modules/slickgrid/slick.core.js",
+              "node_modules/slickgrid/slick.grid.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/app/pages/routing.ts",
+                  "with": "src/app/pages/routing.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/time-and-attendance/time-and-attendance.module.ts",
+                  "with": "src/app/pages/time-and-attendance/time-and-attendance.new.module.ts"
+                },
+                {
+                  "replace": "src/app/pages/payroll-management/payroll-management.module.ts",
+                  "with": "src/app/pages/payroll-management/payroll-management.new.module.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "aot":false,
+              "extractLicenses": false,
+              "namedChunks": false,
+              "vendorChunk": false
+            },
+            "staging": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "8kb"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "aot":false,
+              "extractLicenses": false,
+              "namedChunks": false,
+              "vendorChunk": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                },
+                {
+                  "replace": "src/app/_metronic/layout/components/aside/tabs.ts",
+                  "with": "src/app/_metronic/layout/components/aside/tabs.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/routing.ts",
+                  "with": "src/app/pages/routing.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/time-and-attendance/time-and-attendance.module.ts",
+                  "with": "src/app/pages/time-and-attendance/time-and-attendance.new.module.ts"
+                },
+                {
+                  "replace": "src/app/pages/payroll-management/payroll-management.module.ts",
+                  "with": "src/app/pages/payroll-management/payroll-management.new.module.ts"
+                }
+              ]
+            },
+            "development": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "aot":false,
+              "extractLicenses": false,
+              "namedChunks": true,
+              "vendorChunk": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                },
+                {
+                  "replace": "src/app/_metronic/layout/components/aside/tabs.ts",
+                  "with": "src/app/_metronic/layout/components/aside/tabs.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/routing.ts",
+                  "with": "src/app/pages/routing.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/time-and-attendance/time-and-attendance.module.ts",
+                  "with": "src/app/pages/time-and-attendance/time-and-attendance.new.module.ts"
+                },
+                {
+                  "replace": "src/app/pages/payroll-management/payroll-management.module.ts",
+                  "with": "src/app/pages/payroll-management/payroll-management.new.module.ts"
+                }
+              ]
+            },
+            "server":{
+              "buildOptimizer": false,
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "aot":false,
+              "extractLicenses": false,
+              "namedChunks": true,
+              "vendorChunk": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.server.ts"
+                },
+                {
+                  "replace": "src/app/_metronic/layout/components/aside/tabs.ts",
+                  "with": "src/app/_metronic/layout/components/aside/tabs.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/routing.ts",
+                  "with": "src/app/pages/routing.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/time-and-attendance/time-and-attendance.module.ts",
+                  "with": "src/app/pages/time-and-attendance/time-and-attendance.new.module.ts"
+                },
+                {
+                  "replace": "src/app/pages/payroll-management/payroll-management.module.ts",
+                  "with": "src/app/pages/payroll-management/payroll-management.new.module.ts"
+                }
+              ]
+            },
+            "local": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/app/_metronic/layout/components/aside/tabs.ts",
+                  "with": "src/app/_metronic/layout/components/aside/tabs.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/routing.ts",
+                  "with": "src/app/pages/routing.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/time-and-attendance/time-and-attendance.module.ts",
+                  "with": "src/app/pages/time-and-attendance/time-and-attendance.new.module.ts"
+                },
+                {
+                  "replace": "src/app/pages/payroll-management/payroll-management.module.ts",
+                  "with": "src/app/pages/payroll-management/payroll-management.new.module.ts"
+                }
+              ]
+            },
+            "new-tab": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "outputHashing": "all",
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/app/_metronic/layout/components/aside/tabs.ts",
+                  "with": "src/app/_metronic/layout/components/aside/tabs.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/routing.ts",
+                  "with": "src/app/pages/routing.new.ts"
+                },
+                {
+                  "replace": "src/app/pages/time-and-attendance/time-and-attendance.module.ts",
+                  "with": "src/app/pages/time-and-attendance/time-and-attendance.new.module.ts"
+                },
+                {
+                  "replace": "src/app/pages/payroll-management/payroll-management.module.ts",
+                  "with": "src/app/pages/payroll-management/payroll-management.new.module.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-builders/custom-webpack:dev-server",
+          "options":{
+            "port":5200
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "infithra:build:production"
+            },
+            "staging": {
+              "browserTarget": "infithra:build:staging"
+            },
+            "development": {
+              "browserTarget": "infithra:build:development"
+            },
+            "local": {
+              "browserTarget": "infithra:build:local"
+            },
+            "server": {
+              "browserTarget": "infithra:build:server"
+            },
+            "new-tab": {
+              "browserTarget": "infithra:build:new-tab"
+            }
+          },
+          "defaultConfiguration": "server"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "infithra:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "f7f7437d-ba2b-4230-8a07-fdc4c808ad97"
+  }
+}

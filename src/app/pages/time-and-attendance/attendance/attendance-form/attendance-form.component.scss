@@ -1,0 +1,26 @@
+.grid-wrapper{
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(15, 1fr);
+  }
+  
+  @for $i from 1 through 15 {
+    .grid-row-#{$i} {
+      grid-row: span #{$i};
+    }
+  
+    .grid-col-#{$i} {
+      grid-column: span #{$i};
+    }
+  }
+  
+  .grid-item[data-type="logo"]{
+    grid-row : span 2
+  }
+  .loader{
+    position: absolute;
+    right: 9px;
+    top: 30px;
+    background-color: aliceblue;
+    z-index: 9;
+  }

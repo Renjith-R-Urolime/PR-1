@@ -1,0 +1,73 @@
+<div class="position-relative">
+    <div class="input-group" (click)="toggleDropdown()">
+        <input class="form-control form-control-sm" placeholder="HH:MM" [readonly]="true" [disabled]="!isDisabled" [(ngModel)]="timeValue">
+        <div class="input-group-append px-2">
+            <span class="input-group-icon svg-icon svg-icon-2"
+                [inlineSVG]="'./assets/media/icons/time-outline.svg'"></span>
+        </div>
+    </div>
+
+
+
+    <ng-container *ngIf="showDropdown">
+        <!-- existing -->
+        <div class="position-absolute w-100 z-index-9">
+            <div class="card border bs-dropdown border-dark mt-2">
+                <div class=" px-3 py-2">
+                    <div class="contatiner-fluid">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="d-flex justify-content-center">
+                                    <div id="scrollableDiv" class="scrollable" (wheel)="onScroll($event)">
+                                        <timeless-base-picker [displayData]='hourTimeArray'
+                                            [selectedItemIndex]="hourArrayIndex"
+                                            (newSelectedIndex)=newSelectionEventHour($event)>
+                                        </timeless-base-picker>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <p class="mb-0 fs-9">Hour</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="d-flex justify-content-center">
+                                    <div id="scrollableDiv" class="scrollable text-center" (wheel)="onScroll($event)">
+                                        <timeless-base-picker [selectedItemIndex]="minuteArrayIndex"
+                                            [displayData]='minTimeArray'
+                                            (newSelectedIndex)=newSelectionEventMinutes($event)>
+                                        </timeless-base-picker>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <p class="mb-0 fs-9">Minute</p>
+                                </div>
+
+                            </div>
+                            <div class="col-4">
+
+                                <ng-container *ngIf="format === '12'">
+                                    <div class="border border-2 border-dark rounded-1">
+                                        <div class=" p-1 fs-8 text-center bg-white btn-active-{{ theme }} hover-light cursor-pointer"
+                                            [ngClass]="{'active': selectedMeridien === 'AM' }"
+                                            (click)="toggleMeridien('AM')">
+                                            <p class="m-0">AM</p>
+                                        </div>
+
+                                        <div class=" p-1  fs-8 text-center bg-white btn-active-{{ theme }} hover-light cursor-pointer "
+                                            [ngClass]="{'active': selectedMeridien === 'PM' }"
+                                            (click)="toggleMeridien('PM')">
+                                            <p class="m-0">PM</p>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ng-container>
+
+</div>

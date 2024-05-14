@@ -1,0 +1,207 @@
+<app-page-title></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="!isLoading ; else skeleton">
+
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngIf="section.tabName === formData.tabName">
+              <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                <!--begin::Col-->
+                <div class="ps-9">
+                  <ng-container *ngIf="!isLoading;">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+
+
+                </div>
+                <div class="card-body py-0">
+                  <form [formGroup]="policyForm">
+                    <div class="row">
+                      <ng-container *ngFor="let label of formData.labels">
+                        <ng-container *ngIf="label.sectionName === section.sectionName">
+                          <div class="position-relative col-lg-{{ label.col ? label.col : col }} mb-2">
+                            <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                              <ng-container
+                                *ngIf="!['toggle', 'toggleBtn', 'radio', 'radio1','time','number'].includes(label.type)">
+                                <label class="form-label fs-6 mb-0"
+                                  [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, policyForm) }">{{
+                                  label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                              </ng-container>
+
+                              <app-input-text-field *ngIf="label.type !== 'number'"
+                                [patchValue]="policyForm?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, policyForm) }"
+                                [type]="label.type" [name]="label.labelName.alias!"
+                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true">
+                              </app-input-text-field>
+                              <ng-container *ngIf="label.type === 'policyType'">
+                                <custom-ng-select
+                                  [ngClass]="{ 'mb-3': true, 'invalid': sharedService.hasValidationErrors(label,submit, subsidiaryForm) }"
+                                  [apiLink]="label.apiLink" [patchData]="policyData?.policyType"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [controlName]="label.labelName.defaultValue!"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                  [multiple]="false">
+                                </custom-ng-select>
+                              </ng-container>
+                              <ng-container class="align-items-center" *ngIf="label.type === 'file'">
+                                <input-file-upload theme="light" fieldStyle="compact"
+                                  [formControlName]="label.labelName.defaultValue!"></input-file-upload>
+                              </ng-container>
+                              <ng-container class="align-items-center " *ngIf="label.type === 'classificationApplicability'">
+                                <button
+                                  (click)="getFormTemplate(classificationApplicabilityTemplate,label.labelName.defaultValue,'classificationApplicability')"
+                                  class="btn form-btn-icon btn-light mb-1 border border-1 ms-1"
+                                  [id]="'kt_drawer_form_toggle'">
+                                  <span span *ngIf="!classificationApplicabilityFormSaved"
+                                    [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                    class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                  <span span *ngIf="classificationApplicabilityFormSaved"
+                                    [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                    class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                </button>
+                              </ng-container>
+
+                              <ng-container class="align-items-center" *ngIf="label.type === 'editor'">
+                                <app-editor [formControlName]="label.labelName.defaultValue!" (editorValueChange)="onEditorValueChange($event)"></app-editor>
+                              </ng-container>
+
+
+                              <!-- <ng-container class="form-check form-switch" *ngIf="label.type === 'toggleBtn'">
+                                <label class="switch">
+                                  <input type="checkbox"
+                                  [formControlName]="label.labelName.defaultValue!">
+                                  <span class="slider round"
+                                  [ngClass]="[labelValue ? 'bg-' + theme : '']"></span>
+                                  {{labelValue}}
+                                </label>
+
+
+                                <label class="form-label fs-6 mb-0"
+                                  [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, policyForm) }">
+                                  {{ label.labelName.alias.replace('Id','') | changeCase : "capital" }}
+                                </label>
+                              </ng-container> -->
+
+                              <ng-container class="form-check form-switch " *ngIf="label.type === 'radio'">
+
+                                <div class="form-check form-check-inline ">
+                                  <input class="form-check-input me-2 radio-form" type="radio" name="inlineRadioOptions"
+                                    [id]="label.labelName.alias"  (change)="onRadioChange($event,label.labelName.alias)"
+                                  >
+                                  <label class="form-label fs-6 mb-0"
+                                    [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, policyForm) }">{{
+                                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                </div>
+
+
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'time'">
+                                <div class="d-flex flex-row">
+                                  <label class="form-label fs-6 mb-0 mt-1 me-2"
+                                    [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, policyForm) }">{{
+                                    label.labelName.alias | changeCase : "capital" }}</label>
+
+                                    <app-new-time-picker [formControlName]="label.labelName.defaultValue!"
+                                    (valueConfirmed)="sample($event)"></app-new-time-picker>
+
+                                </div>
+
+                              </ng-container>
+                              <ng-container *ngIf="label.type === 'number'">
+                                <div class="d-flex flex-row">
+                                  <label class="form-label fs-6 mb-0 mt-1 me-2"
+                                    [ngClass]="{ 'required': label?.required, 'invalid': sharedService.hasValidationErrors(label, submit, policyForm) }">{{
+                                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                  <app-input-text-field [patchValue]="policyForm?.value[label.labelName.defaultValue!]"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, policyForm) }"
+                                    [type]="label.type" [name]="label.labelName.alias!"
+                                    [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"></app-input-text-field>
+
+                                </div>
+
+                              </ng-container>
+
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+    <div class="fv-plugins-message-container ">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #classificationApplicabilityTemplate (isCanceled)="cancelFormSave($event)">
+  <form [formGroup]="classificationApplicabilityForm">
+    <div class="row mt-3">
+      <ng-container *ngFor="let label of classificationApplicabilityFormData.labels">
+        <div class="col-4 ">
+          <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+            [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+            label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+        </div>
+        <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+          <ng-container *ngIf="label.type === 'dropdown'">
+            <custom-ng-select
+              [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, classificationApplicabilityForm) }"
+              [formGroup]="contractMasterForm" [apiLink]="label.apiLink" [maxLimit]="2"
+              [fetchCondition]="label.fetchCondition" [formControlName]="label.labelName.defaultValue!"
+              [fetchCondition]="classificationApplicabilityFetchCondition" [controlName]="label.labelName.defaultValue!"
+              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+              [multiple]="label.multiple">
+            </custom-ng-select>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </form>
+</ng-template>
+
+<app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef" (isSaved)="onDrawerSave($event)"
+  (isCanceled)="onDrawerCancel($event)"></app-form-drawer>
+
+
+<ng-template #skeleton>
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+
+</ng-template>
+
+<ng-template #customTemplate>
+
+  <div class="mb-2 d-flex gap-6 justify-content-center">
+      <button class="btn btn-{{theme}} btn-sm" (click)="addAnother()">Add Another</button>
+      <button class="btn border border-2 border-secondary text-dark btn-sm" (click)="BackToList()">List</button>
+  </div>
+</ng-template>

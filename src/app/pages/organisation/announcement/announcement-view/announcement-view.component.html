@@ -1,0 +1,22 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+<div class="py-1 d-flex flex-row gap-4">
+    <div class="w-100">
+        <details-card [detailsCardData]="detailsCardData">
+        </details-card>
+    </div>
+    <div class="card w-60">
+        <details-card [detailsCardData]="responseCardData">
+            <ng-template custom-element let-key="key$" let-data="data$">
+                <div id="chart" class="h-200px d-flex justify-content-center    ">
+                    <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
+                        [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
+                        [yaxis]="chartOptions.yaxis" [xaxis]="chartOptions.xaxis" [fill]="chartOptions.fill"
+                        [title]="chartOptions.title" [labels]="chartOptions.labels" [legend]="chartOptions.legend"
+                        [colors]="chartOptions.colors" [responsive]="chartOptions.responsive"></apx-chart>
+                </div>
+            </ng-template>
+        </details-card>
+    </div>
+</div>
+<app-tab-data-table [tabsMeta]="announcementMetaData"></app-tab-data-table>

@@ -1,0 +1,37 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+<details-card [detailsCardData]="detailsCardData">
+    <ng-template custom-element let-data="data$" let-key="key$">
+        <ng-container *ngIf="key.templateName === 'leavePlan'">
+
+            <div class="fw-medium fs-7 text-dark px-0 mt-1">
+                <ng-container *ngIf="data?.employee?.leavePlan?.name ; else noInfo ">
+                    <a class="text-hover-{{ theme }} fw-medium fs-6 text-dark px-0 mt-1 cursor-pointer">
+                        {{data?.employee?.leavePlan?.name}}
+                    </a>
+                </ng-container>
+                <ng-template #noInfo>
+                    <p class="fw-medium fs-6 text-gray-400 mb-0 ">
+                        Not Available
+                    </p>
+                </ng-template>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="key.templateName === 'leaveType'">
+
+            <div class="fw-medium fs-7 text-dark px-0 mt-1">
+                <ng-container *ngIf="data?.leaveType?.name ; else noInfo ">
+                    <a class="text-hover-{{ theme }} fw-medium fs-6 text-dark px-0 mt-1 cursor-pointer">
+                        {{data?.leaveType?.name}}
+                    </a>
+                </ng-container>
+                <ng-template #noInfo>
+                    <p class="fw-medium fs-6 text-gray-400 mb-0 ">
+                        Not Available
+                    </p>
+                </ng-template>
+            </div>
+        </ng-container>
+    </ng-template>
+</details-card>

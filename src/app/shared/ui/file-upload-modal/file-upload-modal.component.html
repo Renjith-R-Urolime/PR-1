@@ -1,0 +1,113 @@
+<ng-template #fileUploadModal let-modal>
+  <div class="modal-content" id="file-upload">
+    <div class="modal-header">
+      <h4 class="modal-title">Import File</h4>
+      <button [disabled]="isLoading" type="button" class="btn-close text-hover-{{theme}}" aria-label="Close" (click)="closeModal()"></button>
+    </div>
+    <div class="modal-body">
+      <hr />
+      <div class="data-handling">
+
+        <div class="container">
+          <div class="row align-items-center">
+            <h3 class="col-12">Data Handling</h3>
+            <div class="col-md-4 text-start">
+              <input class="radio-style" type="radio" id="add" name="dataHandling" [(ngModel)]="selectedExportType"
+                value="create" />
+              <label for="add">Add</label>
+
+              <input class="radio-style" type="radio" id="update" name="dataHandling" [(ngModel)]="selectedExportType"
+                value="edit" />
+              <label for="update" class="ml-3">Update</label>
+            </div>
+
+            <div class="col-md-6 text-start d-flex align-items-center">
+              <p class="h6 fw-light text-decoration-none m-0">You can download the template <a
+                  href='javascript:void(0);' (click)="handleImportAPI('import')">here</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-container" *ngIf="hasError">
+        <div class="badge badge-danger error-message upload-error-badge">
+          {{ apiErrorMessage || errorMessage }}
+        </div>
+      </div>
+      <div class="file-drop-area" [class.dragover]="isDragOver" (drop)="onDrop($event)" (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)">
+        <div class="d-flex flex-column align-items-center justify-content-center">
+          <img class="upload-svg" src="./assets/media/icons/cloud-upload-outline.svg" alt="Upload icon" />
+          <h2 *ngIf="selectedFileName; else selectFileText">
+            {{ selectedFileName }}
+          </h2>
+          <ng-template #selectFileText>
+            <h2>Drag and Drop a CSV file</h2>
+          </ng-template>
+          <p class="h6 fw-light"> or <a href="#" (click)="triggerFileInput(); $event.preventDefault()"
+              class="h6 fw-light text-decoration-none">select file
+              from the device</a> </p>
+        </div>
+        <input type="file" id="fileInput" hidden (change)="fileSelected($event)" accept=".csv" />
+      </div>
+      <ul class="file-upload-instructions">
+        <li>Only CSV files are allowed</li>
+        <li>Max size 10MB</li>
+        <li>Data import is only for {{modalName}}</li>
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <app-progress-button [isSubmitBtnDisabled]="!selectedFile" [submitBtnText]="'Import'" [isCancelBtn]="false"
+        (submitEvent)="handleExportAPI('export')" [isProcessing]="isLoading"></app-progress-button>
+    </div>
+  </div>
+
+</ng-template>
+
+<ng-container *ngIf="!showSuccessModal" [ngTemplateOutlet]="fileUploadModal">
+</ng-container>
+
+<ng-template #importSuccessError let-modal>
+  <div class="modal-content" id="file-upload-success">
+    <div class="modal-header">
+      <h4 class="modal-title">Import File</h4>
+      <button type="button" class="btn-close text-hover-{{theme}}" aria-label="Close" (click)="closeModal()"></button>
+    </div>
+
+
+    <div class="modal-body text-center">
+      <hr />
+      <div *ngIf="successCount > 0"
+        class="d-flex h-200px justify-content-center mx-auto overflow-hidden rounded-circle w-200px">
+        <img class="h-100" src="./assets/media/gif/file-upload-success.gif" />
+      </div>
+
+      <div *ngIf="successCount === 0"
+        class="d-flex h-200px justify-content-center mx-auto overflow-hidden rounded-circle w-200px">
+        <img class="h-100" src="./assets/media/gif/file-upload-error.gif" />
+      </div>
+
+      <div *ngIf="successCount > 0" else="errorBadge" class="badge badge-success success-message upload-success-badge">
+        <h6>{{successCount}} of {{totalCount}} Records Uploaded Successfully</h6>
+      </div>
+      <div #errorBadge *ngIf="successCount === 0" class="badge badge-danger error-message upload-error-badge">
+        <h6>{{successCount}} of {{totalCount}} Records Uploaded</h6>
+      </div>
+      <hr class="thin-hr">
+      <div class="stats">
+        <span class="success-count">Success: {{successCount}}</span>
+        <span class="failure-count">Failed: {{failedCount}}</span>
+      </div>
+      <div *ngIf="failedCount > 0" class="download-link mb-5">
+        <a class="fs-6 fw-bold mb-2 text-start " text-start href="javascript:void(0);" (click)="downloadCSV()">Download
+          Failed Records</a>
+      </div>
+
+      <button type="button" class="btn btn-lg btn-primary w-20" (click)="closeModal()">Finish</button>
+    </div>
+
+  </div>
+</ng-template>
+
+<ng-container *ngIf="showSuccessModal" [ngTemplateOutlet]="importSuccessError">
+</ng-container>

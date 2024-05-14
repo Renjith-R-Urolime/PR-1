@@ -1,0 +1,470 @@
+<ng-container *ngIf="!isLoading ; else skeleton">
+  <ng-container *ngIf="tableData?.data?.length > 0; else noData">
+    <ng-container [ngTemplateOutlet]="(customViewTemplate || defaultViewTemplate)"
+      [ngTemplateOutletContext]="{ data: tableData?.data}"></ng-container>
+
+    <ng-template #defaultViewTemplate>
+      <div class="p-0">
+        <div class="border-bottom border-bottom-3 overflow-auto card-body p-0" [ngClass]="{'mb-3': collectionSize < 5}">
+          <!-- begin::Table container -->
+          <div class="position-relative" [ngClass]="{ 'rounded-0' : tabs}">
+            <!-- begin::Table -->
+            <table class="movable-headers table align-middle table-striped m-0" id="table1"
+              [ngClass]="{ 'table-fixed': stickyHeader , 'compact' : tabs}">
+              <!-- begin::Table head -->
+              <thead class="bg-{{ theme }}-bright rounded-3 rounded-top ">
+                <tr class="fw-bold">
+                  <ng-container *ngIf="isActionCol">
+                    <th class="min-w-100px ps-5 pinned bg-{{ theme }}-light border-{{
+                          theme
+                        }}-light left-0" style="z-index: 1">
+                      <p class="mb-0 lh-1 ps-4">Actions</p>
+                    </th>
+                  </ng-container>
+                  <!-- Pinned Headers -->
+                  <ng-container *ngFor="let column of pinnedHeaders; let i = index">
+                    <th class="pinned left-{{ i + 1 }} bg-{{ theme }}-light border-{{ theme }}-light">
+                      <ng-container [ngTemplateOutlet]="(headerCellTemplate || defaultHeaderCellTemplate)"
+                        [ngTemplateOutletContext]="{ columnName: column.name ,type:'pinned', index : i}"></ng-container>
+                    </th>
+                  </ng-container>
+
+                  <!-- Scrollable Headers -->
+                  <ng-container *ngFor="let header of tableData?.columns; let i = index">
+                    <th appOutsideClick (appOutsideClick)="closeDropdown($event)" draggable="true" id="head"
+                      class=" p-0" (dragstart)="handleDragStart($event, header.name)"
+                      (dragenter)="handleDragEnter($event, header)" (dragover)="handleDragOver($event)"
+                      (dragend)="handleDragEnd($event)" (drop)="handleDrop($event, header.name)"
+                      [hidden]="pin[i] || hideCol[i]">
+                      <div style="border-style: solid; border-width: 2px" class="border-transparent"
+                        [ngClass]="'dragged-' +(draggedColumn !== '' && draggedColumn === header.name ? theme : 'none') +'-light'">
+                        <ng-container [ngTemplateOutlet]="(headerCellTemplate || defaultHeaderCellTemplate)"
+                          [ngTemplateOutletContext]="{ columnName: header.name,type:'scroll', index : i}"></ng-container>
+                      </div>
+                      <!-- </div> -->
+                    </th>
+                  </ng-container>
+                </tr>
+              </thead>
+              <!-- end::Table head -->
+              <!-- begin::Table body -->
+              <tbody>
+                <tr *ngFor="let row of tableData?.data | matchFilter : filterText; let rowIndex = index"
+                  [ngClass]="{ 'table-fixed': stickyHeader,'opacity-50':row.inactive }">
+                  <ng-container *ngIf="isActionCol">
+                    <td class="ps-5 bg-white pinned left-0">
+                      <div class="d-flex align-items-center flex-shrink-0 p-0">
+                        <ng-template [ngTemplateOutlet]="( actionButtonTemplate || defaultActionButtonTemplate)"
+                          [ngTemplateOutletContext]="{ id:row.id, item$:row, index: rowIndex,meta:tableData }">
+                        </ng-template>
+
+                        <!-- Default Action Buttons -->
+                        <ng-template #defaultActionButtonTemplate let-id="id">
+                          <ng-container *ngIf="row?.status?.id !== '2'">
+                          <a [ngbTooltip]="'Edit'" class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+                            (click)="open('edit', id)">
+                            <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                              class="svg-icon svg-icon-2"></span>
+                          </a></ng-container>
+                          <ng-container *ngIf="row?.status?.id === '2'">
+                            <a [ngbTooltip]="'Lock'" class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+                             >
+                              <span [inlineSVG]="'./assets/media/icons/lock-closed-outline.svg'"
+                                class="svg-icon svg-icon-2"></span>
+                            </a></ng-container>
+                          <a [ngbTooltip]="'View'" class=" btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0"
+                            (click)="open('view', id)">
+                            <span [inlineSVG]="
+                                  './assets/media/icons/document-text-outline.svg'
+                                " class="svg-icon svg-icon-3"></span>
+                          </a>
+                        </ng-template>
+                      </div>
+                    </td>
+                  </ng-container>
+                  <!-- Pinned Data -->
+                  <ng-container *ngFor="let pinnedKey of pinnedHeaders; let i = index">
+                    <td class=" pe-8 p-2 pinned text-nowrap left-{{ i + 1 }}">
+                      <ng-container [ngTemplateOutlet]="defaultDataCellTemplate"
+                        [ngTemplateOutletContext]="{ data: row, column: pinnedKey, index : i}"></ng-container>
+                    </td>
+                  </ng-container>
+
+                  <!-- Scrollable Data -->
+                  <ng-container *ngFor="let column of tableData?.columns; let i = index">
+                    <td [hidden]="pin[i] || hideCol[i]" class="pe-8 p-2 text-nowrap">
+                      <ng-container [ngTemplateOutlet]="defaultDataCellTemplate"
+                        [ngTemplateOutletContext]="{ data: row, column: column, index : i}"></ng-container>
+                    </td>
+                  </ng-container>
+
+                </tr>
+              </tbody>
+              <!-- end::Table body -->
+            </table>
+            <!-- end::Table -->
+          </div>
+          <!-- end::Table container -->
+        </div>
+        <!-- For Pagination -->
+        <div class="app-container my-3" *ngIf="!customData && collectionSize > 5 ">
+          <div class="d-flex flex-stack flex-wrap p-md-1 px-md-6 flex-column flex-md-row border-top-1">
+            <div class="fs-7 fw-semibold text-gray-700 d-flex flex-row align-items-center flex-grow-1 me-4">
+              <div>Showing</div>
+              <select [(ngModel)]="pageSize" name="tickets-table_length" aria-controls="tickets-table"
+                (change)="onEntryChange()" name="pageSize"
+                class="border-1 form-control fs-7 mx-2 ng-valid p-0 px-2 rounded-1 w-fit">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="25">25</option>
+                <option [ngValue]="50">50</option>
+                <option [ngValue]="100">100</option>
+              </select>
+              <div>of {{ collectionSize }} entries</div>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize" [maxSize]="3"
+              (pageChange)="onPageChange($event)" class="pagination-{{ theme }} fs-8">
+              <ng-template ngbPaginationPrevious>
+                <div
+                  class="border border-1 pagination-control rounded-1 rounded-1 d-flex align-items-center justify-content-center">
+                  <span class="svg-icon svg-icon-4 p-0"
+                    [inlineSVG]="'./assets/media/icons/chevron-back-outline.svg'"></span>
+                </div>
+              </ng-template>
+              <ng-template ngbPaginationNext>
+                <div
+                  class="border pagination-control border-1 rounded-1 rounded-1 d-flex align-items-center justify-content-center">
+                  <span class="svg-icon svg-icon-4 p-0"
+                    [inlineSVG]="'./assets/media/icons/chevron-forward-outline.svg'"></span>
+                </div>
+              </ng-template>
+            </ngb-pagination>
+          </div>
+        </div>
+        <div class="app-container my-3" *ngIf="customData">
+          <div class="fs-7 fw-semibold text-black d-flex flex-row align-items-center flex-grow-1 mx-4">
+            <div>Showing {{tableData?.data?.length}} Records</div>
+          </div>
+        </div>
+      </div>
+      <ng-template #modelPinTemplate let-model>
+        <div class="card mt-4">
+          <div class="card-body p-0">
+            <div class="d-flex flex-column p-5">
+              <a class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
+                data-bs-target="#kt_modal_create_app">Sort</a>
+              <a class="btn btn-sm fw-bold btn-primary mt-4" data-bs-toggle="modal"
+                data-bs-target="#kt_modal_create_app">Pin</a>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template #defaultHeaderCellTemplate let-columnName="columnName" let-index="index" let-type="type">
+        <div class="d-flex align-items-center p-2 pe-8">
+          <p [attr.data-header]="columnName" class="flex-grow-1 mb-0 min-w-150px">
+            {{ columnName | changeCase : "capital" }}
+          </p>
+          <div *ngIf="tableData?.isHeaderOption !== false">
+            <a data-kt-menu-trigger="{default: 'click'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end"
+            [ngClass]="{ 'table-fixed': stickyHeader }">
+            <span [inlineSVG]="'./assets/media/icons/ellipsis-vertical.svg'
+                " class="svg-icon svg-icon-2" (click)="toggleFilter(index, type)"></span>
+          </a>
+          </div>
+
+          <div class="position-relative" *ngIf="filterToggle && index === indexClicked && filterToggleType === type
+              ">
+            <div
+              class="align-items-center bg-white border d-flex justify-content-center mt-4 position-absolute right-0 rounded-2 top--100 z-index-4"
+              v appOutsideClick [filterToggle]="filterToggle" (toggleFilter)="toggleFilter($event)">
+              <div class="bg-white shadow rounded-1 p-4 max-w-content">
+                <!-- new sort/pin view -->
+                <div class="d-flex flex-column gap-3">
+                  <div class="align-items-center gap-2 d-flex text-hover-{{
+                        theme
+                      }}" (click)="type === 'pinned' ? unPinCol(index, columnName) : pinCol(index, columnName)">
+                    <ng-container *ngIf="type === 'pinned'; else unpinIcon">
+                      <span [inlineSVG]="'./assets/media/icons/unpin-outline.svg'" class="svg-icon svg-icon-7"></span>
+                    </ng-container>
+                    <ng-template #unpinIcon>
+                      <span [inlineSVG]="'./assets/media/icons/pin-outline.svg'" class="svg-icon svg-icon-7"></span>
+                    </ng-template>
+                    <p class="m-0">{{ type === 'pinned' ? 'Unpin' : 'Pin'}}</p>
+                  </div>
+                  <div class="align-items-center d-flex gap-2 text-hover-{{ theme }}" (click)="sort(index, type)"
+                    style="padding-inline-start: 2px">
+                    <!-- <span class="btn-group-vertical"> -->
+                    <span style="margin-bottom: -6px" [inlineSVG]="
+                          './assets/media/icons/arrow-down-outline.svg'
+                        " class="svg-icon svg-icon-6" *ngIf="sortOrder !== 'DESC'"></span>
+                    <span [inlineSVG]="
+                          './assets/media/icons/arrow-up-outline.svg'
+                        " class="svg-icon svg-icon-6" *ngIf="sortOrder !== 'ASC'"></span>
+                    <!-- </span> -->
+                    <p class="m-0">
+                      Sort
+                      <span *ngIf="sortOrder !== ''">({{
+                        sortOrder === "ASC" ? "DESC" : "ASC"
+                        }})</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- </div>
+            </div> -->
+          </div>
+          <!-- <app-action-model></app-action-model> -->
+        </div>
+      </ng-template>
+
+      <ng-template #defaultDataCellTemplate let-data="data" let-column="column" let-index="index">
+        <ng-container *ngIf="(data?.[column.name] | dataValue : column.name : modelName : column?.type | async) as value">
+          <div class="align-items-center d-flex h-100 w-100">
+            <ng-container [ngSwitch]="column?.type" *ngIf="!column?.custom">
+              <!-- Phone -->
+              <ng-container *ngSwitchCase="'phoneNumber'">
+                <div class="fw-medium fs-7 text-dark px-0 mt-1">
+                  <ng-container *ngIf="value?.number; else noInfo">
+                    +{{ value?.code }} - {{ value?.number }}
+                  </ng-container>
+                </div>
+              </ng-container>
+              <!-- URL -->
+              <ng-container *ngSwitchCase="'url'">
+                <ng-container *ngIf="value !== 'Null'; else noInfo">
+                  <div class="d-flex gap-2 align-items-center cursor-pointer text-hover-{{theme}}"
+                    (click)="openUrlInNewWindow(value)">
+                    <a class="fw-medium fs-7 text-dark px-0 mt-1 ">
+                      {{ value }}
+                    </a>
+                    <span class="svg-icon scg-icon-3 text-muted "
+                      [inlineSVG]="'./assets/media/icons/open-outline.svg'"></span>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <!-- logo -->
+              <ng-container *ngSwitchCase="'withImage'">
+                <ng-container *ngIf="data?.[column?.imageKey] ; else noImg">
+                  <ng-container *ngIf="data?.[column?.imageKey] | s3FileFetch | async as imageData; else: imageLoader">
+                    <ng-container *ngIf="imageData !=='null' ;else noImg">
+                      <div class="symbol symbol-circle symbol-36px me-5 rounded-3" data-bs-toggle="tooltip"
+                        data-bs-boundary="window" data-bs-placement="top" [title]="data?.[column.name]">
+                        <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                          alt="profile" />
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+                <ng-template #imageLoader>
+                  <div class="symbol symbol-circle symbol-40px me-5 rounded-3" data-bs-toggle="tooltip"
+                    data-bs-boundary="window" data-bs-placement="top" title="loading">
+                    <img class="object-fit-cover object-position-top spin" width="30px" height="30px"
+                      [src]="'./assets/media/png/success-loading.png'" alt="profile" />
+                  </div>
+                </ng-template>
+                <ng-template #noImg>
+                  <div class="symbol symbol-circle symbol-36px overflow-hidden me-3" data-bs-toggle="tooltip"
+                    data-bs-boundary="window" data-bs-placement="top" [title]="data?.[column.name]">
+                    <a href="javascript:void(0)">
+                      <div class="symbol-label fs-4 bg-{{theme}}-light text-white">{{data?.[column.name][0] | uppercase}}
+                      </div>
+                    </a>
+                  </div>
+                </ng-template>
+                <!-- Value -->
+                <div class="fw-medium fs-7 text-dark px-0 mt-1">
+                  <ng-container *ngIf="value !== 'Null'; else noInfo">
+                    {{ value }}
+                  </ng-container>
+                </div>
+              </ng-container>
+              <!-- Associated Entity -->
+              <ng-container *ngSwitchCase="'associatedEntity'">
+                <ng-container *ngIf="value !== 'Null'; else noAssociatedEntity">
+                  <ng-container *ngIf="Array.isArray(value); else nonArrayAssociatedEntity">
+                    <div class="d-flex gap-3">
+                      <ng-container *ngFor="let entity of value; let i = index">
+                        <a (click)="onRouterNavigate(column?.baseUrl, entity.id)"
+                          class="text-hover-{{ theme }} fw-medium fs-7 text-dark px-0 mt-1 cursor-pointer">
+                          {{ entity?.name }}
+                          <span *ngIf="i !== value.length - 1">,</span>
+                        </a>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                  <ng-template #nonArrayAssociatedEntity>
+                    <a (click)="onRouterNavigate(column?.baseUrl, value.id)"
+                      class="text-hover-{{ theme }} fw-medium fs-7 text-dark px-0 mt-1 cursor-pointer">
+                      {{ value?.name || value }}
+                    </a>
+                  </ng-template>
+                </ng-container>
+                <ng-template #noAssociatedEntity>
+                  <p class="fw-medium fs-7 text-gray-700 mb-0 ">
+                    NONE
+                  </p>
+                </ng-template>
+              </ng-container>
+              <!-- Employee -->
+              <ng-container *ngSwitchCase="'employee'">
+                <div class="d-flex gap-3 align-items-center">
+                  <div class="d-flex flex-row gap-3 align-items-center fs-7">
+                    <ng-container *ngIf="data?.employee?.image ; else noImage">
+                      <ng-container *ngIf="data?.employee?.image | s3FileFetch | async as imageData; else: imageLoader">
+                        <ng-container *ngIf="imageData !=='null' ;else noImage">
+                          <div class="symbol symbol-circle symbol-36px rounded-3" data-bs-toggle="tooltip"
+                            data-bs-boundary="window" data-bs-placement="top" [title]="data?.[column.name]">
+                            <img class="object-fit-contain object-position-top" [src]="imageData" [lazyLoad]="imageData"
+                              alt="profile" />
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+
+                    <!-- logo starts here -->
+                    <ng-template #noImage>
+                      <div class="symbol symbol-30px symbol-circle ">
+                        <ng-container>
+                          <div class="symbol-label  fw-bolder fs-4 symbol-color bg-{{theme}}">
+                            {{data?.employee?.firstName?.[0] | uppercase}}
+                          </div>
+                        </ng-container>
+                      </div>
+                    </ng-template>
+                    <!-- logo ends here -->
+                    <div>{{data?.employee?.firstName}} {{data?.employee?.lastName}}</div>
+                  </div>
+                </div>
+              </ng-container>
+
+
+
+              <ng-container *ngSwitchCase="'payrollStatus'">
+                <div class="d-flex gap-3 align-items-center">
+                  <ng-container *ngIf="value?.id === '1'">
+                    <div class="d-flex flex-row gap-3 align-items-center fs-7 rounded"
+                      [ngStyle]="{ 'background-color': '#F3EBFF', 'color': '#45349C' }">
+                      <div class="py-1 px-3">
+                        {{ value?.name }}
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="value?.id === '2'">
+                    <div class="d-flex flex-row gap-3 align-items-center fs-7 rounded"
+                      [ngStyle]="{ 'background-color': '#E3F8EC', 'color': '#09833B' }">
+                      <div class="py-1 px-3">
+                        {{ value?.name }}
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="value?.id === '3'">
+                    <div class="d-flex flex-row gap-3 align-items-center fs-7 rounded"
+                      [ngStyle]="{ 'background-color': '#EBF2FF', 'color': '#3A86FF' }">
+                      <div class="py-1 px-3">
+                        {{ value?.name }}
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'createdAt'">
+                <div class="fw-medium fs-7 text-dark px-0 mt-1">
+                  <ng-container *ngIf="value !== 'Null'; else noInfo">
+                    {{ value | date: 'dd/MM/yyyy' }}
+                  </ng-container>
+                </div>
+              </ng-container>
+
+
+            <!-- Default -->
+            <ng-container *ngSwitchDefault>
+              <div class="fw-medium fs-7 text-dark px-0 mt-1">
+                <ng-container *ngIf="value !== 'Null'; else noInfo">
+                  {{ value }}
+                  {{data?.payroll?.status}}
+                </ng-container>
+              </div>
+            </ng-container>
+            </ng-container>
+            <!-- Cuatom -->
+            <ng-container *ngIf="column?.custom">
+              <ng-container [ngTemplateOutlet]="(dataCellTemplate)"
+                [ngTemplateOutletContext]="{data: data, column: column, index : index}">
+              </ng-container>
+            </ng-container>
+            <ng-template #noInfo>
+              <p class="fw-medium fs-7 text-gray-400 mb-0 ">
+                Not Available
+              </p>
+            </ng-template>
+          </div>
+        </ng-container>
+      </ng-template>
+    </ng-template>
+
+  </ng-container>
+</ng-container>
+
+<ng-template #noData>
+  <div class="d-flex justify-content-center p-6 symbol symbol-200px">
+    <img src="./assets/media/illustrations/sigma-1/21.png" alt="no-data" class="img-fluid">
+  </div>
+</ng-template>
+
+<ng-template #skeleton>
+  <div class="p-0">
+    <div class="card-body p-0 border-bottom-4">
+      <div class="table-skeleton">
+        <!-- begin::Table -->
+        <table class="table standard align-middle table-striped">
+          <thead>
+            <tr>
+              <th class="ps-5 pt-6 pb-2 bg-gray-400" *ngFor="let header of [0, 0, 0, 0, 0,0]">
+                <div class="d-flex align-items-center h-100">
+                  <ngx-skeleton-loader [theme]="{
+                      height: '1.1rem',
+                      width: '7rem',
+                      'margin-right': '0.5rem'
+                    }"></ngx-skeleton-loader>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of [0,0,0,0,0]">
+              <td class="ps-5 bg-white">
+                <div class="d-flex gap-5">
+                  <a *ngFor="let row of [0,0]">
+                    <ngx-skeleton-loader [theme]="{ width: '1.2rem', height: '1.2rem' }"></ngx-skeleton-loader>
+                  </a>
+                </div>
+              </td>
+              <td *ngFor="let col of [0,0,0,0,0]">
+                <a class="text-dark fw-medium text-hover-primary d-block fs-6">
+                  <ngx-skeleton-loader [theme]="{ width: '80%', height: '1em' }"></ngx-skeleton-loader>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="app-container">
+      <div class="d-flex flex-stack flex-wrap pb-0 px-3 mb-1 flex-column flex-md-row">
+        <div >
+          <ngx-skeleton-loader [theme]="{ width: '18em', height: '1.6em' }"></ngx-skeleton-loader>
+        </div>
+        <!--begin::Pages-->
+        <ul class="pagination p-md-0 pt-4 gap-3">
+          <ngx-skeleton-loader [theme]="{ width: '2em', height: '2em' }"></ngx-skeleton-loader>
+          <ngx-skeleton-loader [theme]="{ width: '2em', height: '2em' }"></ngx-skeleton-loader>
+          <ngx-skeleton-loader [theme]="{ width: '2em', height: '2em' }"></ngx-skeleton-loader>
+        </ul>
+        <!--end::Pages-->
+      </div>
+    </div>
+  </div>
+</ng-template>

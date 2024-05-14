@@ -1,0 +1,120 @@
+<app-page-title [isGoBack]="true"></app-page-title>
+
+<div *ngIf="!isLoading ; else skeleton">
+    <!-- <div >
+        <ngx-extended-pdf-viewer
+        [src]="report"
+        [showToolbar]="true"
+        [showSidebarButton]="true"
+        [showFindButton]="true"
+        [showDownloadButton]="true"
+        [showPrintButton]="true"
+        [showHandToolButton]="false"
+        [showSecondaryToolbarButton]="false"
+        [showDrawEditor]="false"
+        [showStampEditor]="false"
+        [showTextEditor]="false"
+        [showPresentationModeButton]="false"
+        [showRotateButton]="false"
+        [showZoomButtons]="true"
+        [showOpenFileButton]="false"
+        [showPagingButtons]="false"
+    ></ngx-extended-pdf-viewer>
+    </div> -->
+
+    <!-- <button *ngIf="!isProgress"(click)="downloadFile()">Download PDF</button> -->
+    <div *ngIf="!isProgress"id="htmlResponse" class="bg-white rounded" style="width: fit-content; margin: auto; height: fit-content;" [innerHTML]="htmlResponse"></div>
+</div>
+
+<ng-template #skeleton>
+    <div class="pdf-viewer-skeleton">
+        <!-- PDF Viewer Header -->
+        <div class="pdf-header p-0">
+            <div class="card-body p-0 border-bottom-4">
+                <div class="pdf-header-skeleton">
+                    <!-- PDF Viewer Toolbar -->
+                    <div class="pdf-toolbar-skeleton">
+                        <div class="d-flex flex-row justify-content-between">
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+                                    height: '2rem',
+                                    width: '2rem',
+                                    'margin-right': '0.5rem'
+                                }"></ngx-skeleton-loader>
+                            </div>
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+                                    height: '2rem',
+                                    width: '2rem',
+                                    'margin-right': '0.5rem'
+                                }"></ngx-skeleton-loader>
+                                <ngx-skeleton-loader [theme]="{
+                                    height: '2rem',
+                                    width: '2rem',
+                                    'margin-right': '0.5rem'
+                                }"></ngx-skeleton-loader>
+                                <ngx-skeleton-loader [theme]="{
+                                    height: '2rem',
+                                    width: '6rem',
+                                    'margin-right': '0.5rem'
+                                }"></ngx-skeleton-loader>
+                            </div>
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+                                    height: '2rem',
+                                    width: '2rem',
+                                    'margin-right': '0.5rem'
+                                }"></ngx-skeleton-loader>
+                                <ngx-skeleton-loader [theme]="{
+                                    height: '2rem',
+                                    width: '2rem',
+                                    'margin-right': '0.5rem'
+                                }"></ngx-skeleton-loader>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- PDF Viewer Content -->
+        <div class="pdf-content">
+            <div class="pdf-content-skeleton">
+                <!-- PDF Viewer Text Layer -->
+                <!-- <div class="pdf-text-layer-skeleton">
+                    <ngx-skeleton-loader [theme]="{ width: '100%', height: '1em' }"></ngx-skeleton-loader>
+                </div> -->
+                <!-- PDF Viewer Document -->
+                <div class="pdf-document-skeleton">
+                    <!-- Add appropriate styles and loaders based on your layout -->
+                    <ngx-skeleton-loader [theme]="{ width: '100%', height: '400px' }"></ngx-skeleton-loader>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-container *ngIf="isProgress">
+    <div id="splash-screen2" class="splash-screen">
+        <div class="position-relative">
+            <div class="progress-bar circular">
+                <span class="inner-circle" [attr.data-value]="progress"></span>
+                <div class="d-flex flex-column gap-2 h-100 justify-content-center position-absolute w-100">
+                    <span [inlineSVG]="'./assets/media/logos/default-small.svg'" class="svg-icon svg-icon-2hx"></span>
+                    <p class="m-0 fw-bold">{{progress}}%</p>
+                </div>
+                <svg height="120" width="120" class="circle" [style.stroke-dashoffset]="346 - (progress * 3.46)">
+                    <circle cx="60" cy="60" r="55" stroke="url(#gradient)" stroke-width="10" fill="none"/>
+                    <defs>
+                        <linearGradient id="gradient" gradientTransform="rotate(90)">
+                            <stop offset="0%" stop-color="#fc1777" />
+                            <stop offset="25%" stop-color="#fc1f6e" />
+                            <stop offset="50%" stop-color="#fd3c4e" />
+                            <stop offset="75%" stop-color="#fd5340" />
+                            <stop offset="100%" stop-color="#ff8100" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+</ng-container>

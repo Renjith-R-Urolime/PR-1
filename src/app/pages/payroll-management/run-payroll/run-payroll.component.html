@@ -1,0 +1,200 @@
+<app-page-title [isPayRollButton]="true" [isEditDeleteBtn]="false" run-payroll="page"></app-page-title>
+<ng-container *ngIf="!isLoading ; else skeleton">
+<div class=" px-2 mt-5 d-flex flex-row justify-content-between rounded-1" style="background-color: #EADBFF;">
+    <div class="d-flex flex-row justify-content-between ">
+        <div class="py-4 ps-6 d-flex flex-row">
+            <div class="me-5 mt-2">
+                <!-- <img class="w-40px" src="" alt=""> -->
+                <span class="svg-icon svg-icon-2tx svg-icon-{{ theme }}"
+                    [inlineSVG]="regularIcon"></span>
+
+            </div>
+            <div class="d-flex flex-column justify-content-between ">
+                <div class="pt-2">
+                    <h3>Regular Payroll: {{ currentMonth }} {{ firstDateOfMonth }}st - {{ lastDateOfMonth }}th</h3>
+                </div>
+                <div >
+                    <p>{{message}} </p>
+                </div>
+                <div class="gap-3 d-flex flex-wrap ">
+                    <button class="btn btn-{{theme}} btn-font-small" (click)="onClickRunPayroll('regular')">Run Payroll</button>
+                    <!-- <ng-container *ngIf="showViewBtn">
+                        <button routerLink="/payroll-management/payroll-summary" class="btn btn-{{theme}} btn-font-small ms-2" >View Summary</button>
+                    </ng-container> -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div >
+        <img class="h-100 rounded-top ms-2 w-100" src="./assets/media/icons/Infithra-logo-bg.svg" alt="">
+    </div>
+</div>
+</ng-container>
+<ng-container>
+    <div class="card bg-white">
+        <!-- <div class="d-flex flex-column  px-8 py-4">
+            <div class="d-flex flex-row justify-content-between">
+                <div class=" d-flex justify-content-between">
+                    <h2 class="pt-3 me-4">Process Run Payroll</h2>
+
+                    <button class="btn rounded-pill custom-green-button ">
+                        Processed
+                    </button>
+
+                </div>
+                <button class="btn btn-{{theme}} btn-font-small "> View Reports
+                </button>
+            </div>
+            <div class="d-flex flex-md-row flex-column">
+                <div class="me-6 pt-0 col-md-7">
+                    <div *ngFor="let data of EmployeePayrollInfoData">
+                        <div *ngIf="data.step === 1">
+                          <div class="mt-5 d-flex flex-row justify-content-between bg-{{theme}}-bright rounded-1 border-dashed border-{{theme}} p-3 px-7">
+                            <div class="d-flex flex-column" *ngFor="let payroll of data.payrollInfo">
+                              <div class="text-gray-600">
+                                {{ payroll.payrollTitle }}
+                              </div>
+                              <div class="fw-bolder text-dark">
+                                {{ payroll.payrollInfo }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+                <div class="d-flex flex-row mt-5 col-md-4">
+                    <div class="me-4">
+                        <img src="./assets/media/icons/checkmark-outline-green.svg" alt="">
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h3>Payroll Complete</h3>
+
+                        <p>Congratulations! Your payroll is approved
+                            Track your details</p>
+                    </div>
+
+                </div>
+            </div>
+        </div> -->
+    </div>
+
+    <!-- <div class="card bg-white mt-6">
+        <div class="d-flex flex-column  px-8 py-4">
+            <div class="d-flex flex-row justify-content-between">
+                <div class=" d-flex justify-content-between">
+                    <h2 class="pt-3 me-4">Process Run Payroll</h2>
+
+                    <button class="btn rounded-pill btn-{{theme}}-outline btn-font-small">
+                        In Draft
+                    </button>
+
+                </div>
+                <button class="btn btn-{{theme}}-outline btn-font-small"> Check Draft
+                </button>
+            </div>
+            <div class="d-flex flex-row ">
+                <div class="me-6 pt-0 col-md-9">
+                    <div *ngFor="let data of EmployeePayrollInfoData">
+                        <div *ngIf="data.step === 2">
+                          <div class="mt-5 d-flex flex-row justify-content-between bg-{{theme}}-bright rounded-1 border-dashed border-{{theme}} p-3 px-7">
+                            <div class="d-flex flex-column" *ngFor="let payroll of data.payrollInfo">
+                              <div class="text-gray-600">
+                                {{ payroll.payrollTitle }}
+                              </div>
+                              <div class="fw-bolder text-dark">
+                                {{ payroll.payrollInfo }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <h2 class="fw-bolder fs-2x mt-10">Other Payroll Options</h2>
+    <!--  -->
+    <section class="pt-1 horizontal-scroll" style="overflow-y: hidden;">
+        <div class="row">
+            <div class="col-md-4 d-flex col-6 flex-row" *ngFor="let data of payrollCardData">
+                <div (click)="onClickRunPayroll(data.type)" class="d-flex flex-row mt-3 py-5 px-5 bg-white rounded-2 cursor-pointer">
+                    <span class="me-4 svg-icon svg-icon-2tx px-4 svg-icon-{{ theme }}"
+                        [inlineSVG]="data.iconSrc"></span>
+                    <div class="d-flex flex-column justify-content-between">
+                        <div class="pt-2">
+                            <h3>{{data.title}}</h3>
+                        </div>
+                        <div class="row pt-2">
+                            <p>{{data.description}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+</ng-container>
+<div class="mt-5 ">
+    <div class="fw-bolder fs-2x mb-4 mt-10">Payroll History</div>
+    <div class="card">
+        <div class="px-4 py-2 d-flex flex-row justify-content-between">
+            <search-and-filter filterButton="false"></search-and-filter>
+            <div>
+                <button class="bg-white border-0 box-38px ">
+                    <span [inlineSVG]="'./assets/media/icons/funnel-outline.svg'" class="svg-icon svg-icon-3 p-0 me-0">
+                    </span>
+                </button>
+            </div>
+
+        </div>
+
+
+        <data-table-list [metaData]="tableMetaData" >
+            <ng-template action-btn-temp let-id="id" let-item="item$">
+                <a [routerLink]="'/payroll/run/success/' + item?.batch" class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0">
+                    <span [inlineSVG]="'./assets/media/icons/document-text-outline.svg'
+                    " class="svg-icon svg-icon-3"></span>
+                </a>
+            </ng-template>
+        </data-table-list>
+    </div>
+
+
+</div>
+<ng-template #skeleton>
+
+
+    <div class=" px-2 mt-5 d-flex flex-row justify-content-between rounded-1" style="background-color: #EADBFF;">
+        <div class="d-flex flex-row justify-content-between ">
+            <div class="py-4 ps-6 d-flex flex-row">
+                <div class="me-5 mt-2">
+                    <ngx-skeleton-loader [theme]="{ width: '4em', height: '4em' }"></ngx-skeleton-loader>
+                </div>
+                <div class="d-flex flex-column justify-content-between  ">
+                    <div class="pt-2 ">
+                        <ngx-skeleton-loader [theme]="{ width: '30em', height: '2em' }"></ngx-skeleton-loader>                    </div>
+                    <div >
+                        <ngx-skeleton-loader [theme]="{ width: '28em', height: '1.7em' }"></ngx-skeleton-loader>                    </div>
+
+                    <div class="gap-3 d-flex flex-wrap ">
+                        <ngx-skeleton-loader [theme]="{ width: '8em', height: '4em' }"></ngx-skeleton-loader>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div >
+            <img class="h-100 rounded-top ms-2 w-100" src="./assets/media/icons/Infithra-logo-bg.svg" alt="">
+        </div>
+    </div>
+</ng-template>
+
+

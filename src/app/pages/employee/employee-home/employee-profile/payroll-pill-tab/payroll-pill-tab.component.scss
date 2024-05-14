@@ -1,0 +1,70 @@
+#chart {
+    display: flex;
+    flex-direction: row; 
+    align-items: center; 
+  }
+  
+  .chart-container {
+    display: flex;
+}
+
+.custom-legend {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.legend-marker {
+    width: 10px;
+    height: 10px; 
+    border-radius: 50%; 
+    margin-right: 5px; 
+}
+
+
+.legend-label {
+    color: #000000; 
+    font-weight: bold;
+}
+
+.legend-value {
+    color: #7E8299;; 
+    margin-left: 30px;
+}
+
+.custom-color{
+    color: #482084;
+}
+
+
+.circle {
+  margin-left: 28px;
+  width: 120px; /* Set the diameter of the circle */
+  height: 120px;
+  background-color: transparent;
+  border: 10px solid #EDEDF9; /* Set the width and color of the border */
+  border-radius: 50%; /* Create a circular shape */
+  margin-bottom: 32px;
+}
+
+.chart-container-demo{
+    height:180px
+}
+
+
+.legend-value-demo{
+    color: #7E8299;
+}
+
+
+.legend-item-demo{
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+}

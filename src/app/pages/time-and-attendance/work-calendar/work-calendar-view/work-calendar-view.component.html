@@ -1,0 +1,140 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true">
+    <ng-template dropdown-btn-temp>
+        <!-- Your custom template content goes here -->
+        <div style="right: 30px;"
+            class="position-absolute right-0 z-index-4 d-flex align-items-center justify-content-center">
+            <div class="bg-white shadow rounded-1 p-3">
+                <div class="d-flex flex-column">
+                    <button (click)="open('add-shift')"
+                        class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+                        <span [inlineSVG]="'./assets/media/icons/shift-scheduler.svg'"
+                            class="svg-icon svg-icon-3 "></span>
+                        Add Shift
+                    </button>
+                    <button (click)="open('add-holiday')"
+                        class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+                        <span [inlineSVG]="'./assets/media/icons/image-outline.svg'"
+                            class="svg-icon svg-icon-3 "></span>
+                        Add Holiday
+                    </button>
+                    <button (click)="open('add-waiver-hour')"
+                        class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+                        <span [inlineSVG]="'./assets/media/icons/waiver-hour.svg'" class="svg-icon svg-icon-3 "></span>
+                        Add Waiver Hour
+                    </button>
+                    <button (click)="open('edit' )" class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+                        <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                            class="svg-icon svg-icon-3 "></span>
+                        Edit
+                    </button>
+                    <button class="btn btn-lg rounded-1 text-hover-danger px-3 py-2 d-flex gap-2"
+                        (click)="deletePopup()">
+                        <span [inlineSVG]="'./assets/media/icons/trash-outline.svg'"
+                            class=" svg-icon svg-icon-3"></span>
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+</app-page-title>
+<details-card [detailsCardData]="detailsCardLists">
+    <ng-template custom-element let-data$="data$" let-key$="key$">
+        <ng-container *ngIf="key$.templateName=='classificationApplicability'">
+            <span class="mt-5"> <span class="text-muted">Classification Applicability</span> <button
+                    class="bg-white border-gray-600 btn-light  p-0 ms-1" [id]="'kt_drawer_leave_toggle'"
+                    (click)="classificationApplicabilityData = data$ ; getFormTemplate(classificationApplicabilityTemp,'Classification Applicability' );">
+                    <span [inlineSVG]="'./assets/media/icons/information-circle-outline.svg'"
+                        class="me-0 p-half svg-gray-600 svg-icon svg-icon-4"></span>
+                </button> </span>
+        </ng-container>
+    </ng-template>
+</details-card>
+
+<app-tab-data-table [tabsMeta]="workCalendarTabsMeta" [showFilter]="false">
+
+    <ng-template custom-view let-tab="tab" #customView let-data="data">
+        <ng-container *ngIf="tab === 'shift'">
+            <!-- Shift tabs -->
+            <div class="row">
+                <div class="col-11">
+                    <ul class="nav nav-tabs" #tabsList id="shiftTabs" role="tablist">
+                        <li class="nav-item" *ngFor="let shift of data; let i = index">
+                            <a class="nav-link" [id]="'tab' + i" data-bs-toggle="pill" [attr.href]="'#tabContent' + i"
+                                role="tab" [aria-controls]="'tabContent' + i" [class.active]="selectedShiftIndex === i"
+                                (click)="selectShift(i, data)" [ngClass]="{
+                                 'selected-tab': selectedShiftIndex === i,
+                                 'text-muted': selectedShiftIndex !== i,
+                                 'text-orange': selectedShiftIndex === i
+                               }">
+                                <span class="fw-light">{{ shift.name }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-1 text-right">
+                    <button class="btn btn-sm btn-icon btn-icon-{{theme}}-light" (click)="toggleEditDeleteDropdown()">
+                        <span class="svg-icon svg-icon-2qx"
+                            [inlineSVG]="'./assets/media/icons/ellipsis-horizontal.svg'"></span>
+                    </button>
+
+                    <div *ngIf="editDeleteDropdownOpen"
+                        class="position-absolute right-0 z-index-4 d-flex align-items-center justify-content-center">
+                        <div class="bg-white shadow rounded-1 p-3">
+                            <div class="d-flex flex-column">
+                                <button (click)="editShift(data?.[selectedShiftIndex]?.id)"
+                                    class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+                                    <span [inlineSVG]="'./assets/media/icons/create-outline.svg'"
+                                        class="svg-icon svg-icon-3"></span>
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <app-shift-scheduler-detail  [headingToHide]="'Shift Information'"  [ifWorkCalendarView]="true" [id]="this.totalShiftIds?.[shiftId]" ></app-shift-scheduler-detail>
+
+        </ng-container>
+    </ng-template>
+</app-tab-data-table>
+<app-form-drawer [headerText]="activeTemplateName"  [formDrawerId]="'#kt_drawer_leave_toggle'" [formTemplate]="formTemplateRef" [viewMode]="true"></app-form-drawer>
+
+<ng-template #classificationApplicabilityTemp>
+    <div class="row mt-5">
+        <ng-container *ngFor="let label of classificationApplicabilityFormData.labels; let j = index">
+            <div class="col-md-4">
+                <label class="form-label fs-6 mb-0 text-nowrap">{{label.labelName.alias | changeCase : "capital"}}</label>
+            </div>
+            <div class="col-md-8 mb-5">
+                <div>
+                    <ng-container *ngFor="let item of classificationApplicabilityData?.[label.labelName.defaultValue]; let i = index; let last = last">
+                        <ng-container *ngIf="(showAllItems[j] || i < 3)">
+                            {{ item.name }}
+                            <ng-container *ngIf="!last">,</ng-container>
+                        </ng-container>
+                    </ng-container>
+                    
+                    <ng-container *ngIf="!showAllItems[j] && classificationApplicabilityData?.[label.labelName.defaultValue]?.length > 3" >
+                        <span class="text-{{theme}}" (click)="showAllItems[j] = true">
+                            +{{ classificationApplicabilityData?.[label.labelName.defaultValue]?.length - 3 }} <span >more</span>
+                        </span>
+                      
+                    </ng-container>
+                    
+                    <ng-container *ngIf="showAllItems[j] " >
+                        <!-- <button class="btn-{{theme}}"> -->
+                        <span (click)="showAllItems[j] = false" class="text-{{theme}}">less</span>
+                        <!-- </button> -->
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+        
+        
+    </div>
+</ng-template>
+

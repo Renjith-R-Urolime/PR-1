@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+
+   version="1.1"
+   id="svg211"
+   sodipodi:docname="employee-document 1.svg"
+   inkscape:version="1.2.2 (b0a84865, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview213"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="50.4375"
+     inkscape:cx="7.6232962"
+     inkscape:cy="8.3568773"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     inkscape:window-x="1440"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g204" />
+  <g
+     clip-path="url(#clip0_13987_210654)"
+     id="g204">
+    <path
+       style="color:#000000;fill:#000000;stroke-linejoin:round;stroke-width:1.0015748;stroke-dasharray:none"
+       d="m 4.5,1 c -1.0986469,0 -2,0.9013531 -2,2 v 10 c 0,1.098627 0.9013411,2 2,2 h 7 c 1.098639,0 2,-0.901361 2,-2 V 3 c 0,-1.0986589 -0.901373,-2 -2,-2 z m 0,1 h 7 c 0.558172,0 1,0.4418006 1,1 v 10 c 0,0.55816 -0.44184,1 -1,1 h -7 c -0.5581994,0 -1,-0.441828 -1,-1 V 3 c 0,-0.5582115 0.4417885,-1 1,-1 z"
+       id="path4281" />
+    <path
+       style="color:#000000;fill:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.0015748;stroke-dasharray:none"
+       d="M 5.5,3.5 A 0.5,0.5 0 0 0 5,4 0.5,0.5 0 0 0 5.5,4.5 h 5 A 0.5,0.5 0 0 0 11,4 0.5,0.5 0 0 0 10.5,3.5 Z"
+       id="path4278" />
+    <path
+       style="color:#000000;fill:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.0015748;stroke-dasharray:none"
+       d="M 5.5,6 A 0.5,0.5 0 0 0 5,6.5 0.5,0.5 0 0 0 5.5,7 h 5 A 0.5,0.5 0 0 0 11,6.5 0.5,0.5 0 0 0 10.5,6 Z"
+       id="path4275" />
+    <path
+       style="color:#000000;fill:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.0015748;stroke-dasharray:none"
+       d="M 5.5,8.5 A 0.5,0.5 0 0 0 5,9 0.5,0.5 0 0 0 5.5,9.5 H 8 A 0.5,0.5 0 0 0 8.5,9 0.5,0.5 0 0 0 8,8.5 Z"
+       id="path4272" />
+  </g>
+  <defs
+     id="defs209">
+    <clipPath
+       id="clip0_13987_210654">
+      <rect
+         width="16"
+         height="16"
+         fill="white"
+         id="rect206" />
+    </clipPath>
+  </defs>
+</svg>

@@ -1,0 +1,31 @@
+/* Add this CSS code */
+.scroll{
+scrollbar-width: none;
+scrollbar-color: transparent transparent; /* Firefox */
+}
+
+.dropdown-content {
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
+/* Add these styles to your component's CSS or a shared CSS file */
+.hoverable {
+  cursor: pointer;
+  border-radius: 5px;
+  width: 35px;
+  height:35px ;
+}
+
+.hoverable:hover {
+  background-color: #f1f1f1; /* Change this to your desired hover background color */
+  border-radius: 5px;
+}
+
+.no-cursor-blinking {
+  caret-color: transparent;
+  opacity: 0.5;
+}

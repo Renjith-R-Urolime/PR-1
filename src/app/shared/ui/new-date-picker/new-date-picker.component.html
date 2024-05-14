@@ -1,0 +1,18 @@
+<div class="position-relative">
+      <input type="text"
+      data-type="date"
+      class="form-control form-control-sm highlight-{{theme}}"
+      placeholder="YYYY/MM/DD"
+      #dp="bsDatepicker"
+      bsDatepicker
+      [(ngModel)]="myDateValue"
+      (ngModelChange)="onDateChange($event)"
+      (input)="formateDate($event)"
+      [bsConfig]="datePickerConfig"
+      [minDate]="minDate"
+      [maxDate]="maxDate"
+      [isDisabled]="isDisabled"
+      >
+      <div class="date-icon" (click)="dp.toggle()"></div>
+      <div class="overlay" *ngIf="isDisabled"></div>
+</div>

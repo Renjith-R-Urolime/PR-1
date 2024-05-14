@@ -1,0 +1,409 @@
+<div class=" col-lg-12" [dir]="textStyle" style="background-image: url(./assets/media/login/login_bg_image.png);
+/* background-position: center center; */
+background-repeat: no-repeat;
+background-size: cover;">
+  <div class="p-8">
+    <div class="d-flex justify-content-center align-items-center" style="background: none;">
+      <div class="flex-grow-1 text-center">
+        <img src="./assets/media/login/infithra-login-logo.svg" alt="Image" class="img-fluid">
+      </div>
+      <div class="ms-auto">
+        <img (click)="convertor('ar')" *ngIf="enableArabic" src="./assets/media/login/language.svg" alt="">
+
+        <img (click)="convertor('en')" *ngIf="enableEnglish" src="./assets/media/login/language.svg" alt="">
+      </div>
+    </div>
+    <div class="row d-flex flex-column flex-md-row gap-lg-0 gap-9 max-h-575px min-h-575px">
+      <div class="col-md-4 col-12 card rounded-1 p-5 content">
+        <ng-container>
+          <div class="d-flex justify-content-between p-5 px-0">
+            <h2 class="fs-2tx" *ngIf="!mfaCodeSection && !newPasswordSetup">{{'Welcome Back' | translate}}</h2>
+            <h2 class="fs-2tx" *ngIf="mfaCodeSection && !newPasswordSetup">{{'2-Step Verification' | translate}}</h2>
+            <h2 class="fs-2tx" *ngIf="!mfaCodeSection && newPasswordSetup">{{'New Password Setup' | translate}}</h2>
+          </div>
+
+          <!--begin::Form-->
+          <form class="form w-100" [formGroup]="loginForm" novalidate="novalidate" id="kt_login_signin_form"
+            (ngSubmit)="submit()" *ngIf="!newPasswordSetup">
+
+            <!-- begin::Alert info-->
+            <!-- <ng-container *ngIf="!hasError">
+                  <div class="mb-10 bg-light-info p-8 rounded">
+                    <div class="text-info">
+                      Use account <strong>{{ defaultAuth.email }}</strong> and password
+                      <strong>{{ defaultAuth.password }}</strong> to continue.
+                    </div>
+                  </div>
+                </ng-container> -->
+            <!-- end::Alert info-->
+
+            <!-- begin::Alert error-->
+            <ng-container *ngIf="hasError">
+              <div class="mb-5 alert alert-danger">
+                <div class="alert-text font-weight-bold">
+                  {{'The login details are incorrect' | translate}}
+                </div>
+              </div>
+            </ng-container>
+            <!-- end::Alert error-->
+
+            <!--begin::Login Form-->
+            <ng-container *ngIf="!mfaCodeSection">
+              <div class="fv-row mb-10">
+                <label class="form-label fs-6 fw-bolder text-dark">{{"Email" | translate}}</label>
+                <input class="form-control form-control-lg form-control-solid" type="email" name="email"
+                  formControlName="email" autocomplete="on" [ngClass]="{
+                        'is-invalid': loginForm.controls['email'].invalid,
+                        'is-valid': loginForm.controls['email'].valid
+                      }" />
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: 'required',
+                        message: 'Email is required',
+                        control: loginForm.controls['email']
+                      }"></ng-container>
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: 'email',
+                        message: 'Email is invalid',
+                        control: loginForm.controls['email']
+                      }"></ng-container>
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: 'minLength',
+                        message: 'Email should have at least 3 symbols',
+                        control: loginForm.controls['email']
+                      }"></ng-container>
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: 'maxLength',
+                        message: 'Email should have maximum 360 symbols',
+                        control: loginForm.controls['email']
+                      }"></ng-container>
+              </div>
+              <div class="fv-row mb-10">
+                <div class="d-flex justify-content-between mt-n5">
+                  <div class="d-flex flex-stack mb-2">
+                    <label class="form-label fw-bolder text-dark fs-6 mb-0">{{"Password"| translate}}</label>
+                  </div>
+                </div>
+
+                <input class="form-control form-control-lg form-control-solid"
+                  [type]="showPassword ? 'text' : 'password'" name="password" autocomplete="on"
+                  formControlName="password" [ngClass]="{
+                'is-invalid': loginForm.controls['password'].invalid,
+                'is-valid': loginForm.controls['password'].valid
+              }" />
+
+                <div class="d-flex mt-4">
+                  <input class="form-check-input" type="checkbox" id="showPassword" (click)="togglePasswordFieldType()">
+                  <label for="showPassword" class="form-check-label link-primary fs-6  ms-2">
+                    {{"Show Password" | translate}}
+                  </label>
+                  <a routerLink="/auth/forgot-password" class="link-primary fs-6  ms-auto text-primary"
+                    [style.margin-left]="'5px'">
+                    {{"Forgot Password?" | translate}}
+                  </a>
+                </div>
+
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: 'required',
+                        message: 'Password is required',
+                        control: loginForm.controls['password']
+                      }"></ng-container>
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: 'minlength',
+                        message: 'Password should have at least 8 symbols',
+                        control: loginForm.controls['password']
+                      }"></ng-container>
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: 'maxLength',
+                        message: 'Password should have maximum 100 symbols',
+                        control: loginForm.controls['password']
+                      }"></ng-container>
+              </div>
+            </ng-container>
+            <!--end::Login Form-->
+
+            <!--begin::MFA Form-->
+            <div class="fv-row mb-3" *ngIf="mfaCodeSection && !enableQrcode && !qrCode">
+              <ng-otp-input [config]="config" (onInputChange)="onOtpChange($event)"></ng-otp-input>
+              <div class="fv-row mb-8 mt-3 fv-plugins-icon-container">
+                <label class="form-check form-check-inline">
+                  <input formControlName="rememberDevice" class="form-check-input" type="checkbox" name="toc">
+                  <span class="form-check-label fw-semibold text-gray-700 fs-base ms-1">
+                    Trust this device
+                  </span>
+                </label>
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+              </div>
+              <div *ngIf="!recoverMsg" class="fw-semibold fs-5 mt-2">
+                <span class="text-muted me-1">Lost device?</span>
+                <a (click)="recoverMFA()" class="link-primary fs-5 me-1 cursor-pointer">Recover</a>
+              </div>
+              <div class="fw-semibold fs-5 mt-5" *ngIf="recoverMsg">
+                {{recoverMsg}}
+              </div>
+            </div>
+            <!--end::MFA Form-->
+
+            <!--begin::Action-->
+            <div class="text-center">
+              <button *ngIf="(!mfaCodeSection || mfaCodeSection) && !enableQrcode && !qrCode" type="button"
+                id="kt_sign_in_submit" class="btn btn-lg btn-primary w-100" [disabled]="loginForm.invalid"
+                (click)="submit()">
+                <ng-container *ngIf="isLoading$ | async; else loginText">
+                  <span class="indicator-progress" [style.display]="'block'">
+                    {{ 'Please wait...' | translate }}
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="(isLoading$ | async) === false">
+                  <ng-container *ngIf="!mfaCodeSection; else showSelectAccountButton">
+                    <span class="indicator-label">{{ 'Log in' | translate }}</span>
+                  </ng-container>
+                  <ng-template #showSelectAccountButton>
+                    <span class="indicator-label" (click)="openModal(accountSelectionModal, 'Select Account ID')">
+                      {{ 'Log in' | translate }}
+                    </span>
+                  </ng-template>
+                </ng-container>
+              </button>
+            </div>
+
+            <!--end::Action-->
+          </form>
+
+          <form class="form w-100" [formGroup]="newPasswordForm" novalidate="novalidate" id="login_new_password_form"
+            (ngSubmit)="submit()" autocomplete="on" *ngIf="newPasswordSetup">
+            <!--begin::New Password Form-->
+            <ng-container *ngIf="newPasswordSetup">
+              <div class="fv-row mb-10">
+                <label class="form-label fs-6 fw-bolder text-dark">{{"New Password" | translate}}</label>
+                <input class="form-control form-control-lg form-control-solid" type="text" name="password"
+                  formControlName="password" [ngClass]="{
+                        'is-invalid': newPasswordForm.controls['password'].invalid,
+                        'is-valid': newPasswordForm.controls['password'].valid
+                      }" />
+                <div class="overflow-hidden" style="max-height: 25px;">
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: 'required',
+                          message: 'Password is required',
+                          control: newPasswordForm.controls['password']
+                        }"></ng-container>
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: 'isAlpha',
+                          message: 'Password must contain at least one letter',
+                          control: newPasswordForm.controls['password']
+                        }"></ng-container>
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: 'isNumeric',
+                          message: 'Password must contain at least one number',
+                          control: newPasswordForm.controls['password']
+                        }"></ng-container>
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: 'isSpecial',
+                          message: 'Password must contain at least one special character',
+                          control: newPasswordForm.controls['password']
+                        }"></ng-container>
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: 'isLowerCase',
+                          message: 'Password must contain at least one lowercase letter',
+                          control: newPasswordForm.controls['password']
+                        }"></ng-container>
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: 'isUpperCase',
+                          message: 'Password must contain at least one uppercase letter',
+                          control: newPasswordForm.controls['password']
+                        }"></ng-container>
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: 'minlength',
+                          message: 'Password should have at least 8 symbols',
+                          control: newPasswordForm.controls['password']
+                        }"></ng-container>
+                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                              validation: 'maxLength',
+                              message: 'Password should have maximum 100 symbols',
+                              control: newPasswordForm.controls['password']
+                        }"></ng-container>
+                </div>
+              </div>
+              <div class="fv-row mb-10">
+                <div class="d-flex justify-content-between mt-n5">
+                  <div class="d-flex flex-stack mb-2">
+                    <label class="form-label fw-bolder text-dark fs-6 mb-0">{{"Confirm Password"| translate}}</label>
+                  </div>
+                </div>
+
+                <input class="form-control form-control-lg form-control-solid" type="password" name="confirmPassword"
+                  autocomplete="on" formControlName="confirmPassword" [ngClass]="{
+                        'is-invalid': newPasswordForm.controls['confirmPassword'].invalid,
+                        'is-valid': newPasswordForm.controls['confirmPassword'].valid
+                      }" />
+                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                        validation: 'passwordsMismatch',
+                        message: 'Password do not match',
+                        control: newPasswordForm.controls['confirmPassword']
+                      }"></ng-container>
+              </div>
+            </ng-container>
+            <!--end::New Password Form-->
+
+            <!--begin::Action-->
+            <div class="text-center">
+              <button type="submit" id="new_password_submit" class="btn btn-lg btn-primary w-100 "
+                [disabled]="newPasswordForm.invalid">
+                <ng-container *ngIf="isLoading$ | async">
+                  <span class="indicator-progress" [style.display]="'block'">
+                    {{'Please wait...' | translate}}
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="(isLoading$ | async) === false">
+                  <span class="indicator-label">{{"Save" | translate}}</span>
+                </ng-container>
+              </button>
+            </div>
+            <!--end::Action-->
+          </form>
+          <!--end::Form-->
+          <div class="mb-3" *ngIf="enableQrcode">
+            <label class="form-label mb-3">Secret Key</label>
+            <input [(ngModel)]="verificationCode" type="text" class="form-control form-control-sm mb-3">
+            <div class="fw-semibold fs-5 mt-2">
+              <span class="text-muted me-1">Or Recover by sending sms to phone</span>
+              <a (click)="enableQrcode = false;mfaType = 'SMS_MFA';" class="link-primary fs-5 me-1 cursor-pointer">Send
+                SMS</a>
+            </div>
+          </div>
+          <div *ngIf="qrCode">
+            <qrcode [qrdata]="qrCode" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+            <p>
+              Scan this QR code with your authenticator app. Alternatively, you can manually enter a secret key in your
+              authenticator app.
+            </p>
+
+
+
+          </div>
+          <div class="text-center">
+            <button (click)="getQrcode()" *ngIf="enableQrcode" type="submit" class="btn btn-lg btn-primary w-100">Reset
+            </button>
+            <button (click)="qrCode = false;mfaType = 'SOFTWARE_TOKEN_MFA';" *ngIf="qrCode" type="submit"
+              class="btn btn-lg btn-primary w-100 ">Recover
+            </button>
+          </div>
+          <div class="d-flex align-items-center my-3 gap-3 ">
+            <hr class="flex-grow-1 border-0 h-2px">
+            <span class="me-2 text-muted">{{"Or With" | translate}}</span>
+            <hr class="flex-grow-1 border-0 h-2px">
+          </div>
+
+          <div class="gap-4 d-flex flex-wrap justify-content-center">
+            <button class="btn border text-dark p-2  h-50px flex-grow-1">
+              <span class="me-2"><img src="./assets/media/login/google-logo.svg " alt=""></span>{{"Log in with Google" |
+              translate}}
+            </button>
+            <button class="btn border text-dark p-2  h-50px  flex-grow-1">
+              <span class="me-2 "><img src="./assets/media/login/apple-logo.svg " alt=""></span> {{"Log in with Apple" |
+              translate}}
+            </button>
+          </div>
+
+          <ng-template #formError let-control="control" let-message="message" let-validation="validation">
+            <ng-container *ngIf="control.hasError(validation) && (control.dirty || control.touched)">
+              <div class="fv-plugins-message-container">
+                <span role="alert">
+                  {{ message | translate }}
+                </span>
+              </div>
+            </ng-container>
+          </ng-template>
+        </ng-container>
+      </div>
+      <div class="col-md-8 content-display p-0">
+        <div class="ms-lg-6 ms-0 d-flex flex-row flex-wrap flex-md-nowrap rounded-1 bg-login h-100 p-0">
+          <div class="p-5">
+            <div class="d-flex gap-2 ">
+              <div class="border-line-light w-40px pt-30" [ngClass]="{'selected': selectedContent.id === section.id}"
+                (click)="selectedContent = section" *ngFor="let section of rightSectionData">
+              </div>
+            </div>
+
+            <!-- <div *ngFor="let data of rightSectionData" > -->
+            <div class="d-flex flex-column gap-3 mt-8">
+              <h2 class="fs-2x fw-bolder pt-3 lh-lg">{{ selectedContent.title |
+                translate }}<br></h2>
+              <p class="fw-bolder d-flex align-items-center"> {{ selectedContent.subTitle | translate }}</p>
+              <p class="fw-medium reg-sm-font">
+                {{ selectedContent.description | translate }}
+              </p>
+              <button class="btn btn-purple-outline fw-bolder w-200px">{{ 'Register Now' | translate }}</button>
+            </div>
+          </div>
+          <div>
+            <img alt="banner" class=" h-100 img rounded-start-0" [src]="selectedContent.image">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row  justify-content-center pt-md-13">
+      <div class="col-md-10 col-12 mt-md-20 d-flex flex-md-row flex-column">
+        <div class="row bg-login rounded" *ngFor="let data of updatesData">
+          <div class="col-md-4 col-12">
+            <img class="lap-img img-fluid" [src]="data.image" alt="">
+          </div>
+          <div class="col-md-8 col-12 py-5 pe-6 d-flex align-items-center">
+            <div class="d-flex flex-column">
+              <h3 class="fs-2 fw-bolder">{{data.title}}</h3>
+              <p>{{data.description}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <ng-template #accountSelectionModal let-modal>
+    <div class="mb-4 ">
+      <div >
+        <h4 class="modal-title d-flex justify-content-center mt-4 fw-bolder fs-1" id="modal-basic-title">Choose your account</h4>
+        <div class="box-36px flex-center d-flex btn-icon text-hover-{{ theme }} svg-icon-h-bg-{{ theme }}"
+          (click)="handleCancelModalClickAccountSelection()">
+          <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"></span>
+        </div>
+      </div>
+      <div class="modal-body p-0 px-10">
+        <div class="row mt-5">
+          <div class="col-12">
+            <div class="row">
+              <div class="col-4" *ngFor="let company of data">
+                <div class="card mb-3 card-width position-relative" [ngClass]="{ 'selected': company.accountId === selectedAccountId }"
+                  (click)="onCompanyCardClick(company.accountId)">
+                  <div class="d-flex h-100 p-5 w-100">
+                    <img [src]="company.logo" class="object-fit-contain w-100" alt="{{ company.name }} Logo">
+                  </div>
+                  <div class="bg-success position-absolute rounded-circle w-30px" style="bottom: -12px; right: -12px;">
+                    <img *ngIf="company.accountId === selectedAccountId" src="./assets/media/icons/checkmark-outline.svg"
+                    class="svg-icon m-1 invert">
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <h5 class="card-title justify-content-center d-flex">{{ company.name }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-5">
+          <div class="d-flex justify-content-end">
+            <div >
+              <button class="btn btn-primary d-flex w-100px" (click)="handleSelectAccountClick()">Next
+                <!-- Apply the "invert" class to the arrow image -->
+                <img class="w-20px mx-3 invert" src="./assets/media/icons/chevron-forward-outline.svg" alt="" srcset="">
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>

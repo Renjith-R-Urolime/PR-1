@@ -1,0 +1,212 @@
+.grid-wrapper {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(15, 1fr);
+}
+
+@for $i from 1 through 15 {
+  .grid-row-#{$i} {
+    grid-row: span #{$i};
+  }
+
+  .grid-col-#{$i} {
+    grid-column: span #{$i};
+  }
+}
+
+// .grid-item[data-type="logo"] {
+//   grid-row: span 2
+// }
+
+/* Add this to your styles.css or styles.scss file */
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  /* Updated width */
+  height: 24px;
+  /* Updated height */
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  /* Adjusted height */
+  width: 20px;
+  /* Adjusted width */
+  left: 2px;
+  /* Adjusted left position */
+  bottom: 2px;
+  /* Adjusted bottom position */
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked+.slider {
+  background-color: #ff8000;
+}
+
+input:focus+.slider {
+  box-shadow: 0 0 1px#ff8000;
+}
+
+input:checked+.slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.toggle-label {
+  margin-left: 10px;
+}
+
+.custom-dropdown {
+  display: flex;
+  width: 146px;
+  height: 22px;
+  padding: 3px 6px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 5px;
+  margin-left: 7px;
+  font-size: small;
+}
+
+.day-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.margin-checked {
+  margin-left: -16px
+}
+
+.custom-border {
+  border: 2px solid #ff9123;
+  border-radius: 11px;
+  padding: 2px;
+}
+
+.day-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.day-toggle input {
+  margin-right: 5px;
+}
+
+.time-range {
+  margin-left: 20px;
+  /* Adjust the margin based on your design */
+}
+
+
+.data-item {
+  margin: 22px 0px 6px 0px;
+}
+
+.data-item-container {
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 2px 16px;
+  border-radius: 8px;
+}
+
+.toggle-container,
+.day-container,
+.time-container {
+  flex: 1;
+}
+
+.bi-caret-down {
+  font-size: 1.5rem;
+  color: #000;
+}
+
+.day-box {
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 0px 12px;
+  border-radius: 8px;
+}
+
+.checkbox-orange:checked+label::before {
+  background-color: orange;
+}
+
+.checkbox-container {
+  position: relative;
+}
+
+.checkbox-container input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-container label {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border: 2px solid #000;
+  /* Set your default border color */
+  border-radius: 5px;
+}
+
+.checkbox-container input[type="checkbox"]:checked+label {
+  background-color: orange;
+  border: 2px solid orange;
+}
+
+.check-margin {
+  margin-right: 6px
+}
+
+th.long-content,
+td.long-content {
+  min-width: 150px;
+}
+
+th,
+td {
+  white-space: nowrap;
+}
+
+
+
+.warning_class {
+  color: #FF0000;
+  font-size: 14px;
+  font-family: Mona Sans;
+  font-weight: 500;
+  line-height: 24px;
+  word-wrap: break-word;
+  inline-size: max-content;
+}

@@ -1,0 +1,138 @@
+<div *ngIf="isProfile" class="position-absolute right-0 me-3">
+  <ng-container *ngTemplateOutlet="profileModal"></ng-container>
+</div>
+<ng-template #profileModal>
+    <div class="card p-5 position-relative rounded shadow z-index-6 border-gray-300 ">
+      <div class="d-flex justify-content-start">
+        <div class="d-flex p-1 rounded-circle bg-white border-1 border-gray-300" (click)="isProfile=false ; chart.clearHighlighting().render()">
+          <span [inlineSVG]="'./assets/media/icons/close-outline.svg'" class="svg-icon svg-icon-2"></span>
+        </div>
+      </div>
+      <div class="d-flex flex-column m-4 align-items-center">
+        <div>
+          <img [src]="profileClicked.image" class="h-100px rounded-circle w-100px" alt="">
+        </div>
+        <div class="py-0">
+          <h4><strong>{{profileClicked.name}} {{profileClicked.lastName}}</strong></h4>
+        </div>
+        <div class="py-0">
+          <p class="text-muted">{{profileClicked.position}}</p>
+        </div>
+        <div>
+          <button class="btn btn-primary btn-sm">View Profile</button>
+        </div>
+      </div>
+      <div>
+        <div>
+          <h5 class="pb-4"><u>Details</u></h5>
+          <table class="table">
+            <tbody>
+              <tr>
+                <td class="text-muted px-0 px-sm-3 py-1 fs-7">{{'Location:'}}</td>
+                <td class="px-0 px-sm-3 py-1  fs-7">{{profileClicked.location}}</td>
+              </tr>
+              <tr>
+                <td class="text-muted px-0 px-sm-3 py-1  fs-7">{{'Phone Number:'}}</td>
+                <td class="px-0 px-sm-3 py-1  fs-7">{{profileClicked.phone_number}}</td>
+              </tr>
+              <tr *ngIf="profileClicked.parentId">
+                <td class="text-muted px-0 px-sm-3 py-1  fs-7">{{'Manager:'}}</td>
+                <td class="px-sm-3 py-1 fs-7">{{parentProfile.name}} {{parentProfile.lastName}}</td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h5 class="pb-4"><u>Contact</u></h5>
+          <table class="table">
+            <tbody>
+              <tr>
+                <td class="text-muted px-0 px-sm-3 py-1 fs-7">{{'Social Connect'}}</td>
+                <td class="px-0 px-sm-3 d-flex flex-row justify-content-between py-1  fs-7">
+                  <div>
+                    <span [inlineSVG]="'./assets/media/svg/brand-logos/linkedin-1.svg'"
+                      class="svg-icon svg-icon-2"></span>
+                  </div>
+                  <div>
+                    <span [inlineSVG]="'./assets/media/svg/brand-logos/twitter-2.svg'" class="svg-icon svg-icon-2"></span>
+                  </div>
+                  <div>
+                    <span [inlineSVG]="'./assets/media/icons/at-circle-outline.svg'" class="svg-icon svg-icon-2"></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+</ng-template>
+<section id="org-chart" class="bg-white">
+  <div class="d-flex justify-content-between">
+    <div class="gap-3 d-flex">
+      <ng-select [appendTo]="appendSelect" placeholder="Select Department"
+        (change)="filterDepartment(selectedDepartment)" [(ngModel)]="selectedDepartment" (clear)="onClearFilter()">
+        <ng-option value="" disabled>Select Department</ng-option>
+        <ng-option *ngFor="let department of assignedColors | keyvalue" [value]="department.key">
+          <div class="d-flex gap-2">
+            <div class="h-20px w-20px rounded-1" [style.background-color]="department.value"></div>
+            {{ department.key }}
+          </div>
+        </ng-option>
+      </ng-select>
+      <button (click)="chart.collapseAll().fit()" class="btn border btn-active-{{theme}}">
+        <span class="mx-1">Show Parent</span>
+        <span class="svg-icon svg-icon-2" [inlineSVG]="'/assets/media/icons/git-network.svg'"></span>
+      </button>
+      <button (click)="chart.expandAll().fit()" class="btn border btn-active-{{theme}}">
+        <span class="mx-1">Show Child</span>
+        <span class="svg-icon svg-icon-2" [inlineSVG]="'/assets/media/icons/git-network-outline.svg'"></span>
+      </button>
+    </div>
+    <div class="d-flex gap-3">
+      <button (click)="onFullScreen()" class="btn btn-icon py-3 px-2 border btn-active-{{theme}}"><span
+          class="svg-icon svg-icon-2 m-0"
+          [inlineSVG]="!isFullScreen ? './assets/media/icons/expand.svg' : './assets/media/icons/contract-outline.svg' "></span>
+      </button>
+      <button (click)="onStyleChange()" class="btn btn-icon py-3 px-2 border btn-active-{{theme}}"><span
+          class="svg-icon svg-icon-2 m-0" [inlineSVG]="'./assets/media/icons/settings-outline.svg'"></span>
+      </button>
+      <button (click)="showExport = !showExport" class="btn btn-icon py-3 px-2 border btn-active-{{theme}}"><span
+          class="svg-icon svg-icon-2 m-0" [inlineSVG]="'./assets/media/icons/share-outline.svg'"></span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="showExport" class="position-relative">
+    <ng-container *ngTemplateOutlet="exportDropDown"></ng-container>
+  </div>
+  <ng-template #exportDropDown>
+    <div class="bg-white left-100 mt-2 position-absolute right-0 rounded shadow me-3 z-index-9" appOutsideClick
+      [filterToggle]="showExport" (toggleFilter)="showExport=!showExport">
+      <!-- dropdown -->
+      <!-- <div class="card p-4"> -->
+      <div class="card p-4">
+        <div class=" d-flex flex-column justify-content-start p-0 ">
+          <a (click)="downloadPDF('pdf')" class=" mt-2 text-dark text-hover-{{ theme }}" data-kt-menu-trigger="click"
+            data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+            <span class="svg-icon svg-icon-2 me-2" [inlineSVG]="'./assets/media/icons/document-outline.svg'"></span>PDF
+          </a>
+        </div>
+        <div class=" d-flex flex-column justify-content-start p-0 ">
+          <a (click)="downloadPDF('image')" class="text-dark mt-2 text-hover-{{ theme }}"
+            data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+            <span class="svg-icon svg-icon-2 me-2"
+              [inlineSVG]="'./assets/media/icons/image-outline.svg'"></span>Image</a>
+        </div>
+      </div>
+      <!-- </div> -->
+    </div>
+  </ng-template>
+
+  <div class="mt-4 position-relative">
+    <div class="bs-frame position-absolute">
+    </div>
+    <div #chartContainer id="chartContainer"></div>
+  </div>
+</section>

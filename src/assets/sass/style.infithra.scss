@@ -1,0 +1,1436 @@
+// -----Infithra Theme colors-----
+// @import './../../../node_modules/ngx-bootstrap/datepicker/bs-datepicker.css';
+// @import './../../../node_modules/ngx-bootstrap/datepicker/bs-datepicker.scss';
+
+// Available Font Sizes
+
+// The $font-sizes map includes the following font size values:
+
+// base: 13px
+// fluid: 100%
+// 1: 22.75px
+// 2: 19.50px
+// 3: 17.55px
+// 4: 16.25px
+// 5: 14.95px
+// 6: 13.95px
+// 7: 12.35px
+// 8: 11.05px
+// 9: 9.75px
+// 10: 6.50px
+// 2x: 26px
+// 2qx: 29.25px
+// 2hx: 32.5px
+// 2tx: 35.75px
+// 3x: 39px
+// 3qx: 42.25px
+// 3hx: 45.5px
+// 3tx: 48.75px
+// 4x: 52px
+// 4qx: 55.25px
+// 4hx: 58.5px
+// 4tx: 61.75px
+// 5x: 65px
+// 5qx: 68.25px
+// 5hx: 71.5px
+// 5tx: 74.75px
+
+// Dark
+$dark: #333333;
+$dark-light: #757575;
+
+// tangerine
+$tangerine: #ff8000;
+$tangerine-inverse: $white;
+$tangerine-light: #ffbf80;
+$tangerine-bright: #fff2e5;
+$tangerine-active: #e67300;
+
+// Purple
+$purple: #492185;
+$purple-inverse: $white;
+$purple-light: #a175e3;
+$purple-bright: #f4edff;
+$purple-active: #3f216b;
+
+// Violet
+$violet: #8838FF;
+$violet-inverse: $white;
+$violet-light: #9f5fff;
+$violet-bright: #e2cfff;
+$violet-active: #7a32e7;
+
+// Pink
+$pink: #fc1777;
+$pink-inverse: $white;
+$pink-light: #fc7db2;
+$pink-bright: #ffd9e9;
+$pink-active: #e3176c;
+
+
+//Moon Raker
+$moonRaker: #b9b0d1;
+$moonRaker-inverse: $dark;
+$moonRaker-light: #d1c9e6;
+$moonRaker-bright: #ebe3ff;
+$moonRaker-active: #867d9e;
+
+//Medium Purple
+$mediumPurple: #b380ff;
+$mediumPurple-inverse: $white;
+$mediumPurple-light: #b899e6;
+$mediumPurple-bright: #e7d6ff;
+$mediumPurple-active: #8a4de5;
+
+
+//soft pink
+$softPink: #fc7db2;
+$softPink-inverse: $white;
+$softPink-light: #f28cb7;
+$softPink-bright: #ffe3ef;
+$softPink-active: #f21a74;
+
+
+//Minsk
+$minsk: #413366;
+$minsk-inverse: $white;
+$minsk-light: #6e4dcc;
+$minsk-bright: #b499ff;
+$minsk-active: #3a334d;
+
+
+//Tolopea
+$tolopea: #180d33;
+$tolopea-inverse: $white;
+$tolopea-light: #624d99;
+$tolopea-bright: #a599c2;
+$tolopea-active: #070019;
+
+//Crayola
+$crayola: #1177ff;
+$crayola-inverse: $white;
+$crayola-light: #1d9bff;
+$crayola-bright: #9bd9fe;
+$crayola-active: #1177ff;
+
+// Light
+$gray-100: #F9F9F9 !default;
+$gray-200: #F4F4F4 !default;
+$gray-300: #E1E3EA !default;
+$gray-400: #B5B5C3 !default;
+$gray-500: #A1A5B7 !default;
+$gray-600: #7E8299 !default;
+$gray-700: #5E6278 !default;
+$gray-800: #3F4254 !default;
+$gray-900: #181C32 !default;
+
+
+$black: #000000;
+
+$gradient: linear-gradient(to right, #fc1777 0%, #fc1f6e 25%, #fd3c4e 50%, #fd5340 75%, #ff8100 100%);
+$gradient-inverse: $white;
+
+$mona-sans-font: "MonaSans", sans-serif;
+$quicksand-font: "QuickSand", sans-serif;
+
+body,
+p,
+span,
+div,
+a {
+    font-family: $mona-sans-font;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: $mona-sans-font;
+    // font-family: $quicksand-font;
+}
+
+svg {
+    fill: $dark;
+}
+
+// Functions
+@mixin trapezoid-custom-btn($name) {
+    background-color: var(--#{$name}-bright) !important;
+    color: var(--#{$name}) !important;
+    transition: none !important;
+    border-top-left-radius: 10px !important;
+    position: relative !important;
+    min-width: 110px !important;
+    height: 38px !important;
+    max-height: 38px !important;
+    padding: 0 !important;
+    border: none !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 9px !important;
+    border-bottom-left-radius: 0px !important;
+
+    &.active,
+    &:hover {
+        background-color: var(--#{$name}) !important;
+        color: var(--#{$name}-bright) !important;
+        z-index: 1;
+    }
+
+    &.active::before,
+    &:hover::before {
+        border-left-color: var(--#{$name}) !important;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        height: 53px;
+        right: -33px;
+        top: -3px;
+        border-radius: 25px !important;
+        border-style: solid;
+        border-width: 53px 0 0 40px;
+        /* changed from 53px 0 0 32px */
+        border-color: transparent;
+        border-left-color: var(--#{$name}-bright) !important;
+        ;
+        // border-left-color: var(--#{$name}-bright);
+        border-top-left-radius: 17px;
+        border-top-right-radius: 15px;
+    }
+}
+
+@mixin wizard-custom-color($name) {
+    &.current {
+        .stepper-title {
+            color: var(--#{$name}) !important;
+        }
+
+        &:after {
+            content: " ";
+            position: absolute;
+            height: 5px;
+            left: 0;
+            width: 100%;
+            background-color: var(--#{$name}) !important;
+            border-radius: 2.5px;
+            transition: $transition-link;
+        }
+    }
+
+    .step-number.active {
+        background-color: var(--#{$name}) !important;
+        color: $white;
+    }
+}
+
+// Contextual Colors
+$infithra-colors: (
+    "gradient":$gradient,
+    "dark": $dark,
+    "crayola": $crayola,
+    "tangerine": $tangerine,
+    "pink": $pink,
+    "purple": $purple,
+    "violet": $violet,
+    "moonRaker":$moonRaker,
+    "mediumPurple":$mediumPurple,
+    "softPink":$softPink,
+    "minsk":$minsk,
+    "tolopea":$tolopea) !default;
+
+// Contextual Colors Light
+$infithra-light-colors: (
+    "tangerine": $tangerine-light,
+    "pink": $pink-light,
+    "crayola": $crayola-light,
+    "purple": $purple-light,
+    "violet": $violet-light,
+    "moonRaker":$moonRaker-light,
+    "mediumPurple":$mediumPurple-light,
+    "softPink":$softPink-light,
+    "minsk":$minsk-light,
+    "tolopea":$tolopea-light,
+    "dark":$dark-light) !default;
+
+// Contextual Colors Bright
+$infithra-bright-colors: (
+    "tangerine": $tangerine-bright,
+    "pink": $pink-bright,
+    "crayola": $crayola-bright,
+    "purple": $purple-bright,
+    "violet": $violet-bright,
+    "moonRaker":$moonRaker-bright,
+    "mediumPurple":$mediumPurple-bright,
+    "softPink":$softPink-bright,
+    "minsk":$minsk-bright,
+    "tolopea":$tolopea-bright) !default;
+
+$infithra-active-colors: (
+    "tangerine": $tangerine-active,
+    "pink": $pink-active,
+    "crayola": $crayola-active,
+    "purple": $purple-active,
+    "violet": $violet-active,
+    "moonRaker":$moonRaker-active,
+    "mediumPurple":$mediumPurple-active,
+    "softPink":$softPink-active,
+    "minsk":$minsk-active,
+    "tolopea":$tolopea-active) !default;
+
+$infithra-colors-inverse: (
+    "tangerine": $tangerine-inverse,
+    "pink": $pink-inverse,
+    "crayola": $crayola-inverse,
+    "purple": $purple-inverse,
+    "moonRaker":$moonRaker-inverse,
+    "violet": $violet-inverse,
+    "mediumPurple":$mediumPurple-inverse,
+    "softPink":$softPink-inverse,
+    "minsk":$minsk-inverse,
+    "gradient":$gradient-inverse,
+    "tolopea":$tolopea-inverse,
+    "dark":$white,
+    ) !default;
+
+// Contextual Colors Bright
+$infithra-gray: (
+    "gray-100": $gray-100,
+    "gray-200": $gray-200,
+    "gray-300": $gray-300,
+    "gray-400": $gray-400,
+    "gray-500": $gray-500,
+    "gray-600": $gray-600,
+    "gray-700": $gray-700,
+    "gray-800": $gray-800,
+    "gray-900": $gray-900,
+    ) !default;
+
+// root
+:root {
+    @each $name, $value in $infithra-colors {
+        --#{$name}: #{$value};
+    }
+
+    @each $name, $value in $infithra-colors-inverse {
+        --#{$name}-inverse: #{$value};
+    }
+
+    @each $name, $value in $infithra-gray {
+        --#{$name}: #{$value};
+    }
+
+    @each $name, $value in $infithra-bright-colors {
+        --#{$name}-bright: #{$value};
+    }
+
+    @each $name, $value in $infithra-active-colors {
+        --#{$name}-active: #{$value};
+    }
+
+    @each $name, $value in $infithra-light-colors {
+        --#{$name}-light: #{$value};
+    }
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.uploadLabel {
+    display: inline-block;
+    padding: 0.5rem;
+    font-family: sans-serif;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.iti input {
+    width: 103% !important;
+    height: 36px !important;
+}
+
+.iti {
+    width: 97% !important;
+}
+
+th {
+    font-size: 0.875rem !important;
+}
+
+.fw-bold {
+    font-weight: 600 !important;
+    font-style: normal !important;
+}
+
+.btn-lg {
+    font-size: 1rem !important;
+}
+
+.ngb-datepicker {
+    z-index: 9 !important;
+}
+
+.fw-semibold {
+    font-size: 0.85rem !important;
+}
+
+.form-label {
+    font-size: 1rem !important;
+    color: #7e8299 !important;
+}
+
+td.fw-bolder {
+    font-weight: 500 !important;
+}
+
+.btn {
+    // display: flex;
+    font-size: 14px !important;
+    line-height: 24px !important;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 24px !important;
+}
+
+.btn.compact {
+    padding: 8px 12px !important;
+    line-height: 1.2 !important;
+}
+
+input,
+textarea {
+    border-color: rgba($color: #000000, $alpha: 0.4) !important;
+}
+
+input:focus {
+    border-color: black !important;
+}
+
+textarea:focus {
+    border-color: black !important;
+}
+
+table {
+    .btn.btn-icon {
+        height: unset !important;
+    }
+
+    tr {
+        vertical-align: middle;
+    }
+
+    &:not(.table-bordered) {
+        &.standard {
+            th {
+                font-weight: 600 !important;
+                min-height: 20px !important;
+            }
+
+            td {
+                font-weight: 500 !important;
+                min-height: 20px !important;
+                height: 20px !important;
+            }
+
+            tr {
+                min-height: 20px !important;
+                max-height: 42px !important;
+                height: 42px !important;
+            }
+        }
+
+        &.large {
+            th {
+                font-weight: 600 !important;
+                min-height: 30px !important;
+            }
+
+            td {
+                font-weight: 500 !important;
+                min-height: 30px !important;
+                height: 30px !important;
+            }
+
+            tr {
+                min-height: 30px !important;
+                max-height: 52px !important;
+                height: 52px !important;
+            }
+        }
+
+        &.xxxl {
+            th {
+                font-weight: 600 !important;
+                min-height: 80px !important;
+            }
+
+            td {
+                font-weight: 500 !important;
+                min-height: 80px !important;
+                height: 80px !important;
+            }
+
+            tr {
+                min-height: 80px !important;
+                max-height: 52px !important;
+                height: 52px !important;
+            }
+        }
+
+        &.compact {
+            tr {
+                min-height: 36px !important;
+                height: 36px !important;
+            }
+        }
+
+    }
+
+    >:not(caption)>*>* {
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+    }
+}
+
+.svg-icon.svg-icon-2x svg {
+    height: 1.5rem !important;
+    width: 1.5rem !important;
+}
+
+.breadcrumb-item {
+    path {
+        height: 5.7px !important;
+        width: 10px !important;
+        color: #7E8299 !important;
+    }
+}
+
+.form-control.form-control.form-control-solid {
+    background-color: white;
+}
+
+.breadcrumb-item .chevron {
+    color: #7E8299 !important;
+
+    svg {
+        fill: #7E8299 !important;
+    }
+}
+
+li.breadcrumb-item:last-child a {
+    color: #000000 !important;
+}
+
+// .breadcrumb{
+//     font-size: 0.9rem !important;
+
+// }
+.max-w-90 {
+    width: 90% !important;
+}
+
+.max-w-50 {
+    width: 50% !important;
+}
+
+
+.max-hi-90 {
+    height: 70% !important;
+}
+
+// input[type="time"]::-webkit-calendar-picker-indicator{
+//     font-size: 13px !important;
+// }
+.form-check-input-sm {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+}
+
+.btn-active-gradient {
+
+    .btn-check:checked+&,
+    .btn-check:active+&,
+    &:focus:not(.btn-active),
+    &:hover:not(.btn-active),
+    &:active:not(.btn-active),
+    &.active,
+    &.show,
+    .show>& {
+        background: $gradient !important;
+    }
+}
+
+.bg-hover-gradient.active {
+    background: $gradient !important;
+
+    svg,
+    path {
+        fill: $white !important;
+    }
+}
+
+.form-control.form-control-solid {
+    background-color: var(--gray-200
+    );
+border-color: var(--gray-200);
+}
+
+@each $name, $value in $infithra-colors {
+    .spinner.#{$name}{
+        border: 3px solid #{$value}52!important;
+        border-bottom-color: var(--#{$name})!important;
+    }
+    .nav-item{
+        .nav-link-#{$name}{
+            color: $gray-500 !important;
+            border: 0;
+            border-bottom: 4px solid transparent!important;
+            &:hover {
+                background-color: transparent;
+                border: 0;
+                border-bottom: 4px solid var(--#{$name})!important;
+                transition: color 0.2s ease;
+            }
+            &.active{
+                color: $black !important;
+                background-color: transparent;
+                border: 0;
+                border-bottom: 4px solid var(--#{$name})!important;
+                transition: color 0.2s ease;
+            }
+        }
+    }
+
+    .btn-outline-h-#{$name}{
+        border: 1px solid transparent !important;
+        &:hover{
+            border: 1px solid var(--#{$name}) !important;
+            color: var(--#{$name}) !important;
+            svg,
+            path{
+                fill: var(--#{$name}) !important;
+            }
+        }
+    }
+
+    .fa-#{$name} {
+        color: var(--#{$name}) !important;
+    }
+
+    .shiftHour-#{$name} {
+        stroke:var(--#{$name}) !important;
+    }
+
+    .glow-h-#{$name}:hover {
+        box-shadow: 0px 0px 11px 0px #{$value}80 !important;
+    }
+
+    .text-hover-#{$name}:hover {
+        cursor: pointer;
+        // background-color: $white!important;
+        color: var(--#{$name}) !important;
+
+        svg,
+        path {
+            fill: var(--#{$name}) !important;
+        }
+    }
+
+    .highlight-#{$name} {
+
+        &:focus,
+        &:active {
+            border: 1px solid;
+            box-shadow: 0 0 0 .15rem #{$value}40;
+            border-color: var(--#{$name}) !important;
+        }
+
+        &.focus,
+        &.active {
+            border: 1px solid;
+            box-shadow: 0 0 0 .15rem #{$value}40;
+            border-color: var(--#{$name}) !important;
+        }
+    }
+
+    .border-#{$name} {
+        border: 2px solid;
+        border-color: var(--#{$name}) !important;
+    }
+
+    .bg-#{$name} {
+        background: var(--#{$name}) !important;
+        color: var(--#{$name}-inverse) !important;
+
+        svg {
+            fill: var(--#{$name}-inverse) !important;
+        }
+
+        span {
+            color: var(--#{$name}-inverse) !important;
+        }
+    }
+
+    .border-#{$name} {
+        border-color: var(--#{$name}) !important;
+    }
+
+    .text-#{$name} {
+        color: var(--#{$name}) !important;
+    }
+
+    .btn-#{$name} {
+        background-color: var(--#{$name}) !important;
+        border-color: var(--#{$name}) !important;
+        color: var(--#{$name}-inverse) !important;
+
+        svg,
+        path {
+            fill: $white !important;
+        }
+
+        &:hover,
+        &:active:hover {
+            background-color: var(--#{$name}-active) !important;
+            border-color: var(--#{$name}-active) !important;
+            color: var(--#{$name}-inverse) !important;
+        }
+    }
+
+    .btn-icon-#{$name} {
+        &:hover {
+            background-color: var(--#{$name}) !important;
+
+            svg,
+            path {
+                fill: $white !important;
+            }
+        }
+    }
+
+    // .calendar-#{$name} {
+    //     .bs-datepicker-head{
+    //         background-color: var(--#{$name}) !important;
+    //     }
+    //     span.selected{
+    //         background-color: var(--#{$name}) !important;
+    //         color: $white !important;
+    //     }
+    // }
+    .pagination-#{$name} {
+        .pagination {
+            gap: 1rem !important;
+        }
+
+        .page-item {
+            margin: 0rem !important;
+        }
+
+        .page-item>.page-link {
+            height: 1.5rem !important;
+            width: 0.1rem !important;
+            min-width: 0rem !important;
+            // padding: 0rem !important;
+            border-radius: 0.25rem !important;
+        }
+
+        .page-item.active>.page-link {
+            background-color: var(--#{$name}) !important;
+            color: $white !important;
+            height: 1.5rem !important;
+            width: 0.1rem !important;
+            min-width: 0rem !important;
+            // padding: 0rem !important;
+            border-radius: 0.33rem !important;
+
+        }
+
+        .page-link:hover {
+            color: var(--#{$name}) !important;
+            background-color: var(--#{$name}-bright);
+            border-color: var(--#{$name}-bright);
+
+            svg,
+            path {
+                fill: var(--#{$name}) !important;
+            }
+        }
+    }
+
+    .btn-#{$name}-outline {
+        border: solid 1px var(--#{$name}) !important;
+
+        // color: var(--#{$name}) !important;
+        &:hover {
+            background-color: var(--#{$name}) !important;
+            color: $white !important;
+        }
+    }
+
+    .btn-active-#{$name} {
+        $color: null;
+        $icon-color: null;
+        $border-color: null;
+        $bg-color: null;
+
+        $color-active: $white;
+        $icon-color-active: white !important;
+        $border-color-active: var(--#{$name});
+        $bg-color-active: var(--#{$name});
+        @include button-custom-variant($color,
+            $icon-color,
+            $border-color,
+            $bg-color,
+            $color-active,
+            $icon-color-active,
+            $border-color-active,
+            $bg-color-active );
+
+        &.hover-light {
+            &:hover {
+                background-color: var(--#{$name}-light) !important;
+            }
+        }
+    }
+
+    // Text and icon colors active state
+    .btn.btn-active-color-#{$name} {
+        $color: null;
+        $icon-color: null;
+        $border-color: null;
+        $bg-color: $gray-400;
+
+        $color-active: $white;
+        $icon-color-active: $white;
+        $border-color-active: null;
+        $bg-color-active: var(--#{$name});
+
+        // background-color: $gray-400;
+        @include button-custom-variant($color,
+            $icon-color,
+            $border-color,
+            $bg-color,
+            $color-active,
+            $icon-color-active,
+            $border-color-active,
+            $bg-color-active );
+    }
+
+    .btn-trapezoid-#{$name} {
+        @include trapezoid-custom-btn($name);
+    }
+
+    .wizard-#{$name} {
+        @include wizard-custom-color($name);
+    }
+
+    .form-check-color-#{$name} {
+        .form-check-input:checked {
+            background-color: var(--#{$name}) !important;
+            border-color: var(--#{$name}) !important;
+        }
+        .form-check-input[type=radio]{
+            width: 20px;
+            height: 20px;
+            margin: 2px -2.25rem;
+        }
+        .form-check-input:checked[type=radio]{
+            background-color:  var(--#{$name}) !important;
+            border: 0;
+        }
+    }
+
+    .bg-hover-#{$name}:hover,
+    .bg-hover-#{$name}.active {
+        cursor: pointer;
+        background: var(--#{$name}) !important;
+
+        @if $name =='moonRaker' {
+            color: $dark !important;
+
+            svg,
+            path {
+                fill: $dark !important;
+            }
+
+            span {
+                color: $dark !important;
+            }
+        }
+
+        @else {
+            color: $white !important;
+
+            svg,
+            path {
+                fill: $white !important;
+            }
+
+            span {
+                color: $white !important;
+            }
+        }
+    }
+
+    .svg-icon-#{$name} {
+
+        svg,
+        path {
+            fill: var(--#{$name}) !important;
+        }
+    }
+
+    .svg-icon-h-bg-#{$name} {
+        border-radius: 50% !important;
+
+        &:hover {
+            @if $name == 'gradient' {
+                background: var(--gray-200) !important;
+            }@else{
+                background: #{$value}17 !important;
+            }
+            border-radius: 50% !important;
+            padding: 6px !important;
+        }
+    }
+
+    ng-select.ng-select-#{$name} {
+        &.ng-select-multiple {
+            .ng-select-container {
+                .ng-value-container {
+                    .ng-value {
+                        background-color: var(--#{$name}) !important;
+                        color: var(--#{$name}-inverse) !important;
+                        display: flex;
+
+                        .ng-value-label {
+                            padding: 0px 5px !important;
+                            display: flex;
+                            align-items: center;
+                        }
+                    }
+
+                    &:has(#max-indicator) {
+                        .ng-value:not(#max-indicator) {
+                            .ng-value-label {
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                                max-width: 72px;
+                                display: block;
+                                overflow: hidden
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .ng-option-selected,
+        .ng-option-marked {
+            background-color: var(--#{$name}-bright) !important;
+            color: $dark !important;
+        }
+    }
+
+    .spinner-#{$name} {
+        border: 3px solid var(--#{$name}) !important;
+        border-bottom-color: var(--#{$name}-bright) !important;
+    }
+}
+
+::placeholder {
+    font-size: 13px !important;
+    color: var(--bs-gray-400) !important;
+    font-family: $mona-sans-font !important;
+    font-weight: 500 !important;
+}
+
+@each $name, $value in $infithra-light-colors {
+
+    .icon-custom {
+        svg {
+            fill: var(--#{$name}-light);
+            color: var(--#{$name}-light) !important;
+        }
+    }
+    .svg-icon-#{$name}-light {
+
+        svg,
+        path {
+            fill: var(--#{$name}-light) !important;
+        }
+    }
+
+    .upload-button-#{$name}-light {
+        border: 2px solid !important;
+        border-style: dashed !important;
+        border-color: var(--#{$name}-light) !important;
+    }
+
+    .tooltip-#{$name}-light {
+        background-color:var(--#{$name}-light);
+    }
+
+    .bg-#{$name}-light {
+        background-color: var(--#{$name}-light) !important;
+
+        @if $name =='purple' {
+            color: var(--#{$name}-inverse) !important;
+        }
+    }
+
+    .bg-hover-#{$name}-light:hover{
+        cursor: pointer;
+        background-color: white !important;
+    }
+
+    .bg-hover-#{$name}-light{
+        &.active{
+            cursor: pointer;
+            background-color: var(--#{$name}-light) !important;
+
+            // color: var(--#{$name}-dark) !important;
+            // @if $name == 'tolopea' or $name == 'purple'{
+            //     color: var(--#{$name}-inverse) !important;
+            //     span{
+            //         color: var(--#{$name}-inverse) !important;
+            //     }
+            //     svg, path{
+            //         fill: var(--#{$name}-inverse) !important;
+            //     }
+            //     span {
+            //         color: var(--#{$name}-inverse) !important;
+            //     }
+            // }
+        }
+    }
+
+
+    .menu-item.show{
+        .menu-link.active{
+            &~.menu-sub{
+                .bg-hover-#{$name}-light:hover{
+                    cursor: pointer;
+                    background-color: lighten($value, 8%) !important;
+                }
+                .bg-hover-#{$name}-light.active{
+                    cursor: pointer;
+                    background-color: $value !important;
+                }
+            }
+        }
+    }
+
+    .border-#{$name}-light {
+        border: solid;
+        border-color: var(--#{$name}-light) !important;
+    }
+
+    .dragged-#{$name}-light {
+        border: solid 2px var(--#{$name}-light) !important;
+    }
+
+    // th{
+    //     &.
+    //     &:has(+ th.dragged-#{$name}-light){
+    //         border-right: 2px solid var(--pink-light)!important;
+    //     }
+    // }
+    .text-#{$name}-light {
+        color: var(--#{$name}-light) !important;
+    }
+
+    .btn-#{$name}-light {
+        background-color: var(--#{$name}-light) !important;
+        color: var(--#{$name}-dark) !important;
+    }
+
+    .btn-icon-#{$name}-light {
+        &:hover {
+            background-color: var(--#{$name}-light) !important;
+
+            svg,
+            path {
+                fill: $dark !important;
+            }
+        }
+    }
+
+    .btn-active-#{$name}-light {
+        $color: null;
+        $icon-color: null;
+        $border-color: null;
+        $bg-color: null;
+
+        $color-active: $dark !important;
+        $icon-color-active: $dark !important;
+        $border-color-active: var(--#{$name}-light);
+        $bg-color-active: var(--#{$name}-light);
+        @include button-custom-variant($color,
+            $icon-color,
+            $border-color,
+            $bg-color,
+            $color-active,
+            $icon-color-active,
+            $border-color-active,
+            $bg-color-active );
+    }
+}
+
+@each $name, $value in $infithra-bright-colors {
+    .highlight-current-date {
+        background-color: yellow;
+        /* or any other style you want */
+    }
+
+    .bg-#{$name}-bright {
+        background-color: var(--#{$name}-bright) !important;
+        color: $black !important;
+    }
+
+    .border-#{$name}-bright {
+        border: solid;
+        border-color: var(--#{$name}-bright) !important;
+    }
+
+    .text-#{$name}-bright {
+        color: var(--#{$name}-bright) !important;
+    }
+
+    .btn-#{$name}-bright {
+        background-color: var(--#{$name}-bright) !important;
+        color: $black !important;
+    }
+
+    .btn-icon-#{$name}-bright {
+        &:hover {
+            background-color: var(--#{$name}-bright) !important;
+
+            svg,
+            path {
+                fill: $dark !important;
+            }
+        }
+    }
+
+    .btn-active-#{$name}-bright {
+        $color: null;
+        $icon-color: null;
+        $border-color: null;
+        $bg-color: null;
+
+        $color-active: $dark;
+        $icon-color-active: $dark !important;
+        $border-color-active: var(--#{$name}-bright);
+        $bg-color-active: var(--#{$name}-bright);
+        @include button-custom-variant($color,
+            $icon-color,
+            $border-color,
+            $bg-color,
+            $color-active,
+            $icon-color-active,
+            $border-color-active,
+            $bg-color-active );
+    }
+}
+
+.shadow-gray-300 {
+    box-shadow: 0px 5px 15px 0px $gray-300 !important;
+}
+
+ngb-pagination {
+    .page-item.disabled {
+
+        svg,
+        path {
+            fill: $gray-400 !important;
+        }
+    }
+
+    .page-item {
+
+        svg,
+        path {
+            fill: $dark !important;
+        }
+    }
+}
+
+$index-list: 4, 5, 6, 7, 8, 9;
+
+@each $index in $index-list {
+    .z-index-#{$index} {
+        z-index: $index;
+    }
+}
+
+$basePinnedLeft : 128px;
+
+td.pinned {
+    background-color: white !important;
+}
+
+// Left *100px
+@for $i from 1 through 10 {
+    .pinned.left-#{$i} {
+        left: 127px + (($i - 1) * 200px) !important;
+    }
+}
+
+//Tooltip theme
+@each $name, $value in $infithra-colors {
+    .tooltip-#{$name} {
+        background-color:var(--#{$name});
+    }
+    .tooltip-#{$name}-triangle-left:before {
+        content: ' ';
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-right: 10px solid var(--#{$name});
+        height: 0;
+        left: 12px;
+        top: 12px;
+        margin-left: -13px;
+        position: absolute;
+        width: 0;
+    }
+}
+
+$gap: 25px;
+$width-height-start: 100px;
+$width-height-end: 600px + $gap;
+
+$i: $width-height-start;
+
+@while $i <=$width-height-end {
+
+    //max
+    .max-w-#{$i} {
+        max-width: $i !important;
+    }
+
+    .max-h-#{$i} {
+        max-height: $i !important;
+    }
+
+    //min
+    .min-w-#{$i} {
+        min-width: $i !important;
+    }
+
+    .min-h-#{$i} {
+        min-height: $i !important;
+    }
+
+    $i: $i + $gap;
+
+    @if $i >$width-height-end {
+        @break; // Exit the loop if $i exceeds $max-width-end
+    }
+}
+
+;
+
+$bgi-position-start: 25px;
+$bgi-position-end: 100px + $gap;
+
+$bgi: $bgi-position-start;
+
+@while $bgi <=$bgi-position-end {
+
+    .bgi-position-x-#{$bgi} {
+        background-position: $bgi !important;
+    }
+
+    $bgi: $bgi + $gap;
+
+    @if $bgi >$bgi-position-end {
+        @break; // Exit the loop if $i exceeds $bg-position-end
+    }
+}
+
+;
+
+@each $name, $value in $infithra-gray {
+    .bg-#{$name} {
+        background-color: var(--#{$name}) !important;
+        color: $dark !important;
+    }
+
+    .border-#{$name} {
+        border: solid;
+        border-color: var(--#{$name}) !important;
+    }
+
+    .text-#{$name} {
+        color: var(--#{$name}) !important;
+    }
+
+    .btn-#{$name} {
+        background-color: var(--#{$name}) !important;
+        color: $dark !important;
+    }
+
+    .svg-icon-#{$name} {
+
+        svg,
+        path {
+            fill: var(--#{$name}) !important;
+        }
+    }
+
+    .btn-icon-#{$name} {
+        &:hover {
+            background-color: var(--#{$name}) !important;
+
+            svg,
+            path {
+                fill: $dark !important;
+            }
+        }
+    }
+    // .bg-hover-#{$name}:hover{
+    //     cursor: pointer;
+    //     background-color: var(--#{$name}) !important;
+    // }
+    .btn-hover-#{$name}:hover{
+        cursor: pointer;
+        background-color: var(--#{$name}) !important;
+    }
+}
+
+@for $i from 1 through 5 {
+    .line-clamp-#{$i} {
+        width: 100%;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: $i;
+        overflow: hidden;
+    }
+}
+
+button,
+.btn,
+input {
+    border-radius: .45rem !important;
+}
+
+.progress {
+    --bs-progress-bg: var(--bs-gray-300) !important;
+}
+
+.border-white {
+    border-color: $white !important;
+}
+
+.custom-button-danger {
+    background-color: #FF6E66 !important;
+}
+
+tbody {
+    background-color: white !important;
+}
+
+.radio-form {
+    border-radius: 20px !important;
+
+}
+
+ngb-datepicker .ngb-dp-header option {
+    color: black !important;
+    background-color: white;
+}
+
+//new date picker theme
+@each $name, $value in $infithra-colors {
+    .search-input-#{$name} {
+        &:has(input:focus) {
+            border-color: var(--#{$name}) !important;
+            box-shadow: 0 0 0 0.25rem var(--#{$name}-bright) !important;
+
+            span {
+                svg {
+                    fill: var(--#{$name}) !important;
+                }
+            }
+        }
+
+        input:focus {
+            outline: 0;
+        }
+    }
+
+    .calendar-#{$name} .bs-datepicker-container {
+        .today {
+            color: var(--#{$name}-inverse) !important;
+            background-color: var(--#{$name}) !important;
+        }
+
+        &:has(.selected) {
+            .today {
+                color: unset !important;
+                background-color: unset !important;
+            }
+
+            .today.is-highlighted {
+                background-color: #e9edf0 !important;
+            }
+        }
+
+        .bs-datepicker-head {
+            background-color: var(--#{$name}) !important;
+            border-top-right-radius: 12px !important;
+            border-top-left-radius: 12px !important;
+            color: white !important;
+        }
+
+        .bs-datepicker-current {
+            color: black !important;
+            background-color: var(--#{$name}) !important;
+        }
+
+        .bs-datepicker-body {
+            border: none !important;
+
+            table th {
+                color: var(--#{$name}) !important;
+            }
+        }
+
+        .bs-datepicker-body table td span.selected,
+        .bs-datepicker-body table td.selected span,
+        .bs-datepicker-body table td span[class*=select-]:after,
+        .bs-datepicker-body table td[class*=select-] span:after {
+            background-color: var(--#{$name}) !important;
+            color: var(--#{$name}-inverse) !important;
+        }
+
+    }
+
+    .bs-datepicker-body table td span {
+
+        border-radius: 10px !important;
+
+    }
+
+    .bs-datepicker {
+        border-radius: 12px !important;
+        // background-color: var(--#{$name}) !important;
+    }
+
+
+}
+
+
+//Remving flex-wrap inorder to make capsule of ng select to the styling
+.ng-select.ng-select-multiple .ng-select-container .ng-value-container {
+    flex-wrap: nowrap !important;
+}

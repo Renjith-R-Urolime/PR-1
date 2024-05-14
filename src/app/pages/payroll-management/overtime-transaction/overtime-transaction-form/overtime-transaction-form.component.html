@@ -1,0 +1,133 @@
+<app-page-title></app-page-title>
+
+<div class="card">
+    <div class="card bs-none p-4">
+        <app-breadcrumb></app-breadcrumb>
+        <ng-container *ngIf="!isLoading ; else skeleton">
+            <ng-container *ngIf="formSections.length>0">
+                <ng-container *ngFor="let section of formSections; let i=index">
+                    <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                        <div class="ps-9 mt-2">
+                            <div class="d-flex">
+                                <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                                <div class="hr-side me-8 ms-2">
+                                    <hr class="mx-1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body py-0">
+                            <form [formGroup]="overtimeForm">
+                                <div class="row">
+                                    <ng-container *ngFor="let label of overtimeFormData.labels">
+                                        <ng-container *ngIf="section.sectionName === label.sectionName && !label?.hide">
+                                            <div
+                                                class="col-lg-{{ label.col ? label.col : col }} mb-2  position-relative">
+                                                <div class="max-w-90">
+                                                    <label *ngIf=" label.type !== 'checkbox'"
+                                                        class="form-label fs-6 mb-0 text-nowrap"
+                                                        [ngClass]="{'required': label?.required}">{{
+                                                        label.labelName.alias.replace('Id','') | changeCase : "capital"
+                                                        }}</label>
+                                                    <app-input-text-field
+                                                        [max]="label?.max"
+                                                        *ngIf="label.labelName.defaultValue !== 'days'"
+                                                        [patchValue]="overtimeForm?.value[label.labelName.defaultValue!]"
+                                                        [formControlName]="label.labelName.defaultValue!"
+                                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                        [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, overtimeForm) }"
+                                                        [type]="label.type" [name]="label.labelName.alias!"
+                                                        [isFieldDisabled]="label.labelName.defaultValue ==='overtimeAmount'?true:false"
+                                                        [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"></app-input-text-field>
+                                                    <ng-container *ngIf="label.type === 'employee'">
+                                                        <employee-select (onchange)="onEmployeeChange($event)"
+                                                            [isDisabled]="id ? true : false"
+                                                            [employeeFilterMeta]="employeeFilterMeta"
+                                                            [formControlName]="label.labelName.defaultValue!"
+                                                            [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, adjustmentDeductionForm)}"
+                                                            [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital') "></employee-select>
+                                                    </ng-container>
+                                                    <ng-container class="align-items-center"
+                                                        *ngIf="label.type === 'date'">
+                                                        <!-- ngb-bootstrap datepicker -->
+                                                        <input-date-picker
+                                                            [formControlName]="label.labelName.defaultValue!"
+                                                            [minDate]="minDate"></input-date-picker>
+                                                        <!-- -- -->
+                                                    </ng-container>
+
+                                                    <ng-container *ngIf="label.type === 'overtimeHour'">
+                                                        <app-new-time-picker [isTimeIntervalMode]="true"
+                                                        [formControlName]="label.labelName.defaultValue!"></app-new-time-picker>
+                                                    </ng-container>
+
+
+
+                                                    <ng-container class="align-items-center"
+                                                        *ngIf="label.type === 'days'">
+                                                        <custom-ng-select
+                                                            [formControlName]="label.labelName.defaultValue!"
+                                                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                            [jsonListName]="label.jsonListName"
+                                                            [multiple]="label.multiple" [patchData]="patchData?.days">
+                                                        </custom-ng-select>
+                                                    </ng-container>
+                                                    <ng-container class="align-items-center"
+                                                        *ngIf="label.type === 'component'">
+                                                        <custom-ng-select (onchange)="onComponentChange($event)"
+                                                        [fetchCondition]="label.fetchCondition"
+                                                            [formControlName]="label.labelName.defaultValue!"
+                                                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                                            [apiLink]="label.apiLink" [multiple]="label.multiple"
+                                                            [patchData]="patchData?.component">
+                                                        </custom-ng-select>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="label.type === 'transactionStatus' && id" >
+                                                        <custom-ng-select  [multiple]="label.multiple"
+                                                          [jsonListName]="label.jsonListName" [controlName]="label.labelName.defaultValue!"
+                                                          [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, overtimeForm) }"
+                                                          [formControlName]="label.labelName.defaultValue!"
+                                                          [controlName]="label.labelName.defaultValue!"
+                                                          [patchData]="overtimeForm.value[label.labelName.defaultValue!] ? overtimeForm.value[label.labelName.defaultValue!] : undefined"
+                                                          [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                                        </custom-ng-select>
+                                                      </ng-container>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+
+                                    </ng-container>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+            <ng-container>
+                <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+                <!-- <div class=" p-md-0 ">
+                    <div class="d-flex  flex-column flex-md-row justify-content-end gap-4">
+                        <button (click)="onCancel()" type="button"
+                            class="btn btn-sm cursor-pointer bg-{{theme}}-bright">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-{{theme}} btn-sm cursor-pointer"
+                            (click)="onSubmit()">
+                            <ng-container *ngIf="!isProcessing">
+                                Submit
+                            </ng-container>
+                            <ng-container *ngIf="isProcessing">
+                                <div class="d-flex gap-3">
+                                    Please wait
+                                    <div class="spinner"></div>
+                                </div>
+                            </ng-container>
+                        </button>
+                    </div>
+                </div> -->
+            </ng-container>
+        </ng-container>
+    </div>
+    <ng-template #skeleton>
+        <app-edit-form-skeleton></app-edit-form-skeleton>
+    </ng-template>

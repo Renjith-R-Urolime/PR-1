@@ -1,0 +1,1142 @@
+<app-page-title></app-page-title>
+<div class="card">
+    <ng-container>
+        <div class="card bs-none p-4">
+            <app-breadcrumb></app-breadcrumb>
+            <div class="mx-6">
+                <app-wizard-tabs [wizardData]="wizardData" [disableSwitch]="'true'"></app-wizard-tabs>
+            </div>
+            <ng-container *ngIf="!isLoading ; else skeleton">
+                <!-- <ng-container *ngIf="formSections.length>0"> -->
+                <ng-container *ngFor="let section of formSections; let i=index">
+                    <!-- <ng-container *ngIf="section.tabName === formData.tabName"> -->
+                    <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                        <!-- <ng-container *ngIf="!isLoading;"> -->
+                        <div class="d-flex">
+                            <div class="fs-5 fw-bold ms-6">{{ section.sectionName }}</div>
+                            <div class="hr-side me-8 ms-2">
+                                <hr class="mx-1">
+                            </div>
+                        </div>
+                        <!-- </ng-container> -->
+                        <div class="card-body py-0">
+                            <!-- in below container call the forms -->
+                            <ng-container *ngIf="currentStep === 1" [ngTemplateOutlet]="step1"
+                                [ngTemplateOutletContext]="{section:section}"></ng-container>
+                            <ng-container *ngIf="currentStep === 2" [ngTemplateOutlet]="step2"
+                                [ngTemplateOutletContext]="{section:section}"></ng-container>
+                            <ng-container *ngIf="currentStep === 3" [ngTemplateOutlet]="step3"
+                                [ngTemplateOutletContext]="{section:section}"></ng-container>
+                        </div>
+                    </div>
+                    <!-- </ng-container> -->
+                </ng-container>
+
+                <!-- </ng-container> -->
+                <ng-container>
+                    <div class=" p-md-0 ">
+                        <div class="d-flex  flex-column flex-md-row justify-content-end gap-4">
+                            <!-- <button *ngIf="currentStep>=1 && currentStep<=3" (click)="onSaveAsDraft()" type="button"
+                                class="btn border border-2 border-{{theme}} btn-sm cursor-pointer">
+                                Save as Draft
+                            </button> -->
+                            <button *ngIf="currentStep===1" (click)="onCancel()" type="button"
+                                class="btn btn-sm cursor-pointer bg-{{theme}}-bright">
+                                Cancel
+                            </button>
+                            <button *ngIf="currentStep>1 && currentStep<=3" (click)="onBack()" type="button"
+                                class="btn btn-sm cursor-pointer bg-{{theme}}-bright">
+                                Back
+                            </button>
+                            <button *ngIf="currentStep>=1 && currentStep<3" (click)="onNext()" type="button"
+                                class="btn btn-sm cursor-pointer bg-{{theme}}">
+                                <ng-container *ngIf="!emailLoader">
+                                    Next
+                                </ng-container>
+                                <ng-container *ngIf="emailLoader">
+                                    <div class="d-flex gap-3">
+                                        Please wait
+                                        <div class="spinner"></div>
+                                    </div>
+                                </ng-container>
+                            </button>
+                            <ng-container *ngIf="currentStep===3">
+                                <app-progress-button [isCancelBtn]="false" (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+                            </ng-container>
+                            <!-- <button *ngIf="currentStep===3" type="submit" class="btn btn-{{theme}} btn-sm cursor-pointer" (click)="onSubmit()">
+                                <ng-container *ngIf="!isProcessing">
+                                    Submit
+                                </ng-container>
+                                <ng-container *ngIf="isProcessing">
+                                    <div class="d-flex gap-3">
+                                        Please wait
+                                        <div class="spinner"></div>
+                                    </div>
+                                </ng-container>
+                            </button> -->
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+
+
+<ng-template #step1 let-section="section">
+    <form [formGroup]="step1Form">
+        <div class="row">
+            <ng-container *ngFor="let label of step1FormData.labels">
+                <ng-container *ngIf="label.sectionName === section.sectionName">
+                    <div class="col-lg-{{ label.col ? label.col : col }} mb-2  position-relative">
+                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                            <label
+                                *ngIf="label.type !== 'checkbox'"
+                                class="form-label fs-6 mb-0 " [ngClass]="{'required': label?.required,
+                            'text-danger': next && step1Form.get(label.labelName.defaultValue).invalid}">{{
+                                label.labelTransformationCancelled ? label.labelName.alias.replace('Id','') :
+                                label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                            <app-input-text-field [name]="label.labelName.alias"
+                                [patchValue]="step1Form?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [isFieldDisabled]="label?.disabled ? true : false"
+                                [ngClass]="{'invalid': next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                [type]="label.type"></app-input-text-field>
+                            <!-- <app-input-text-field *ngIf="label.labelName.alias === 'employeeId'"
+                                [name]="label.labelName.alias"
+                                [patchValue]="step1Form?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{'invalid':next &&  step1Form.get(label.labelName.defaultValue).invalid }"
+                                [type]="label.type"></app-input-text-field> -->
+                            <ng-container class="align-items-center" *ngIf="label.type === 'file'">
+                                <input-file-upload theme="light" fieldStyle="compact"
+                                    [formControlName]="label.labelName.defaultValue!"></input-file-upload>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'button'">
+                                <button class="btn btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"><span span
+                                        [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                        class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                                <button class="btn btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"><span span
+                                        [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                        class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'currency'">
+                                <custom-ng-select [isSelectDisabled]="true"
+                                    [formControlName]="label.labelName.defaultValue!" bindLabel="currency"
+                                    [items]="currencyData ? [currencyData] : undefined"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="false">
+                                </custom-ng-select>
+                            </ng-container>
+                            <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                                <!-- ngb-bootstrap datepicker -->
+                                <!-- <ng-container *ngIf="label.labelName.defaultValue !== 'hireDate'">
+                                    <input-date-picker
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, step1Form) }"
+                                    ></input-date-picker>
+                                </ng-container> -->
+
+                                <!-- <div class="position-relative" *ngIf="label.labelName.defaultValue !== 'hireDate'">
+                                    <input (input)="sharedService.formatDate($event)"
+                                        class="form-control form-control-sm" data-type="date"
+                                        formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD"
+                                        name="dp" ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                                        (click)="d.toggle()" [minDate]="sharedService.minDate"
+                                        [maxDate]="sharedService.maxDate" />
+                                    <span class="date-icon" (click)="d.toggle()"></span>
+                                </div> -->
+
+
+                                <!-- -- -->
+                                <!-- ngb-bootstrap datepicker -->
+                                <!-- <ng-container  *ngIf="label.labelName.defaultValue === 'hireDate'"> -->
+                                <input-date-picker [formControlName]="label.labelName.defaultValue!"
+                                    [ngClass]="{ 'invalid': next && step1Form.get(label.labelName.defaultValue).invalid } "></input-date-picker>
+                                <!-- </ng-container> -->
+                                <!-- <div class="position-relative" *ngIf="label.labelName.defaultValue === 'hireDate'">
+                                    <input (input)="sharedService.formatDate($event)"
+                                        class="form-control form-control-sm" data-type="date"
+                                        formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD"
+                                        name="dp" ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                                        (click)="d.toggle()"
+                                        [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                        [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate" />
+                                    <span class="date-icon" (click)="d.toggle()"></span>
+                                </div> -->
+                                <!-- -- -->
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'supervisor'">
+                                <custom-ng-select [apiLink]="label.apiLink" [scope]="label.scope"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "  [bindLabel]="'firstName'"
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.supervisor">
+
+                                    <ng-template custom-ng-label-temp let-item$="item">
+                                        {{item$.employeeId+' - '+item$.firstName +' '+item$.lastName}}
+                                    </ng-template>
+
+                                </custom-ng-select>
+                            </ng-container>
+                            <ng-container class="align-items-center"
+                                *ngIf="label.type === 'indirectReporting'">
+                                <custom-ng-select [apiLink]="label.apiLink" [scope]="label.scope"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') " [bindLabel]="'firstName'"
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.indirectReporting">
+
+                                    <ng-template custom-ng-label-temp let-item$="item">
+                                        {{item$.employeeId+' - '+item$.firstName +' '+item$.lastName}}
+                                    </ng-template>
+
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'grade'">
+                                <custom-ng-select [apiLink]="label.apiLink" (onchange)="filterDesignation($event)"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.gradeId"
+                                    >
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <!-- <ng-container class="align-items-center" *ngIf="label.type === 'indirectReporting'">
+                                <custom-ng-select [apiLink]="label.apiLink" [scope]="label.scope"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [bindLabel]="'firstName'">
+                                    <ng-template custom-ng-label-temp let-item$="item">
+                                        {{item$.employeeId+' - '+item$.firstName +' '+item$.lastName}}
+                                    </ng-template>
+                                </custom-ng-select>
+                            </ng-container> -->
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'subsidiary'">
+                                <custom-ng-select (onchange)="filterBasedOnSubsidiarySelected($event)"
+                                    [apiLink]="label.apiLink"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.subsidiaryId"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'location'">
+                                <custom-ng-select [apiLink]="subsidiaryCondition.length > 0 ? label.apiLink : ''"
+                                    [fetchCondition]="subsidiaryCondition"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.locationId"
+                                    >
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'department'">
+                                <custom-ng-select [apiLink]="subsidiaryCondition.length > 0 ? label.apiLink : ''"
+                                    [fetchCondition]="subsidiaryCondition"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.departmentId"
+                                    >
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'class'">
+                                <custom-ng-select [apiLink]="subsidiaryCondition.length > 0 ? label.apiLink : ''"
+                                    [fetchCondition]="subsidiaryCondition"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.classId"
+                                    >
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'designation'">
+                                <custom-ng-select [items]="designationList"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.designationId"
+                                    >
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'employeeStatus'">
+                                <custom-ng-select [apiLink]="label.apiLink"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.statusId"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'employeeCategory'">
+                                <custom-ng-select [apiLink]="label.apiLink"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.categoryId"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'employeeType'">
+                                <custom-ng-select [apiLink]="label.apiLink"
+                                    [ngClass]="{ 'invalid':next && step1Form.get(label.labelName.defaultValue).invalid }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.employeeTypeId"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'salutation'">
+                                <custom-ng-select
+                                    [ngClass]="{  'invalid' : next && step1Form.get(label.labelName.defaultValue).invalid  }"
+                                    [jsonListName]="label.jsonListName"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step1Form.value?.salutation"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container *ngFor="let validation of label.validations;">
+                                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                    validation: validation.name,
+                                     message: validation.message,
+                                     control: step1Form.get(label.labelName.defaultValue)
+                                }">
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #step2 let-section="section">
+    <form [formGroup]="step2Form">
+        <div class="row">
+            <ng-container *ngFor="let label of step2FormData.labels ; let i = index;">
+                <ng-container *ngIf="label.sectionName === section.sectionName">
+                    <div class="col-lg-{{ label.col ? label.col : col }} mb-2 position-relative">
+                        <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                            <label
+                                *ngIf=" label.type !== 'checkbox' && label.type !== 'formDrawer' && label.labelName.defaultValue !== 'emergencyContact' && label.labelName.defaultValue !== 'roles'"
+                                class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required,
+                            'text-danger': next && step2Form.get(label.labelName.defaultValue).invalid}">{{
+                                label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+                            <label
+                                *ngIf="label.type === 'formDrawer' && label.labelName.defaultValue !== 'emergencyContact' && label.labelName.defaultValue !== 'roles'"
+                                class="form-label fs-6 mt-1" [ngClass]="{'required': label?.required,
+                            'text-danger': next && step2Form.get(label.labelName.defaultValue).invalid}">{{
+                                label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                            <label *ngIf="label.labelName.defaultValue === 'emergencyContact'"
+                                class="form-label fs-6 mt-5" [ngClass]="{'required': label?.required,
+                            'text-danger': next && step2Form.get(label.labelName.defaultValue).invalid}">{{
+                                label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+                            <ng-container *ngIf="label.labelName.defaultValue ==='isWebLogin'">
+                                <div class="form-check mt-5 form-check-color-{{theme}}">
+                                    <input (click)="toggleEnableRole()" class="form-check-input mt-2 mb-3"
+                                        type="checkbox" [formControlName]="label.labelName.defaultValue!"
+                                        [id]=" label.labelName.alias" />
+                                    <label class="form-label fs-6 mt-2 mb-1" [for]=" label.labelName.alias">
+                                        {{ label.labelName.alias | changeCase : "capital" }}
+                                    </label>
+                                </div>
+                            </ng-container>
+
+                            <app-input-text-field [name]="label.labelName.alias"
+                                *ngIf="label.labelName.defaultValue !== 'isWebLogin' && label.labelName.defaultValue !== 'workEmail' && label.labelName.defaultValue !== 'height'"
+                                [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"
+                                [patchValue]="step2Form?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{'invalid':next && step2Form.get(label.labelName.defaultValue).invalid}"
+                                [type]="label.type"></app-input-text-field>
+                            <app-input-text-field [name]="label.labelName.alias"
+                                *ngIf="label.labelName.defaultValue === 'height'"
+                                [patchValue]="step2Form?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, step2Form) }"
+                                [type]="label.type"></app-input-text-field>
+                            <app-input-text-field *ngIf="label.labelName.defaultValue === 'workEmail'"
+                                [emailVerify]="emailLoader" [name]="label.labelName.alias"
+                                [patchValue]="step2Form?.value[label.labelName.defaultValue!]"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [ngClass]="{'invalid': next && step2Form.get(label.labelName.defaultValue).invalid && step2Form.get(label.labelName.defaultValue).dirty && step2Form.get(label.labelName.defaultValue).touched   }"
+                                [type]="label.type"></app-input-text-field>
+                            <ng-container *ngIf="label.labelName.defaultValue=== 'workEmail' && emailExist">
+                                <div class="fv-plugins-message-container">
+                                    <span role="alert" class="fv-help-block fs-9">
+                                        Email already exist
+                                    </span>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="next && emailLoader && label.labelName.defaultValue=== 'workEmail'">
+                                <div class="fv-plugins-message-container">
+                                    <span role="alert" class="fv-help-block fs-9">
+                                        Verifying Email. Please Wait..
+                                    </span>
+                                </div>
+                            </ng-container>
+
+                            <ng-container *ngIf="label.type === 'phoneNumber'">
+                                <app-intl-phonenumber (onPhoneChange)="onPhoneUpdateStep2($event)" [countryCode]="newCountryCode"
+                                    [formControlName]="label.labelName.defaultValue!" [isFirstChange]="'true'"
+                                    [controlName]="label.labelName.defaultValue!"></app-intl-phonenumber>
+                            </ng-container>
+                            <ng-container class="align-items-center" *ngIf="label.type === 'date'">
+                                <!-- ngb-bootstrap datepicker -->
+                                <input-date-picker [formControlName]="label.labelName.defaultValue!"
+                                    [ngClass]="{ 'invalid': next && step2Form.get(label.labelName.defaultValue).invalid } "></input-date-picker>
+                                <!-- -- -->
+                            </ng-container>
+                            <ng-container class="align-items-center " *ngIf="label.type === 'formDrawer'">
+                                <ng-container *ngIf="label.labelName.defaultValue === 'currentAddress'">
+                                    <button *ngIf="currentAddressTooltipString === ''"
+
+                                        class="btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue,currentAddressTemplate)">
+                                        <span span [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                            class="svg-icon svg-icon-3 p-0 me-0"></span>
+
+                                    </button>
+
+                                        <!-- <div class="card-body bg-{{theme}} p-4">{{emergencyContactToolTipValues}}</div> -->
+
+
+                                    <button *ngIf="currentAddressTooltipString !== ''" (mouseenter)="showCurrentAddressTooltip = true" (mouseleave)="showCurrentAddressTooltip=false"
+                                        class=" btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue,currentAddressTemplate)"><span
+                                            span [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                            class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                                            <app-tool-tip [leftWidth]="'167px'" [data]="currentAddressTooltipString" [showTooltip]="showCurrentAddressTooltip"></app-tool-tip>
+
+                                </ng-container>
+                                <ng-container *ngIf="label.labelName.defaultValue === 'homeAddress'">
+                                    <button *ngIf="homeAddressTooltipString === ''"
+                                        class=" btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue,homeAddressTemplate)"><span
+                                            span [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                            class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+
+                                    <button *ngIf="homeAddressTooltipString !== ''"  (mouseenter)="showHomeAddressTooltip = true" (mouseleave)="showHomeAddressTooltip=false"
+                                        class=" btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue,homeAddressTemplate)"><span
+                                            span [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                            class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                                            <app-tool-tip [leftWidth]="'167px'" [data]="homeAddressTooltipString" [showTooltip]="showHomeAddressTooltip"></app-tool-tip>
+                                </ng-container>
+
+                                <ng-container *ngIf="label.labelName.defaultValue === 'emergencyContact'">
+                                    <button *ngIf="emergencyContactToolTipValues === ''"
+                                        class=" btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue,emergencyContactTemplate)"
+                                        [ngClass]="{'invalid': next &&  step2Form.get(label.labelName.defaultValue).invalid }"><span
+                                            span [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                            class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                                    <button *ngIf="emergencyContactToolTipValues !== ''"  (mouseenter)="showEmergencyContactTooltip = true" (mouseleave)="showEmergencyContactTooltip=false"
+                                        class=" btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue,emergencyContactTemplate)"><span
+                                            span [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                            class="svg-icon svg-icon-3 p-0 me-0"
+                                            [ngClass]="{'invalid': next &&  step2Form.get(label.labelName.defaultValue).invalid }"></span></button>
+                                            <app-tool-tip [leftWidth]="'187px'" [data]="emergencyContactToolTipValues" [showTooltip]="showEmergencyContactTooltip"></app-tool-tip>
+                                </ng-container>
+                                <ng-container *ngIf="label.labelName.defaultValue === 'roles' && enableRole ">
+                                    <label class="form-label fs-6 mb-0 mt-8" [ngClass]="{'required': label?.required,
+                                'text-danger': next && step2Form.get(label.labelName.defaultValue).invalid}">{{
+                                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                    <button *ngIf="rolesToolTipValues === ''"
+                                        class=" btn-sm btn-light pt-0 pb-1 px-1 mb-1 mt-8 border border-1 ms-1"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue,rolesTemplate)"><span span
+                                            [inlineSVG]="'./assets/media/icons/add-outline.svg'"
+                                            class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                                    <button *ngIf="rolesToolTipValues !== ''"   (mouseenter)="showRolesTooltip = true" (mouseleave)="showRolesTooltip=false"
+                                        class=" btn-sm btn-light pt-0 pb-1 px-1 mb-1 border border-1 ms-1 mt-8"
+                                        id="kt_drawer_form_toggle"
+                                        (click)="assignTemplate(label.labelName.defaultValue,rolesTemplate)"><span span
+                                            [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                                            class="svg-icon svg-icon-3 p-0 me-0"></span></button>
+                                            <app-tool-tip [leftWidth]="'90px'"[top]="'65%'" [data]="rolesToolTipValues" [showTooltip]="showRolesTooltip"></app-tool-tip>
+
+                                </ng-container>
+
+                            </ng-container>
+
+                            <ng-container *ngIf="label.type === 'currency'">
+                                <ng-select [formControlName]="label.labelName.defaultValue!" class="mb-3  "
+                                    [clearable]="true"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [ngClass]="{ 'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid }">
+                                </ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'bloodGroup'">
+                                <custom-ng-select
+                                    [ngClass]="{  'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid  }"
+                                    [jsonListName]="label.jsonListName"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step2Form.value?.bloodGroup"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'maritalStatus'">
+                                <custom-ng-select
+                                    [ngClass]="{  'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid  }"
+                                    [jsonListName]="label.jsonListName"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step2Form.value?.maritalStatus"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'gender'">
+                                <custom-ng-select
+                                    [ngClass]="{  'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid  }"
+                                    [jsonListName]="label.jsonListName"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step2Form.value?.gender"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+                            <ng-container class="align-items-center" *ngIf="label.type === 'nationality'">
+                                <custom-ng-select
+                                    [ngClass]="{  'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid  }"
+                                    [jsonListName]="label.jsonListName"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step2Form.value?.nationality"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'religion'">
+                                <custom-ng-select
+                                    [ngClass]="{  'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid  }"
+                                    [jsonListName]="label.jsonListName"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step2Form.value?.religion"
+                                    [controlName]="label.labelName.defaultValue!">>
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container class="align-items-center" *ngIf="label.type === 'ethnicity'">
+                                <custom-ng-select
+                                    [ngClass]="{  'invalid' : next && step2Form.get(label.labelName.defaultValue).invalid  }"
+                                    [jsonListName]="label.jsonListName"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                    [multiple]="label.multiple" [patchData]="step2Form.value?.ethnicity"
+                                    [controlName]="label.labelName.defaultValue!">
+                                </custom-ng-select>
+                            </ng-container>
+
+                            <ng-container *ngFor="let validation of label.validations;">
+                                <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                    validation: validation.name,
+                                     message: validation.message,
+                                     control: step2Form.get(label.labelName.defaultValue)
+                                }">
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #step3 let-section="section">
+    <!-- <form [formGroup]="step3Form"> -->
+    <div class="row mt-1 my-3">
+        <div class="col-lg-2">
+            <div id="kt_drawer_form_toggle" (click)="assignTemplate('uploadFile',uploadFormTemplate)"
+                class="bg-{{theme}}-bright rounded-1 upload-button-{{theme}} px-4 py-7 h-100">
+                <!-- <label for="upload"> -->
+                <div class="d-flex flex-column justify-content-center align-items-center h-100 gap-3">
+                    <span span [inlineSVG]="'./assets/media/icons/document-cloud-upload.svg'"
+                        class="svg-icon svg-icon-5hx svg-icon-{{theme}}"></span>
+                    <div class="text-center text-{{theme}} fs-6 mt-3">
+                        Upload File
+                    </div>
+                </div>
+                <!-- </label> -->
+            </div>
+        </div>
+        <ng-container *ngFor="let document of uploadFormArray; let i=index">
+            <ng-container *ngFor="let label of step3FormData.labels">
+                <ng-container *ngIf="label.sectionName === section.sectionName">
+                    <div class="col-lg-2 position-relative">
+                        <ng-container class="align-items-center" *ngIf="label.type === 'button'">
+                            <div class="d-flex flex-column justify-content-center align-items-center position-relative border-gray-500 cursor-pointer rounded-1 h-100 bg-white z-index-1"
+                                [ngStyle]="document?.browse?.length > 1 ? {'transform': 'scale(0.95) translate(-3px, 7px)'} : null">
+                                <div id="kt_drawer_form_toggle" class="d-flex h-100 w-100"
+                                    (click)="editDocument(label.labelName.defaultValue,uploadFormTemplate, i)">
+                                    <ng-container *ngIf="(document.browse[0] | fileType) === 'image'">
+                                        <div
+                                            class="overflow-hidden max-h-175px h-175px w-100 overflow-hidden rounded-top-1">
+                                            <img [src]="document.browse[0] | s3FileFetch | async"
+                                                [lazyLoad]="document.browse[0] | s3FileFetch | async" alt="profile"
+                                                class="h-100 object-fit-cover w-100">
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="(document.browse[0] | fileType) === 'pdf'">
+                                        <div class="align-items-center d-flex flex-grow-1 justify-content-center">
+                                            <span [inlineSVG]="'./assets/media/icons/document-pdf-outline.svg'"
+                                                class="svg-icon svg-icon-5hx"></span>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <div
+                                    class="d-flex border-bottom-0 border-gray-300 border-left-0 border-right-0 border-top border-top-3 fs-8 py-3 text-center w-100 position-relative">
+                                    <div class="flex-grow-1">
+                                        {{document.documentName}}
+                                    </div>
+                                    <ng-container [ngTemplateOutlet]="actionMenu"
+                                        [ngTemplateOutletContext]="{ id: i }"></ng-container>
+                                </div>
+                            </div>
+                            <div *ngIf="document?.browse?.length > 1" class="multiple-document"></div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+    </div>
+    <!-- </form> -->
+</ng-template>
+
+<!-- upload file form -->
+<ng-template #uploadFormTemplate>
+    <form [formGroup]="uploadDocumentForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of uploadDocumentFormData.labels">
+                <div class="col-md-4 col-lg-4 col-4 mb-4">
+                    <label
+                        *ngIf="label.type !== 'pathArray' && label.type !== 'checkbox' && label.labelName.defaultValue!== 'credentialNumber' && label.labelName.defaultValue !== 'issueDate'&& label.labelName.defaultValue !=='expiryDate' &&label.labelName.defaultValue!== 'placeOfIssue' && label.labelName.defaultValue !== 'issueAuthority' && label.labelName.defaultValue!== 'country'"
+                        class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+                    <label
+                        *ngIf="label.type !== 'pathArray' && label.type !== 'checkbox' && (label.labelName.defaultValue=== 'credentialNumber' || label.labelName.defaultValue=== 'issueDate'|| label.labelName.defaultValue==='expiryDate' || label.labelName.defaultValue=== 'placeOfIssue' || label.labelName.defaultValue=== 'issueAuthority' || label.labelName.defaultValue=== 'country') && enableTrackApplication"
+                        class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4">
+                    <app-input-text-field [name]="label.labelName.alias"
+                        *ngIf="label.labelName.defaultValue !== 'enableTrackApplication' && (label.labelName.defaultValue=== 'credentialNumber' || label.labelName.defaultValue === 'placeOfIssue' || label.labelName.defaultValue=== 'issueAuthority') && enableTrackApplication"
+                        [patchValue]="uploadDocumentForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [type]="label.type"></app-input-text-field>
+
+
+                    <app-input-text-field [name]="label.labelName.alias"
+                        *ngIf="label.labelName.defaultValue!== 'enableTrackApplication' && (label.labelName.defaultValue==='documentName')"
+                        [patchValue]="uploadDocumentForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [type]="label.type"></app-input-text-field>
+
+
+                    <ng-container class="align-items-center" *ngIf="label.type === 'documentType'">
+                        <custom-ng-select [apiLink]="label.apiLink"
+                            [ngClass]="{ 'invalid':next && uploadDocumentForm.get(label.labelName.defaultValue).invalid }"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+
+                    <ng-container *ngIf="label.type === 'checkbox'">
+                        <div class="form-check  form-check-color-{{theme}}">
+                            <input (click)="toggleTrackApplication($event)" class="form-check-input mt-2 mb-3"
+                                type="checkbox" [formControlName]="label.labelName.defaultValue!"
+                                [id]=" label.labelName.alias" />
+                            <label class="form-label fs-6 mt-2 mb-1" [for]=" label.labelName.alias">
+                                {{ label.labelName.alias | changeCase : "capital" }}
+                            </label>
+                        </div>
+                    </ng-container>
+
+
+                    <ng-container class="align-items-center"
+                        *ngIf="label.type === 'date' && label.labelName.defaultValue=== 'issueDate' && enableTrackApplication">
+                        <!-- ngb-bootstrap datepicker -->
+                        <input-date-picker [formControlName]="label.labelName.defaultValue!"
+                            [maxDate]="uploadDocumentForm?.value['expiryDate']"
+                            [ngClass]="{ 'invalid': uploadDocumentForm.get(label.labelName.defaultValue).invalid } "></input-date-picker>
+                        <!-- <div class="position-relative">
+                            <input class="form-control form-control-sm" class="form-control form-control-sm"
+                                [maxDate]="uploadDocumentForm?.value['expiryDate'] | dateToJson"
+                                (input)="sharedService.formatDate($event)" data-type="date"
+                                formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD" name="dp"
+                                ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                                (click)="d.toggle()" />
+                            <span class="date-icon" (click)="d.toggle()"></span>
+                        </div> -->
+                        <!-- -- -->
+                    </ng-container>
+
+                    <ng-container class="align-items-center"
+                        *ngIf="label.type === 'date' &&  label.labelName.defaultValue=== 'expiryDate' && enableTrackApplication">
+                        <!-- ngb-bootstrap datepicker -->
+                        <input-date-picker [formControlName]="label.labelName.defaultValue!"
+                            [minDate]="uploadDocumentForm?.value['issueDate']"
+                            [ngClass]="{ 'invalid': uploadDocumentForm.get(label.labelName.defaultValue).invalid } "></input-date-picker>
+                        <!-- <div class="position-relative">
+                            <input class="form-control form-control-sm" class="form-control form-control-sm"
+                                [minDate]="uploadDocumentForm?.value['issueDate'] | dateToJson"
+                                (input)="sharedService.formatDate($event)" data-type="date"
+                                formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD" name="dp"
+                                ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                                (click)="d.toggle()" />
+                            <span class="date-icon" (click)="d.toggle()"></span>
+                        </div> -->
+                        <!-- -- -->
+                    </ng-container>
+                    <ng-container class="align-items-center" *ngIf="label.type === 'country' && enableTrackApplication">
+                        <custom-ng-select [jsonListName]="label.jsonListName"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple"
+                            [patchData]="uploadDocumentForm?.value[label.labelName.defaultValue!]"
+                            [controlName]="label.labelName.defaultValue!">
+                        </custom-ng-select>
+                    </ng-container>
+                    <!-- Browse field starts -->
+                    <ng-container class="align-items-center" *ngIf="label.type === 'file'">
+                        <input-file-upload theme="light" [imagePreview]="true" [pdfPreview]="true" [allowPdf]="true"
+                            [uploadedFiles]="uploadFormArray[onEditDocumentIndex] ? uploadFormArray[onEditDocumentIndex]?.browse : []"
+                            [reset]="browseReset" [formControlName]="label.labelName.defaultValue!" [multiple]="true"
+                            [ngClass]="{'invalid':uploadDocumentForm.get('browse').invalid }"></input-file-upload>
+                    </ng-container>
+                    <!-- browse field ends -->
+                </div>
+            </ng-container>
+
+            <!-- <ng-container *ngFor="let label of uploadDocumentFormData.labels">
+                <div class="col-md-4 col-lg-4 col-4 mb-4" *ngIf="label.type !== 'pathArray' && label.type !== 'checkbox' && label.labelName.alias !== 'credentialNumber' && label.labelName.alias !== 'issueDate'&& label.labelName.alias !=='expiryDate' &&label.labelName.alias !== 'placeOfIssue' && label.labelName.alias !== 'issueAuthority' && label.labelName.alias !== 'country'">
+                    <label class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-md-4 col-lg-4 col-4 mb-4" *ngIf="label.type !== 'pathArray' && label.type !== 'checkbox' && enableTrackApplication && (label.labelName.alias === 'credentialNumber' || label.labelName.alias === 'issueDate'|| label.labelName.alias ==='expiryDate' || label.labelName.alias === 'placeOfIssue' || label.labelName.alias === 'issueAuthority' || label.labelName.alias === 'country')">
+                    <label class="form-label fs-6 mb-0" [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4" *ngIf="label.labelName.alias !== 'trackingApplication' && label.labelName.alias !== 'credentialNumber' && label.labelName.alias !== 'placeOfIssue' && label.labelName.alias !== 'issueAuthority'">
+                    <app-input-text-field [name]="label.labelName.alias"
+                        [patchValue]="uploadDocumentForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && uploadDocumentForm.get(label.labelName.defaultValue).invalid }"
+                        [type]="label.type">
+                    </app-input-text-field>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4" *ngIf="label.labelName.alias !== 'trackingApplication' && label.labelName.alias !== 'credentialNumber' && label.labelName.alias !== 'placeOfIssue' && label.labelName.alias !== 'issueAuthority'">
+                    <ng-container class="align-items-center" *ngIf="label.type === 'documentType'">
+                        <custom-ng-select [apiLink]="label.apiLink"
+                            [ngClass]="{ 'invalid':next && uploadDocumentForm.get(label.labelName.defaultValue).invalid }"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4" *ngIf="label.labelName.alias !== 'trackingApplication' && label.labelName.alias !== 'credentialNumber' && label.labelName.alias !== 'placeOfIssue' && label.labelName.alias !== 'issueAuthority'">
+                    <ng-container class="align-items-center" *ngIf="label.type === 'file'">
+                        <input-file-upload theme="light" [imagePreview]="true" [pdfPreview]="true" [allowPdf]="true" [uploadedFiles]="uploadFormArray[onEditDocumentIndex] ? uploadFormArray[onEditDocumentIndex]?.browse : []" [reset]="browseReset"
+                            [formControlName]="label.labelName.defaultValue!" [multiple]="true" [ngClass]="{'invalid':uploadDocumentForm.get('browse').invalid }"></input-file-upload>
+                    </ng-container>
+                </div>
+                <ng-container *ngIf="label.labelName.alias === 'trackingApplication'">
+                    <div class="col-lg-{{ label.col ? label.col : col }} mb-4">
+                        <div class="form-check mt-1 form-check-color-{{theme}}">
+                            <input (click)="toggleTrackApplication($event)" class="form-check-input mt-2 mb-3"
+                                type="checkbox" [formControlName]="label.labelName.defaultValue!"
+                                [id]=" label.labelName.alias" />
+                            <label class="form-label fs-6 mt-2 mb-1" [for]=" label.labelName.alias">
+                                {{ label.labelName.alias | changeCase : "capital" }}
+                            </label>
+                        </div>
+                    </div>
+                </ng-container>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4 align-items-center" *ngIf="label.labelName.alias !== 'trackingApplication' && enableTrackApplication && (label.labelName.alias === 'credentialNumber' || label.labelName.alias === 'placeOfIssue' || label.labelName.alias === 'issueAuthority')" >
+                    <app-input-text-field [name]="label.labelName.alias"
+                        [patchValue]="uploadDocumentForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': uploadDocumentForm.get(label.labelName.defaultValue).invalid }"
+                        [type]="label.type">
+                    </app-input-text-field>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4 align-items-center"
+                    *ngIf="label.type === 'date' && enableTrackApplication &&  ( label.labelName.alias=== 'issueDate' )">
+
+                    <div class="position-relative">
+                        <input (input)="sharedService.formatDate($event)" class="form-control form-control-sm"
+                            [maxDate]="uploadDocumentForm?.value['expiryDate']| dateToJson" data-type="date"
+                            formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD" name="dp"
+                            ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                            [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, registerForm) }"
+                            (click)="d.toggle()" />
+                        <span class="date-icon" (click)="d.toggle()"></span>
+                    </div>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} align-items-center"
+                    *ngIf="label.type === 'date' && enableTrackApplication && (label.labelName.alias === 'expiryDate' )">
+
+                    <div class="position-relative">
+                        <input (input)="sharedService.formatDate($event)" class="form-control form-control-sm"
+                            [minDate]="uploadDocumentForm?.value['issueDate'] | dateToJson" data-type="date"
+                            formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD" name="dp"
+                            ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                            [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, registerForm) }"
+                            (click)="d.toggle()" />
+                        <span class="date-icon" (click)="d.toggle()"></span>
+                    </div>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} align-items-center" *ngIf="label.type === 'country' && enableTrackApplication">
+                    <custom-ng-select [jsonListName]="label.jsonListName"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [multiple]="label.multiple"
+                        [patchData]="uploadDocumentForm.value[label.labelName.defaultValue!]"
+                        [controlName]="label.labelName.defaultValue!">
+                    </custom-ng-select>
+                </div>
+            </ng-container> -->
+        </div>
+    </form>
+</ng-template>
+
+
+<ng-template #homeAddressTemplate (isCanceled)="cancelFormSave($event)">
+    <form [formGroup]="homeAddressForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of homeAddressFormData.labels">
+                <div class="col-4">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-4">
+                    <ng-container *ngIf="label.labelName.defaultValue==='sameAsCurrentAddress'">
+                        <div class="form-check mt-5 form-check-color-{{theme}}">
+                            <input (click)="onCopyCurrentToHomeClick($event)" class="form-check-input mt-2 mb-3"
+                                type="checkbox" [formControlName]="label.labelName.defaultValue!"
+                                [id]=" label.labelName.alias" />
+                            <label class="form-label fs-6 mt-2 mb-1" [for]=" label.labelName.alias">
+                                {{ label.labelName.alias | changeCase : "capital" }}
+                            </label>
+                        </div>
+                    </ng-container>
+                    <app-input-text-field *ngIf="label.labelName.defaultValue!=='sameAsCurrentAddress' && label.type!=='number'"
+                        [name]="label.labelName.alias" [isFieldDisabled]="sameAsCurrentAddress"
+                        [patchValue]="homeAddressForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && homeAddressForm.get(label.labelName.defaultValue).invalid}"
+                        [type]="label.type" [max]="label?.max" [maxLength]="label?.maxLength"></app-input-text-field>
+                        <app-input-text-field *ngIf="label.labelName.defaultValue!=='sameAsCurrentAddress'  && label.type==='number'"
+                        [name]="label.labelName.alias" [isFieldDisabled]="sameAsCurrentAddress"
+                        [patchValue]="homeAddressForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && homeAddressForm.get(label.labelName.defaultValue).invalid}"
+                        [type]="label.type" [max]="label?.max"[maxLength]="label?.maxLength"></app-input-text-field>
+                    <ng-container *ngIf="label.type === 'country'">
+                        <custom-ng-select
+                        (onchange)="onCountryChange($event,'homeAddress')"
+                            [ngClass]="{  'invalid' : next && homeAddressForm.get(label.labelName.defaultValue).invalid  }"
+                            [isSelectDisabled]="sameAsCurrentAddress" [jsonListName]="label.jsonListName"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [patchData]="homeAddressForm?.get('homeCountry')?.value ? homeAddressForm?.get('homeCountry')?.value :''"
+                            [multiple]="label.multiple" [controlName]="label.labelName.defaultValue!">
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #currentAddressTemplate (isCanceled)="cancelFormSave($event)">
+    <form [formGroup]="currentAddressForm">
+        <div class="row mt-3">
+            <ng-container *ngFor="let label of currentAddressFormData.labels">
+                <div class="col-4 ">
+                    <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+                        [ngClass]="{'required': label?.required, 'text-danger': submit , 'optional': label?.optional}">{{
+                        label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                </div>
+                <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+                    <app-input-text-field [name]="label.labelName.alias" *ngIf="label.type!=='number'"
+                        [patchValue]="currentAddressForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && currentAddressForm.get(label.labelName.defaultValue).invalid }"
+                        [type]="label.type" [max]="label?.max" [maxLength]="label?.maxLength"></app-input-text-field>
+                    <app-input-text-field [name]="label.labelName.alias" *ngIf="label.type==='number'"
+                        [patchValue]="currentAddressForm?.value[label.labelName.defaultValue!]"
+                        [formControlName]="label.labelName.defaultValue!"
+                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                        [ngClass]="{'invalid': next && currentAddressForm.get(label.labelName.defaultValue).invalid }"
+                        [type]="label.type" [max]="label?.max" [maxLength]="label?.maxLength"></app-input-text-field>
+                    <ng-container *ngIf="label.type === 'country'">
+                        <!-- ID:{{currentAddressForm?.value | json}} -->
+                        <custom-ng-select
+                        (onchange)="onCountryChange($event,'currentAddress')"
+                            [ngClass]="{  'invalid' : next && currentAddressForm.get(label.labelName.defaultValue).invalid  }"
+                            [jsonListName]="label.jsonListName"
+                            [formControlName]="label.labelName.defaultValue!"
+                            [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                            [multiple]="label.multiple"
+                            [patchData]="currentAddressForm?.get('currentCountry')?.value ? currentAddressForm?.get('currentCountry')?.value :''"
+                            >
+                            <!-- savedFormsObject?.currentAddressForm ? savedFormsObject?.currentAddressForm[label.labelName.defaultValue!] : editResponse ? editResponse?.currentCountry : ''  -->
+                        </custom-ng-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #emergencyContactTemplate>
+    <form [formGroup]="emergencyContactForm" class="mt-1 mb-4">
+        <div formArrayName="contacts">
+            <ng-container *ngFor="let contact of contacts.controls; let i = index">
+                <div [formGroupName]="i">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex justify-content-between gap-2 mt-3 mb-4">
+                            <!-- <div class="d-flex "> -->
+                            <div class="fs-5 fw-bold text-nowrap">Contact {{i+1}}</div>
+                            <div class="hr-side ms-2">
+                                <hr class="mx-1">
+                            </div>
+                            <div class="mt-1" *ngIf="i>0">
+                                <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"
+                                    (click)="clearElement(i,'emergencyContactForm')"></span>
+                            </div>
+                            <!-- </div> -->
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-4">
+                                <label class="form-label fs-6 mb-1 required text-nowrap min-w-35">Name</label>
+                            </div>
+                            <div class="col-8">
+                                <input [formControlName]="'name'" type="text" class="form-control form-control-sm  "
+                                    placeholder="Enter Name"
+                                    [ngClass]="{  'invalid' : popupSave && emergencyContactForm.get('contacts').at(i).get('name').invalid   }" />
+                                <ng-container
+                                    *ngIf="popupSave && emergencyContactForm.get('contacts').at(i).get('name').errors?.required">
+                                    <div class="fv-plugins-message-container">
+                                        <span role="alert" class="fv-help-block fs-9">
+                                            Name Required
+                                        </span>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-4">
+                                <label class="form-label fs-6 mb-1 text-nowrap min-w-35">Relationship</label>
+                            </div>
+                            <div class="col-8">
+                                <custom-ng-select
+                                    [ngClass]="{  'invalid' : next && emergencyContactForm.get('contacts').at(i).get('relationship').invalid  }"
+                                    [jsonListName]="'relationship'" [formControlName]="'relationship'"
+                                    [placeholder]="'Select Relationship'" [multiple]="false"
+                                    [patchData]="emergencyContactForm.value['contacts'][i]?.relationship ? emergencyContactForm.value['contacts'][i]?.relationship : null">
+                                </custom-ng-select>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-4">
+                                <label class="form-label fs-6 mb-1 text-nowrap min-w-35">Emergency Address</label>
+                            </div>
+                            <div class="col-8">
+                                <textarea id="address" name="address" rows="4" cols="50" [formControlName]="'address'"
+                                    type="textarea" class="form-control form-control-sm "
+                                    placeholder="Enter Address"></textarea>
+                                <!-- <input [formControlName]="'emergencyAddress'" type="textarea"
+                                    class="form-control form-control-sm " placeholder="Enter Address" /> -->
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-4">
+                                <label class="form-label fs-6 mb-1 required text-nowrap min-w-35">Emergency
+                                    Phone</label>
+                            </div>
+                            <div class="col-8">
+                                <app-intl-phonenumber [isRequired]="true" [formControlName]="'phoneNumber'" [countryCode]="newCountryCode"
+                                    (onPhoneChange)="onPhoneUpdate($event,i)" [isFirstChange]="'true'"></app-intl-phonenumber>
+                                <ng-container
+                                    *ngIf="popupSave && emergencyContactForm.get('contacts').at(i).get('phoneNumber').errors?.required">
+                                    <div class="fv-plugins-message-container">
+                                        <span role="alert" class="fv-help-block fs-9">
+                                            Phone Number Required
+                                        </span>
+                                    </div>
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="popupSave && !emergencyContactForm.get('contacts').at(i).get('isValid')">
+                                    <div class="fv-plugins-message-container">
+                                        <span role="alert" class="fv-help-block fs-9">
+                                            Invalid Phone Number
+                                        </span>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+    <ng-container>
+        <button (click)="addNewEmergencyContact()" type="button" class="btn btn-sm cursor-pointer bg-{{theme}}">
+            + Add more
+        </button>
+    </ng-container>
+</ng-template>
+
+<ng-template #rolesTemplate>
+    <form [formGroup]="rolesForm">
+        <div formArrayName="roles">
+            <ng-container *ngFor="let role of roles.controls; let i = index">
+                <div [formGroupName]="i">
+                    <div class="row mt-3">
+                        <ng-container *ngFor="let label of rolesFormData.labels">
+                            <div class="col-4 mt-2">
+                                <label *ngIf="label.type !== 'checkbox'" class="form-label fs-6 mb-0 text-nowrap"
+                                    [ngClass]="{'required': label?.required, 'text-danger': submit}">{{
+                                    label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                                <span *ngIf="i===0" class="badge mb-0 bg-{{theme}}-bright ms-4 fs-9 p-2">Active</span>
+                            </div>
+
+                            <div class="col-lg-{{ label.col ? label.col : col }} mb-5">
+                                <ng-container *ngIf="label.type === 'roles'">
+                                    <custom-ng-select [items]="rolesList"
+                                        [ngClass]="{ 'invalid':next && rolesForm.get(label.labelName.defaultValue).invalid }"
+                                        [formControlName]="label.labelName.defaultValue!"
+                                        [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                        [multiple]="label.multiple"
+                                        [patchData]="id?rolesForm?.value?.['roles']?.[i]?.roles?.id:''"
+                                        (onchange)="onRoleChange($event)">
+                                    </custom-ng-select>
+                                </ng-container>
+
+                            </div>
+                            <div class="col-1" *ngIf="i>0">
+                                <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-2"
+                                    (click)="clearElement(i,'rolesForm')"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+    <ng-container class="ps-4">
+        <button (click)="addNewRole()" type="button" class="btn btn-sm cursor-pointer bg-{{theme}}">
+            + Add more
+        </button>
+    </ng-container>
+</ng-template>
+
+<!-- [buttonDisable]="isSaveDisabled" -->
+<app-form-drawer drawerWidth="580" [headerText]="headerText  | changeCase : 'capital'" [formTemplate]="formTemplate"
+    (isSaved)="savePopupForm($event,headerText)" (isCanceled)="cancelPopupForm($event,headerText) "
+    [buttonDisable]="isSaveDisabled">
+</app-form-drawer>
+
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+    <ng-container *ngIf="next && control.hasError(validation)">
+        <div class="fv-plugins-message-container">
+            <span role="alert" class="fv-help-block fs-9">
+                {{ message }}
+            </span>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #customTemplate>
+
+    <div class="mb-2 d-flex gap-6 justify-content-center">
+        <a [routerLink]="['/employee-hub/profiles/employee/view', this.id]" class="btn btn-{{theme}} btn-sm"
+            (click)="sharedService.onModalClose()">View</a>
+        <a [routerLink]="['/employee-hub/profiles/payroll-enrollment', this.id]" (click)="sharedService.onModalClose()"
+            class="btn border border-2 border-secondary text-dark btn-sm">
+            Onboard Payroll
+        </a>
+    </div>
+</ng-template>
+
+
+<ng-template #skeleton>
+    <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+
+<ng-template #actionMenu let-index="id">
+    <div class="d-flex left-0 p-2 position-absolute top-0 w-100 z-index-1">
+        <div class=" align-items-center d-flex p-1 ms-auto cursor-pointer" (click)="onActionBtnToggle($event, index)">
+            <span class="svg-icon" [inlineSVG]="'./assets/media/icons/ellipsis-vertical.svg'"></span>
+        </div>
+    </div>
+    <div class="d-flex me-3 mt-5 position-absolute right-0 z-index-1"
+        *ngIf="actionBtnToggle && actionBtnToggleId === index" appOutsideClick [filterToggle]="actionBtnToggle"
+        (toggleFilter)="onActionBtnToggle($event,index)">
+        <div class="bg-white shadow rounded-1 ">
+            <div class="d-flex flex-column">
+                <button (click)="onRemoveDocument($event, index)"
+                    class="btn rounded-1 text-hover-{{theme}} py-2 px-3 d-flex gap-2">
+                    <span [inlineSVG]="'./assets/media/icons/close.svg'" class="svg-icon svg-icon-3 ">
+                    </span>
+                    Remove
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+

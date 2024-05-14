@@ -1,0 +1,81 @@
+<app-page-title [isNewButton]="true" [isGoBack]="true">
+</app-page-title>
+
+<div class="card" [ngClass]="{ 'bg-transparent bs-none' : view==='card' }">
+  <div class="d-flex flex-row justify-content-between align-items-center pt-1 mb-1">
+    <app-breadcrumb [breadcrumbs]="['List']"></app-breadcrumb>
+    <div>
+      <search-and-filter (viewSelected)="changeView($event)" [multipleViewOptions]="true" [importExportOption]="true" (openImportModal)="openModalFromEvent()"></search-and-filter>
+    </div>
+  </div>
+  <div *ngIf="view==='table'">
+    <data-table-list [metaData]="tableMetaData">
+      <ng-template data-cell-temp let-data="data" let-column="column" let-index="index">
+                <ng-container [ngSwitch]="column?.template">
+                    <ng-container *ngSwitchCase="'leavePlan_temp'">
+                      <div class="fw-medium fs-7 text-dark px-0 mt-1">
+                        <ng-container *ngIf="data?.employee?.leavePlan?.name ; else noInfo">
+                          {{data?.employee?.leavePlan?.name}}
+                        </ng-container>
+                      </div>
+                    </ng-container>
+                </ng-container>
+                <ng-template #noInfo>
+                  <p class="fw-medium fs-6 text-gray-400 mb-0 ">
+                      Not Available
+                  </p>
+                  </ng-template>
+      </ng-template>
+    </data-table-list>
+  </div>
+</div>
+  <div *ngIf="view==='card'">
+
+    <app-card-view-list [cardMetaData]="cardJsonData">
+      <ng-template card-header-temp let-item="item$">
+        <div class="d-flex flex-center flex-column justify-content-center mb-2 ">
+            <!-- Image -->
+            <div class="mb-3">
+              <div class="symbol symbol-70px symbol-circle ">
+                <ng-container *ngIf="item?.employee?.image; else showInitial">
+                  <!-- Show Image if Available -->
+                  <img [src]="item?.employee?.image| s3FileFetch | async" alt="User Image" class="symbol-label" />
+
+                </ng-container>
+              <ng-template #showInitial>
+                  <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                    {{item?.employee?.firstName?.[0] | uppercase}}
+                  </div>
+                </ng-template>
+
+              </div>
+            </div>
+            <!-- Name -->
+            <div class="text-center">
+              <div  [title]="item.firstName +' '+ item.lastName"
+                class="line-clamp-1 fs-6 fw-bolder cursor-pointer"> {{ item?.employee?.firstName +' '+ item?.employee?.lastName }}
+              </div>
+            </div>
+          </div>
+    </ng-template>
+    <ng-template data-cell-temp let-data="data" let-column="column" let-index="index">
+      <ng-container [ngSwitch]="column?.template">
+          <ng-container *ngSwitchCase="'leavePlan_temp'">
+            <div class="fw-medium fs-7 text-dark px-0 mt-1">
+              <ng-container *ngIf="data?.employee?.leavePlan?.name ; else noInfo">
+                {{data?.employee?.leavePlan?.name}}
+              </ng-container>
+            </div>
+          </ng-container>
+      </ng-container>
+      <ng-template #noInfo>
+        <p class="fw-medium fs-6 text-gray-400 mb-0 ">
+            Not Available
+        </p>
+        </ng-template>
+</ng-template>
+    </app-card-view-list>
+
+  </div>
+
+

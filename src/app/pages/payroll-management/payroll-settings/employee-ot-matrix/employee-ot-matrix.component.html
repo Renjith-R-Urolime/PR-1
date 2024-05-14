@@ -1,0 +1,61 @@
+
+<div >
+  <a
+  (click)="goBack()"
+  class=" d-flex align-items-center text-gray-500 text-hover-{{ theme }} me-5 cursor-pointer "
+ >
+  <span [inlineSVG]=" './assets/media/icons/arrow-back.svg' "
+    class="svg-icon svg-icon-4 me-1 svg-gray-500"></span>
+  Back to List
+</a>
+</div>
+<app-page-title [isNewButton]="true" [isEditDeleteBtn]="false">
+</app-page-title>
+<div class="card border-0" [ngClass]="{ 'bg-transparent bs-none': view === 'card'}">
+  <div class="d-flex flex-row justify-content-between align-items-center">
+    <app-breadcrumb></app-breadcrumb>
+    <search-and-filter (viewSelected)="changeView($event)" [multipleViewOptions]="true" [importExportOption]="true" (openImportModal)="openModalFromEvent()"></search-and-filter>
+  </div>
+  <div *ngIf="view==='table'">
+    <data-table-list  [metaData]="tableMetaData">
+        <!-- <ng-template action-btn-temp let-id="id" let-item="item$">
+            <a class="btn btn-icon text-hover-{{ theme }} btn-sm me-1 p-0" (click)="open('edit',id)">
+              <span [inlineSVG]="'./assets/media/icons/create-outline.svg'
+                " class="svg-icon svg-icon-3"></span>
+            </a>
+        </ng-template> -->
+    </data-table-list>
+  </div>
+</div>
+<div *ngIf="view==='card'">
+
+  <app-card-view-list [cardMetaData]="cardJsonData">
+    <ng-template card-header-temp let-item="item$">
+      <div class="d-flex flex-center flex-column justify-content-center mb-2 ">
+          <!-- Image -->
+          <div class="mb-3">
+            <div class="symbol symbol-70px symbol-circle ">
+              <ng-container *ngIf="item?.employee?.image; else showInitial">
+                <!-- Show Image if Available -->
+                <img [src]="item?.employee?.image| s3FileFetch | async" alt="User Image" class="symbol-label" />
+
+              </ng-container>
+            <ng-template #showInitial>
+                <div class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                  {{item?.employee?.firstName?.[0] | uppercase}}
+                </div>
+              </ng-template>
+
+            </div>
+          </div>
+          <!-- Name -->
+          <div class="text-center">
+            <div  [title]="item.firstName +' '+ item.lastName"
+              class="line-clamp-1 fs-6 fw-bolder cursor-pointer"> {{ item?.employee?.firstName +' '+ item?.employee?.lastName }}
+            </div>
+          </div>
+        </div>
+  </ng-template>
+  </app-card-view-list>
+
+</div>

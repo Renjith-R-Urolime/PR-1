@@ -1,0 +1,293 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+    <div class="card p-6" [ngClass]="sizeClass">
+        <div class="border-0 p-0 d-flex flex-row justify-content-between align-items-center ">
+            <div class="card-title align-items-start">
+                <h3 class=" fw-bolder fs-2x mb-1">
+                    Employee Finder
+                </h3>
+            </div>
+            <div class="d-flex flex-row justify-content-between ">
+                <div class="card-toolbar me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover"
+                    title="Click to add a user">
+                    <a href="#" class="btn btn-sm btn-light-primary">
+                        <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr075.svg'" class="svg-icon svg-icon-3"></span> -->
+                        Add Employee
+                    </a>
+                </div>
+                <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover"
+                    title="Click to add a user">
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-row justify-content-center mb-3 ">
+            <div class="me-2">
+                <select class="form-select bg-light">
+                    <option>Department</option>
+                </select>
+            </div>
+            <div class="me-2">
+                <select class="form-select bg-light">
+                    <option>Location</option>
+                </select>
+            </div>
+            <div class="me-2">
+                <select class="form-select bg-light">
+                    <option>Status</option>
+                </select>
+            </div>
+            <div class="me-2">
+                <select class="form-select bg-light">
+                    <option>My Shortcuts</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <p>120 Employees</p>
+                <table class="table xxxl align-middle gs-0 gy-4 ">
+                    <thead>
+                        <tr class="fw-bolder text-muted bg-light">
+                            <th class="w-25px rounded-start">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid mx-3">
+                                    <input class="form-check-input" type="checkbox" value="1" data-kt-check="true"
+                                        data-kt-check-target=".widget-9-check" />
+                                </div>
+                            </th>
+                            <th class="min-w-150px ">NAME</th>
+                            <th class="min-w-140px">DEPARTMENT</th>
+                            <th class="min-w-120px">DESIGNATION</th>
+                            <th class="min-w-1200px ">STATUS</th>
+                            <th class="min-w-100px text-end rounded-end"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="overflow-auto">
+                        <tr *ngFor="let member of membersData">
+                            <td>
+                                <div class="form-check form-check-sm form-check-custom form-check-solid mx-3">
+                                    <input class="form-check-input widget-9-check" type="checkbox"
+                                        [value]="member.id" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="symbol symbol-50px me-5 bg-light">
+                                        <img [src]="member.avatar" alt="" />
+                                    </div>
+                                    <div class="d-flex justify-content-start flex-column">
+                                        {{ member.name }}
+                                        <span class="text-muted">{{ member.technology }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-start flex-column">
+                                    {{ member.department }}
+                                    <span class="text-muted">{{ member.deptInfo }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-start flex-column">
+                                    {{ member.designation }}
+                                    <span class="text-muted">{{ member.joinDate }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-start flex-column">
+                                    {{ member.status }}
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="card-toolbar me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-trigger="hover" title="Click to add a user">
+                                    <a href="#" class="btn btn-sm btn-light-primary">
+                                        <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr075.svg'" class="svg-icon svg-icon-3"></span> -->
+                                        View
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<ng-template #skeleton>
+    <div class="card p-6" [ngClass]="sizeClass">
+        <div class="border-0 p-0 d-flex flex-row justify-content-between align-items-center ">
+            <div class="card-title align-items-start">
+                <h3 class=" fw-bolder fs-2x mb-1">
+                    <ngx-skeleton-loader [theme]="{
+                        'margin-top': '0.5rem',
+                        height: '2rem',
+                        width: '22rem'
+                      }"></ngx-skeleton-loader>
+                </h3>
+            </div>
+            <div class="d-flex flex-row justify-content-between ">
+                <div class="card-toolbar me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover"
+                    title="Click to add a user">
+                    <a href="#" class="btn btn-sm btn-light-primary">
+                        <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr075.svg'" class="svg-icon svg-icon-3"></span> -->
+                        Add Employee
+                    </a>
+                </div>
+                <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover"
+                    title="Click to add a user">
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-row justify-content-center mb-3 ">
+            <div class="me-2">
+                <select class="form-select bg-light">
+                    <option>Department</option>
+                </select>
+            </div>
+            <div class="me-2">
+                <select class="form-select bg-light">
+                    <option>Location</option>
+                </select>
+            </div>
+            <div class="me-2">
+                <select class="form-select bg-light">
+                    <option>Status</option>
+                </select>
+            </div>
+            <div class="me-2">
+                <select class="form-select bg-light">
+                    <option>My Shortcuts</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <p>120 Employees</p>
+                <table class="table align-middle gs-0 gy-4 ">
+                    <thead>
+                        <tr class="fw-bolder text-muted bg-light">
+                            <th class="w-25px rounded-start">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid mx-3">
+                                    <input class="form-check-input" type="checkbox" value="1" data-kt-check="true"
+                                        data-kt-check-target=".widget-9-check" />
+                                </div>
+                            </th>
+                            <th class="min-w-300px "><ngx-skeleton-loader [theme]="{
+                                'margin-top': '0.5rem',
+                                height: '1.1rem',
+                                width: '3rem'
+                              }"></ngx-skeleton-loader></th>
+                            <!-- DEPATMENT HEADER -->
+                            <th class="min-w-140px  "><ngx-skeleton-loader [theme]="{
+                                'margin-top': '0.5rem',
+                                height: '1.1rem',
+                                width: '7rem',
+                                'margin-left': '4.5rem'
+            }"></ngx-skeleton-loader></th>
+                            <!-- DESIGNATION HEADER-->
+                            <th class="min-w-120px"><ngx-skeleton-loader [theme]="{
+                                'margin-top': '0.5rem',
+                                height: '1.1rem',
+                                width: '7rem',
+                                'margin-left': '3.5rem'
+                              }"></ngx-skeleton-loader></th>
+                            <!-- STATUS HEADER-->
+                            <th class="min-w-1200px "><ngx-skeleton-loader [theme]="{
+                                'margin-top': '0.5rem',
+                                height: '1.1rem',
+                                width: '4rem',
+                                'margin-left': '3rem'
+                              }"></ngx-skeleton-loader></th>
+                            <th class="min-w-100px text-end rounded-end"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="overflow-auto">
+                        <!-- membersData -->
+                        <tr *ngFor="let member of membersData">
+                            <td>
+                                <div class="form-check form-check-sm form-check-custom form-check-solid mx-3">
+                                    <input class="form-check-input widget-9-check" type="checkbox"
+                                        [value]="member.id" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="symbol symbol-50px me-5 bg-light">
+                                        <ngx-skeleton-loader [theme]="{
+                                            height: '3.2rem',
+                                            width: '2.2rem'
+                                          }"></ngx-skeleton-loader>
+                                    </div>
+                                    <div class="d-flex justify-content-start flex-column">
+                                        <ngx-skeleton-loader [theme]="{
+                                            'margin-top': '0.5rem',
+                                            height: '1.1rem',
+                                            width: '10rem',
+                                            'margin-left': '1rem'
+                                          }"></ngx-skeleton-loader>
+                                        <span class="text-muted">
+                                            <ngx-skeleton-loader [theme]="{
+                                                height: '1.1rem',
+                                                width: '10rem',
+                                                'margin-left': '1rem'
+                                              }"></ngx-skeleton-loader></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <!-- DEPARTMENT -->
+                            <td>
+                                <div class="d-flex justify-content-start flex-column">
+                                    <ngx-skeleton-loader [theme]="{
+                                        'margin-top': '0.5rem',
+                                        height: '1.1rem',
+                                        width: '11rem',
+                                        'margin-left': '4.5rem'
+                                      }"></ngx-skeleton-loader>
+                                    <span class="text-muted"> <ngx-skeleton-loader [theme]="{
+                                        height: '1.1rem',
+                                        width: '11rem',
+                                        'margin-left': '4.5rem'
+                                      }"></ngx-skeleton-loader></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-start flex-column">
+                                    <ngx-skeleton-loader [theme]="{
+                                        'margin-top': '0.5rem',
+                                        height: '1.1rem',
+                                        width: '10rem',
+                                        'margin-left': '3.5rem'
+                                      }"></ngx-skeleton-loader>
+                                    <span class="text-muted"><ngx-skeleton-loader [theme]="{
+                                        height: '1.1rem',
+                                        width: '10rem',
+                                        'margin-left': '3.5rem'
+                                      }"></ngx-skeleton-loader></span>
+                                </div>
+                            </td>
+                            <!-- STATUS -->
+                            <td>
+                                <div class="d-flex justify-content-start flex-column">
+                                    <ngx-skeleton-loader [theme]="{
+                                        'margin-top': '0.5rem',
+                                        height: '1.1rem',
+                                        width: '4rem',
+                                        'margin-left': '3rem'
+                                  }"></ngx-skeleton-loader>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="card-toolbar me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-trigger="hover" title="Click to add a user">
+                                    <a href="#" class="btn btn-sm btn-light-primary">
+                                        <!-- <span [inlineSVG]="'./assets/media/icons/duotune/arrows/arr075.svg'" class="svg-icon svg-icon-3"></span> -->
+                                        View
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</ng-template>

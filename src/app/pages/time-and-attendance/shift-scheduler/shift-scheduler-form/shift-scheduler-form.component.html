@@ -1,0 +1,537 @@
+<app-page-title></app-page-title>
+
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="formSections.length>0">
+        <ng-container *ngFor="let section of formSections; let i=index">
+          <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+            <div class="ps-9 mt-2">
+              <div class="d-flex">
+                <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                <div class="hr-side me-8 ms-2">
+                  <hr class="mx-1">
+                </div>
+              </div>
+              <div class="row d-flex">
+                <div *ngIf="section.sectionName === 'Define Weekends'">
+                  <h5 class="text-muted col-4">Weekends</h5>
+                </div>
+              </div>
+            </div>
+            <div class="card-body pe-2 py-0" *ngIf="!(section.sectionName === 'Define Weekends')">
+
+              <form [formGroup]="shiftForm">
+                <div class="grid-wrapper gy-5 m-0 mt-1">
+                  <div class="grid-item m-0 grid-row-{{key?.row ? key?.row : 1}} grid-col-{{key?.col ? key.col : 5}}"
+                    *ngFor="let key of formData.labels; let i = index;">
+                    <ng-container *ngIf="section.sectionName === key.sectionName">
+                      <div class="max-w-90">
+                        <label
+                          *ngIf=" key.type !== 'hours' && key.type !== 'checkbox' && key.labelName.defaultValue!=='additionalBreakFrom' && key.labelName.defaultValue!=='excludeBreak' && key.labelName.defaultValue!=='excludeAdditionalBreak' && key.labelName.defaultValue!=='isAdditionalBreak' && key.labelName.defaultValue!=='additionalBreakTo'"
+                          class="form-label fs-6 mb-0 text-nowrap" [ngClass]="{'required': key?.required , 'invalid': sharedService.hasValidationErrors(key, submit, shiftForm)}">{{
+                          key.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                        <label
+                          *ngIf="showAdditionalBreak && key.type !== 'hours' && (key.type !== 'checkbox' && key.labelName.defaultValue==='additionalBreakFrom'|| key.labelName.defaultValue==='additionalBreakTo')"
+                          class="form-label fs-6 mb-0 text-nowrap" [ngClass]="{'required': key?.required ,  'invalid': sharedService.hasValidationErrors(key, submit, shiftForm)}">{{
+                          key.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+
+                        <app-input-text-field [name]="key.labelName.alias!"
+                          [patchValue]="shiftForm?.value[key.labelName.defaultValue!]"
+                          [formControlName]="key.labelName.defaultValue!"
+                          *ngIf="key.type !== 'time' && key.type !== 'checkbox'"
+                          [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') "
+                          [ngClass]="{'invalid': sharedService.hasValidationErrors(key, submit, shiftForm) }"
+                          [type]="key.type"></app-input-text-field>
+
+                        <ng-container
+                          *ngIf="(key.labelName.defaultValue === 'regularFrom' || key.labelName.defaultValue === 'regularTo') && key.type === 'time'">
+                          <app-new-time-picker [formControlName]="key.labelName.defaultValue!"
+                            (inputValueChange)="calculateTotalHours()"></app-new-time-picker>
+                        </ng-container>
+
+                        <app-new-time-picker
+                          *ngIf="(key.labelName.defaultValue === 'breakFrom' || key.labelName.defaultValue === 'breakTo') && key.type === 'time'"
+                          [formControlName]="key.labelName.defaultValue!"
+                          (inputValueChange)="calculateTotalBreakTime()"></app-new-time-picker>
+                        <app-new-time-picker
+                          *ngIf="showAdditionalBreak && (key.labelName.defaultValue === 'additionalBreakFrom' || key.labelName.defaultValue === 'additionalBreakTo') && key.type === 'time'"
+                          (inputValueChange)="calculateTotalAdditionalBreakTime()"
+                          [formControlName]="key.labelName.defaultValue!"></app-new-time-picker>
+
+                        <div
+                          *ngIf="!validAdditionalBreakTime && showAdditionalBreak && (key.labelName.defaultValue === 'additionalBreakFrom') && key.type === 'time'"
+                          class="warning_class mt-2">
+                          <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                            class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Error-Ensure regular from
+                          and to are defined and the entered time is inbetween the same
+                        </div>
+                        <!-- </ng-container> -->
+                        <ng-container *ngIf="key.type === 'hours'">
+                          <div *ngIf="key.labelName.defaultValue === 'totalHours'">
+                            <div [ngClass]="{'mt-6':key.labelName.defaultValue === 'totalHours'}"
+                              class=" w-50px h-36px border-2 border-{{theme}} rounded-1 align-items-center pt-1 ps-1 fs-6">
+                              <div>{{this.shiftForm.value['totalHours']}}</div>
+                            </div>
+                          </div>
+                          <div *ngIf="key.labelName.defaultValue === 'totalBreakTime'">
+                            <div [ngClass]="{'mt-6':key.labelName.defaultValue === 'totalBreakTime'}"
+                              class=" w-50px h-36px border-2 border-{{theme}} rounded-1 align-items-center pt-1 ps-1 fs-6">
+                              <div>{{this.shiftForm.value['totalBreakTime']}}</div>
+                            </div>
+                          </div>
+                          <div *ngIf="key.labelName.defaultValue === 'totalAdditionalBreakTime' && showAdditionalBreak">
+                            <div [ngClass]="{'mt-6':key.labelName.defaultValue === 'totalAdditionalBreakTime'}"
+                              class=" w-50px h-36px border-2 border-{{theme}} rounded-1 align-items-center pt-1 ps-1 fs-6">
+                              <div>{{this.shiftForm.value['totalAdditionalBreakTime']}}</div>
+                            </div>
+                          </div>
+                        </ng-container>
+
+                        <ng-container class="form-check form-switch" *ngIf="key.type === 'toggleBtn'">
+                          <ng-container *ngIf="key.labelName.defaultValue==='excludeBreak'">
+                            <label class="switch mt-8">
+                              <input type="checkbox" [formControlName]="key.labelName.defaultValue!"
+                                (change)="excludeBreak($event)">
+                              <span class="slider round" [ngClass]="[labelValue ? 'bg-' + theme : '']"></span>
+                            </label>
+                            <label class="form-label fs-6 mb-0 mt-8"
+                              [ngClass]="{ 'required': key?.required, 'invalid': sharedService.hasValidationErrors(key, submit, shiftForm) }">
+                              {{ key.labelName.alias.replace('Id','') | changeCase : "capital" }}
+                            </label>
+                          </ng-container>
+                          <ng-container
+                            *ngIf=" showAdditionalBreak && (key.labelName.defaultValue==='excludeAdditionalBreak')">
+                            <label class="switch mt-8">
+                              <input type="checkbox" [formControlName]="key.labelName.defaultValue!"
+                                (change)="excludeAdditionalBreak($event)">
+                              <span class="slider round" [ngClass]="[labelValue ? 'bg-' + theme : '']"></span>
+                            </label>
+                            <label class="form-label fs-6 mb-0 mt-8"
+                              [ngClass]="{ 'required': key?.required, 'invalid': sharedService.hasValidationErrors(key, submit, shiftForm) }">
+                              {{ key.labelName.alias.replace('Id','') | changeCase : "capital" }}
+                            </label>
+                          </ng-container>
+                          <ng-container *ngIf="key.labelName.defaultValue==='isAdditionalBreak'">
+
+                            <div *ngIf="!validBreakTime" class="warning_class">
+                              <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                                class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Error-Ensure regular from
+                              and to are defined and the entered time is inbetween the same
+
+                            </div>
+                            <label class="switch mt-8">
+                              <input type="checkbox" [formControlName]="key.labelName.defaultValue!"
+                                (change)="considerAdditionalBreak($event)">
+                              <span class="slider round" [ngClass]="[labelValue ? 'bg-' + theme : '']"></span>
+                            </label>
+                            <label class="form-label fs-6 mb-0 mt-8"
+                              [ngClass]="{ 'required': key?.required, 'invalid': sharedService.hasValidationErrors(key, submit, shiftForm) }">
+                              {{ key.labelName.alias.replace('Id','') | changeCase : "capital" }}
+                            </label>
+                          </ng-container>
+                        </ng-container>
+                        <ng-container *ngIf="key.type==='button'">
+
+
+
+
+
+
+
+
+                          <button *ngIf="toleranceSaved && key.labelName.defaultValue==='toleranceMargin'"
+                            class="btn-sm btn-light pt-0 pb-1 px-1 border border-1 ms-1 mt-7"
+                            (click)="openToleranceModal(toleranceModal)">
+                            <span span [inlineSVG]="'./assets/media/icons/open-outline.svg'"
+                              class="svg-icon svg-icon-3 p-0 me-0"></span>
+                          </button>
+
+                          <button *ngIf="!isModifyTimingSaved && key.labelName.defaultValue==='modifyTiming'"
+                            class="btn-sm btn-light pt-0 pb-1 px-1 border border-1 ms-1 mt-7"
+                            [id]="modifyTimingFormStatus ? 'kt_drawer_form_toggle' : null"
+                            (click)="getFormTemplate(modifyTimingsTemplate,'modifyTiming')">
+                            <span
+                              [inlineSVG]="modifyTimingSaved ? './assets/media/icons/open-outline.svg' : './assets/media/icons/add-outline.svg'"
+                              class="svg-icon svg-icon-3 p-0 me-0"></span>
+                          </button>
+
+                          <button *ngIf="!toleranceSaved && key.labelName.defaultValue==='toleranceMargin'"
+                            class="btn-sm btn-light pt-0 pb-1 px-1 border border-1 ms-1 mt-7"
+                            (click)="openToleranceModal(toleranceModal)">
+                            <span span
+                              [inlineSVG]="id ? './assets/media/icons/open-outline.svg' : './assets/media/icons/add-outline.svg'"
+                              class="svg-icon svg-icon-3 p-0 me-0"></span>
+                          </button>
+                          <button *ngIf="key.labelName.defaultValue==='workCalendar'"
+                            class="btn-sm btn-light pt-0 pb-1 px-1 border border-1 ms-1 mt-7"
+                            [id]="true ? 'kt_drawer_form_toggle' : null"
+                            (click)="getFormTemplate(workCalendarTemplate,'workCalendar')">
+                            <span
+                              [inlineSVG]="workCalendarFormSavedStatus? './assets/media/icons/open-outline.svg' : './assets/media/icons/add-outline.svg'"
+                              class="svg-icon svg-icon-3 p-0 me-0"></span>
+                          </button>
+
+                          <div *ngIf="!isWorkCalendarLoaded && key.labelName.defaultValue==='workCalendar' && submit "
+                            class="warning_class">
+                            <span span [inlineSVG]="'./assets/media/icons/warning-outline.svg'"
+                              class="svg-icon svg-icon-3 svg-icon-warning p-0 me-0"></span> Loading.....Please wait
+
+                          </div>
+
+                        </ng-container>
+                      </div>
+                      <ng-container *ngFor="let validation of key.validations;">
+                        <ng-container [ngTemplateOutlet]="formError"
+                            [ngTemplateOutletContext]="{
+                    validation: validation.name,
+                    message: validation.message,
+                    control: shiftForm.get(key.labelName.alias)
+                  }"></ng-container>
+                    </ng-container>
+                    </ng-container>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
+
+          <!-- Add checkboxes for each day -->
+          <div class="card-body p-0 card bs-none mx-1">
+            <div class="row " *ngIf="section.sectionName === 'Define Weekends'">
+              <div class="col-md-6">
+                <div class="d-flex mx-5 justify-content-start align-items-center gap-6 form-check-color-{{ theme }}"
+                  *ngIf="section.sectionName === 'Define Weekends'">
+                  <!-- Individual day checkboxes -->
+                  <span *ngFor="let day of daysOfWeek">
+                    <label class="d-flex align-items-center">
+                      <input (change)="toggleColumnVisibility( $event ,day.name)"
+                        class="h-20px w-20px rounded-half form-check-input form-check-input-sm form-check-color-{{theme}}"
+                        type="checkbox" [(ngModel)]="day.isChecked" />
+                      <span class="mx-2">{{ day.name }}</span>
+                    </label>
+                  </span>
+
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class=" d-flex justify-content-center align-items-center gap-2 mt-1 form-check-color-{{ theme }}"
+                  *ngIf="section.sectionName === 'Define Weekends' && defineWeekendstatus">
+                  <label class="switch form-check-color-{{ theme }}">
+                    <input type="checkbox" [(ngModel)]="enableHalf" (change)="toggleDropdown()" />
+                    <span class="slider round"></span>
+                  </label>
+                  <span class="toggle-label">Enable Half Weekend / Weekday</span>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="section.sectionName === 'Define Weekends' && defineWeekendstatus"
+              class=" form-table-card overflow-hidden mt-5 mb-4 mx-4">
+
+              <table class="table m-0 border table-bordered table-rounded mt-4 ">
+                <thead class="bg-{{ theme }}-bright rounded-3 rounded-top">
+                  <tr class="fw-bold h-36px">
+                    <th class="fs-7 vertical-middle">
+                      Week / Days
+                    </th>
+                    <ng-container *ngFor="let right of listOfDays; let i=index">
+                      <th *ngIf="columnVisibility[i]"
+                        class="fs-7 vertical-middle min-w-125px border-bottom border-light">
+                        <div
+                          class="d-flex justify-content-center align-items-center form-check-color-{{ theme }} mt-1 mb-1">
+                          <div class="col-md-3 justify-content-end d-flex">
+                            <div >
+                              <input (change)="selectAllweeks($event, i)"
+                                class="check-margin form-check-input form-check-input-sm h-20px rounded-half w-20px mt-1"
+                                type="checkbox" [(ngModel)]="right.checked" />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <span class="text-end mt-1 mx-2 ng-star-inserted">{{ right.day | changeCase : 'capital'
+                              }}</span>
+                          </div>
+                        </div>
+                      </th>
+                    </ng-container>
+                    <!-- extra -->
+                  </tr>
+                </thead>
+                <tbody *ngFor="let weekObj of weekendConfig; let j=index">
+                  <tr class="bg-white">
+
+                    <td class="text-start">
+                      <div >
+                        <p class="m-0 w-content fs-7 py-1">{{ weekObj.week }}</p>
+                      </div>
+                    </td>
+                    <!-- extra  -->
+                    <ng-container *ngFor="let day of weekObj.day; let ind = index">
+                      <td *ngIf="columnVisibility[ind]">
+                        <div
+                          class="d-flex justify-content-center align-items-center form-check-color-{{ theme }} mt-1 mb-1">
+                          <div class="col-md-3 justify-content-end d-flex">
+                            <div class="form-check-color-{{ theme }}">
+                              <input
+                                class=" check-margin form-check-input form-check-input-sm h-20px rounded-half w-20px mt-1 form-check-color-{{ theme }} "
+                                type="checkbox" [(ngModel)]="day.status" (change)="unCheckDay($event, j, ind)" />
+                            </div>
+                          </div>
+
+                          <div class="col-md-4 ml-2" *ngIf="showDropdown">
+                            <!-- <form [formGroup]="shiftForm"> -->
+                            <!-- {{day.selectedHalf}} -->
+                            <div *ngFor="let label of formData.labels; let i = index;">
+                              <div *ngIf="label.type === 'shift'"
+                                [ngClass]="{'app-new-time-picker-disabled': !day.status}">
+                                <custom-ng-select
+                                  [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label, submit, shiftForm) }"
+                                  [jsonListName]="label.jsonListName" [patchValue]="day.selectedHalf"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter ' + (label.labelName.alias | changeCase : 'capital')"
+                                  [multiple]="false" [(ngModel)]="day.selectedHalf">
+                                </custom-ng-select>
+
+                              </div>
+                            </div>
+                            <!-- </form> -->
+                          </div>
+
+                        </div>
+                      </td>
+                    </ng-container>
+                  </tr>
+                </tbody>
+              </table>
+
+
+            </div>
+          </div>
+        </ng-container>
+
+      </ng-container>
+      <ng-container>
+        <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+      <div class="fv-plugins-message-container ">
+          <span role="alert" class="fv-help-block fs-9">
+              {{ message }}
+          </span>
+      </div>
+  </ng-container>
+</ng-template>
+
+
+
+<ng-template #classificationTemplate>
+  <form [formGroup]="classificationForm">
+    <div class="row">
+      <ng-container *ngFor="let key of classificationFormData.labels">
+        <div class="col-4 ">
+          <label *ngIf="key.type !== 'checkbox'" class="form-key fs-6 mb-0 text-nowrap  ">{{
+            key.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+        </div>
+        <div class="col-lg-{{ key.col ? key.col : col }} mb-2  position-relative">
+          <ng-container class="align-items-center" *ngIf="key.type === 'subsidiary'">
+            <custom-ng-select [apiLink]="key.apiLink" [formControlName]="key.labelName.defaultValue!"
+              [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') "
+              [patchData]="listPatchData?.subsidiary" [multiple]="key.multiple">
+            </custom-ng-select>
+          </ng-container>
+          <ng-container class="align-items-center" *ngIf="key.type === 'jurisdiction'">
+            <custom-ng-select [apiLink]="key.apiLink" [formControlName]="key.labelName.defaultValue!"
+              [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') "
+              [patchData]="listPatchData?.jurisdiction" [multiple]="key.multiple">
+            </custom-ng-select>
+          </ng-container>
+          <ng-container class="align-items-center" *ngIf="key.type === 'location'">
+            <custom-ng-select [apiLink]="key.apiLink" [formControlName]="key.labelName.defaultValue!"
+              [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') "
+              [patchData]="listPatchData?.location" [multiple]="key.multiple">
+            </custom-ng-select>
+          </ng-container>
+          <ng-container class="align-items-center" *ngIf="key.type === 'department'">
+            <custom-ng-select [apiLink]="key.apiLink" [formControlName]="key.labelName.defaultValue!"
+              [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') "
+              [patchData]="listPatchData?.department" [multiple]="key.multiple">
+            </custom-ng-select>
+          </ng-container>
+          <ng-container class="align-items-center" *ngIf="key.type === 'class'">
+            <custom-ng-select [apiLink]="key.apiLink" [formControlName]="key.labelName.defaultValue!"
+              [placeholder]="key.placeholder ? key.placeholder : 'Enter '+( key.labelName.alias | changeCase : 'capital') "
+              [patchData]="listPatchData?.class" [multiple]="key.multiple">
+            </custom-ng-select>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #toleranceModal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">{{'Tolerance Margin'}}</h4>
+  </div>
+  <div class="modal-body p-0">
+    <form [formGroup]="toleranceForm">
+      <div class="me-4 ms-4 mt-2 mb-2">
+        <ng-container>
+          <div class="position-relative mb-2">
+            <label class="form-label fs-6 mb-0">
+              {{'Start time'}}
+            </label>
+            <ng-container class="align-items-center max-w-90">
+              <app-new-time-picker [isTimeIntervalMode]="true"
+                [formControlName]="'toleranceMarginStartTime'"></app-new-time-picker>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+
+
+      <div class="me-4 ms-4 mt-2 mb-2">
+        <ng-container>
+          <div class="position-relative mb-2">
+            <label class="form-label fs-6 mb-0">
+              {{'End time'}}
+            </label>
+            <ng-container class="align-items-center max-w-90">
+              <app-new-time-picker [isTimeIntervalMode]="true"
+                [formControlName]="'toleranceMarginEndTime'"></app-new-time-picker>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer py-3">
+    <!-- <app-progress-button (submitEvent)="onEmpSubmit()" [isProcessing]="isProcessing"></app-progress-button> -->
+    <button type="button" class=" fw-bold btn btn-{{theme}}-bright" (click)="onCancelTolerance()">Cancel</button>
+    <button type="submit" class="fw-bold btn btn-{{theme}} ms-5S cursor-pointer" (click)="onSaveTolerance()">
+      <!-- <ng-container *ngIf="!isProcessing"> -->
+      Apply
+    </button>
+  </div>
+</ng-template>
+
+<!-- Calendar -->
+<ng-template #workCalendarTemplate (isCanceled)="cancelFormSave($event)">
+  <ng-container *ngIf="isWorkCalendarLoaded">
+    <div class="d-flex flex flex-row justify-content-between">
+      <div class="form-check form-check-sm form-check-custom my-3 form-check-solid form-check-color-{{theme}}  ">
+        <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target=".widget-9-check"
+          [(ngModel)]="selectAllChecked" (change)="onSelectAll()">
+        <span class="fw-bold">Select All</span>
+      </div>
+      <!-- <button class="btn-icon btn-30px bg-white btn-active-{{ theme }} my-3"
+        (click)="assignTemplate('workCalendar', 'appiesTo')" class="btn form-btn-icon btn-light mb-1 border border-1 ms-1"
+        [id]="'kt_drawer_form_toggle'" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+        <span class="svg-icon svg-icon-2" [inlineSVG]="'./assets/media/icons/funnel.svg'"></span>
+      </button> -->
+    </div>
+    <!-- <search-and-filter filterButton="false" [customWidth]="'477px'"></search-and-filter> -->
+
+    <div *ngFor="let calendarItem of calendarData" class="d-flex flex-row mt-2">
+      <div class="form-check form-check-sm form-check-custom my-3 form-check-solid form-check-color-{{theme}}  ">
+        <input class="form-check-input" type="checkbox" value="1" data-kt-check="true"
+          [(ngModel)]="calendarItem.isChecked" data-kt-check-target=".widget-9-check">
+      </div>
+      <div class="card card-body p-5 border border-1 border-gray rounded-1">
+        <div class="d-flex flex-row">
+          <span [inlineSVG]="'./assets/media/icons/calendar-outline.svg'"
+            class="svg-icon svg-icon-3 svg-icon-{{ theme }}"></span>
+          <div class="ms-5">
+            {{ calendarItem.name }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <div class="card h-100 mt-5" *ngIf="!isWorkCalendarLoaded">
+    <div class="bg-light loader me-5 rounded-3" data-bs-toggle="tooltip" data-bs-boundary="window"
+      data-bs-placement="top" title="loading">
+      <img class="object-fit-cover object-position-top spin" [src]="'./assets/media/png/success-loading.png'"
+        alt="profile" />
+    </div>
+  </div>
+</ng-template>
+
+<app-form-drawer [headerText]="activeTemplateName" [formTemplate]="formTemplateRef"
+  (isSaved)="applyPopupForm($event,activeTemplateName)"
+  (isCanceled)="cancelPopupForm($event,activeTemplateName) "></app-form-drawer>
+
+<ng-template #modifyTimingsTemplate>
+  <div *ngFor="let day of daysOfWeeks; let index = index" class="day-box mt-5">
+    <div class="data-item">
+      <div class="row">
+        <div class="col-5">
+          <div class="float-start me-3">
+            <div class="toggle-container me-1">
+              <label class="switch ">
+                <input type="checkbox" [(ngModel)]="day.isChecked" (change)="updateShiftTiming($event,index)">
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+          <div class="day-container me-1">
+            <label>{{ day.name }}</label>
+          </div>
+        </div>
+
+        <div class="col-5">
+          <div class="time-container me-1 text-muted">
+            {{ convertTo12HourFormat(day.startTime) }} - {{ convertTo12HourFormat(day.endTime) }}
+          </div>
+        </div>
+
+        <div class="col-2">
+          <div class="dropdown-arrow float-end">
+            <span class="fas fa-angle-down" data-bs-toggle="collapse"
+              [attr.data-bs-target]="'#collapse_' + index"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="error-message text-danger"
+            *ngIf="day.isChecked && ((day.startTime=='00:00') || (day.endTime=='00:00') || (day.startTime=='') || (day.endTime=='')) ">
+            Start and end time are required.
+          </div>
+
+          <div id="{{ 'collapse_' + index }}" class="accordion-collapse collapse"
+            [attr.aria-labelledby]="'heading_' + index" [ngClass]="{'show': day.isChecked}">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="row">
+                  <div class="col-6">
+                    <ng-container class="align-items-center max-w-90">
+                      <app-new-time-picker [isDisabled]="!day.isChecked"
+                        [(ngModel)]="day.startTime"></app-new-time-picker>
+                    </ng-container>
+                  </div>
+                  <div class="col-6">
+                    <ng-container class="align-items-center max-w-90">
+                      <app-new-time-picker [isDisabled]="!day.isChecked"
+                        [(ngModel)]="day.endTime"></app-new-time-picker>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</ng-template>

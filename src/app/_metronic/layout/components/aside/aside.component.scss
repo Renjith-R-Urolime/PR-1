@@ -1,0 +1,7 @@
+#kt_aside_wordspace::-webkit-scrollbar{
+    display: none!important;
+}
+
+.custom-aside {
+    transition: visibility 0s linear 500ms, opacity 500ms;
+}

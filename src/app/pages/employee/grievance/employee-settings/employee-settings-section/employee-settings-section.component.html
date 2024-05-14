@@ -1,0 +1,16 @@
+<app-page-title
+   [isNewButton]="true"
+   >
+  </app-page-title>
+  <div class="card">
+    <div class="d-flex flex-row justify-content-between align-items-center pt-1 mb-1">
+      <app-breadcrumb [breadcrumbs]="['List']"></app-breadcrumb>
+      <div>
+        <search-and-filter [multipleViewOptions]="true"></search-and-filter>
+      </div>
+    </div>
+    <div>
+      <data-table-list></data-table-list>
+    </div>
+
+  </div>

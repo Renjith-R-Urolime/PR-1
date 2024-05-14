@@ -1,0 +1,111 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+        <ng-container *ngIf="currentPage === 1">
+            <div class="modal-body p-10 d-flex flex-column align-items-center justify-content-center gap-6">
+                <img class="img-fluid custom-img" src="./assets/media/logos/Checkmark.svg" alt="">
+                <h2 class="fw-bolder">{{ survey.title }}
+                </h2>
+                {{ survey.description }}
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="button" class="btn btn-{{theme}} me-2" (click)="currentPage = 2">Next</button>
+                    <button type="button" class="btn btn-secondary text-dark"
+                        (click)="modal.close('Ok click')">I
+                        will do it later</button>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="currentPage === 2">
+            <div class="modal-body p-10">
+                <ng-container *ngFor="let item of questions">
+                    <div>
+                        <h2>
+                            <strong>{{ item.question }}</strong>
+                        </h2>
+                        <div class="options mb-2 ">
+                            <div class="row">
+                                <div class="col-6 mt-4" *ngFor="let option of item.options">
+                                    <label>
+                                        <input type="radio" [name]="'question-' + item.question"
+                                            [value]="option.value">
+                                        {{ option.label }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <div class="d-flex justify-content-end mt-3">
+                <button type="button" class="btn btn-{{theme}}" (click)="currentPage = 3">Next</button>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="currentPage === 3">
+            <div class="modal-body p-10">
+                <ng-container *ngFor="let item of nextPageQuestions">
+                    <div>
+                        <h2>
+                            <strong>{{ item.question }}</strong>
+                        </h2>
+                        <div class="options mb-2 ">
+                            <div class="row">
+                                <div class="col-6 mt-1 mb-1" *ngFor="let option of item.options">
+                                    <label>
+                                        <input type="radio" [name]="'question-' + item.question"
+                                            [value]="option.value">
+                                        {{ option.label }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="button" class="btn btn-{{theme}} me-2" (click)="currentPage = 4">Next</button>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="currentPage === 4">
+            <div class="purple-bg curve-shape modal-body p-10 d-flex flex-column align-items-center justify-content-center">
+                <img class=" img-fluid mb-9 mt-5 pb-2 custom-img"
+                    src="../../../../assets/media/icons/survey-thumbsup.svg" alt="">
+            </div>
+            <div class="modal-body p-10 d-flex flex-column align-items-center justify-content-center">
+                <h3 class="mb-15">
+                    <strong class="mb-9">Thank you for completing this survey.<br>Your feedback is highly
+                        appreciated!</strong>
+                </h3>
+                <div class="d-flex justify-content-center  mt-4">
+                    <button type="button" class="btn btn-{{theme}} me-2"
+                        (click)="modal.close('Ok click')">Submit</button>
+                </div>
+            </div>
+        </ng-container>
+    <!-- </div> -->
+</ng-container>
+<ng-template #skeleton>
+        <div class="modal-body p-10 d-flex flex-column align-items-center justify-content-center gap-4">
+            <ngx-skeleton-loader  appearance="circle" [theme]="{
+                height: '5rem',
+                width: '5rem'
+                }"></ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{
+            height: '2rem',
+            width: '20rem'
+            }"></ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]="{
+                height: '5rem',
+                width: '20rem'
+            }"></ngx-skeleton-loader>
+
+            <div class="d-flex justify-content-center gap-3">
+                <ngx-skeleton-loader [theme]="{
+                    height: '2.5rem',
+                    width: '4rem'
+                }"></ngx-skeleton-loader>
+                <ngx-skeleton-loader [theme]="{
+                    height: '2.5rem',
+                    width: '6rem'
+                }"></ngx-skeleton-loader>
+            </div>
+        </div>
+        <!-- </div> -->
+</ng-template>

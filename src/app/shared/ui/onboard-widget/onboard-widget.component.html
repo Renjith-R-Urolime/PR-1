@@ -1,0 +1,110 @@
+<ng-container *ngIf="!isLoading; else skeleton">
+
+  <div class="card h-100 p-6 bgi-no-repeat bgi-size-contain bgi-position-x-end col-{{size}}"
+  [ngStyle]="{'background-color': color, 'background-image': 'url(' + img + ')'}">
+  <div class="card-header p-0 border-0">
+    <div class="card-title d-flex flex-column">
+      <span class="fs-2tx fw-bold text-white me-2 lh-1 ls-n2">69</span>
+
+      <span class="text-white opacity-75 pt-1 fw-semibold fs-6">
+        {{description}}
+      </span>
+    </div>
+  </div>
+
+  <div class="card-body d-flex align-items-end p-0">
+    <div class="d-flex align-items-center flex-column mt-3 w-100">
+      <div class="d-flex justify-content-between fw-bold fs-6 text-white opacity-75 w-100 mt-auto mb-2">
+        <span>43 Pending</span>
+        <span>72%</span>
+      </div>
+
+      <div class="h-8px mx-3 w-100 bg-white bg-opacity-50 rounded">
+        <div class="bg-white rounded h-8px" role="progressbar" style="width: 72%;" aria-valuenow="50"
+          aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</ng-container>
+
+<ng-template #skeleton> 
+
+  <div class="card h-100 p-6 bgi-no-repeat bgi-size-contain bgi-position-x-end col-{{size}}" 
+
+  [ngStyle]="{'background-color': color, 'background-image': 'url(' + img + ')'}"> 
+
+  <div class="card-header p-0 border-0"> 
+
+    <div class="card-title d-flex flex-column"> 
+
+      <span class="fs-2tx fw-bold text-white me-2 lh-1 ls-n2"> 
+
+        <ngx-skeleton-loader [theme]="{                                              
+
+        height: '1.8rem', 
+
+        width: '2rem' 
+
+      }"></ngx-skeleton-loader></span> 
+ 
+      <span class="text-white opacity-75 pt-1 fw-semibold fs-6"> 
+
+        <ngx-skeleton-loader [theme]="{                                             
+          height: '0.8rem', 
+
+          width: '7rem' 
+      
+
+        }"></ngx-skeleton-loader> 
+
+      </span> 
+
+    </div> 
+
+  </div> 
+
+  <div class="card-body d-flex align-items-end p-0"> 
+
+    <div class="d-flex align-items-center flex-column mt-3 w-100"> 
+
+      <div class="d-flex justify-content-between fw-bold fs-6 text-white opacity-75 w-100 mt-auto mb-2"> 
+
+        <span><ngx-skeleton-loader [theme]="{                                              
+
+          height: '0.8rem', 
+
+          width: '5rem', 
+
+          'margin-top': '4rem' 
+
+        }"></ngx-skeleton-loader></span> 
+
+        <span><ngx-skeleton-loader [theme]="{                                              
+
+          height: '0.8rem', 
+
+          width: '2rem', 
+
+          'margin-top': '4rem' 
+
+        }"></ngx-skeleton-loader></span> 
+
+      </div> 
+      <div class="h-8px mx-3 w-100 bg-white bg-opacity-50 rounded"> 
+
+        <div class="bg-white rounded h-8px" role="progressbar" style="width: 72%;" aria-valuenow="50" 
+
+          aria-valuemin="0" aria-valuemax="100"></div> 
+
+      </div> 
+
+    </div> 
+
+  </div> 
+
+</div> 
+
+</ng-template> 
+
+ 

@@ -1,0 +1,45 @@
+<app-page-title [isEditDeleteBtn]="true" [isGoBack]="true"></app-page-title>
+
+ <details-card [detailsCardData]="detailsCardData">
+    <ng-template additional-view-temp let-item="data$">
+
+    <div class="card card-body mt-n3 rounded-top-0 px-8 box-shadow-none"> 
+        <table class="table m-0 border table-bordered border-gray-500">
+            <thead class="bg-{{ theme }}-bright rounded-3 rounded-top">
+              <tr class="fw-bold h-36px">
+                <th class="fs-7 vertical-middle ">
+                  Fields
+                </th>
+                <th class="fs-7 vertical-middle min-w-125px ">
+                  Old Value
+                </th>
+                <th class="fs-7 vertical-middle min-w-125px ps-7">
+                  New Value
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let label of shiftMeta.labels; " class="bg-white">
+                <td>
+                  <!-- <div class="d-flex justify-content-center align-items-center"> -->
+                    <p class="m-0 w-content fs-7 py-2">{{ label?.labelName?.alias | changeCase : "capital" }}</p>
+                  <!-- </div> -->
+                </td>
+                <td>
+                  <div class="h-100  align-items-center fs-6 ">
+                    <span>-</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="h-100  align-items-center fs-6 ps-4">
+                    <span>{{item?.[label?.labelName?.alias].name}}</span>
+                    
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+    </ng-template>
+ </details-card>
+ <app-tab-data-table  [tabsMeta]="classificationTabsMeta"></app-tab-data-table>

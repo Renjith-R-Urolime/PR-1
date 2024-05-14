@@ -1,0 +1,254 @@
+<app-page-title></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<ng-container *ngIf="checkMsg">
+  <div class="mb-5 alert alert-danger">
+    <div class="alert-text font-weight-bold">
+      {{checkMsg}}
+    </div>
+  </div>
+</ng-container>
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="!isLoading; else skeleton">
+
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngIf="section.tabName === formData.tabName">
+              <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                <!--begin::Col-->
+                <div class="ps-9">
+                  <ng-container *ngIf="!isLoading;">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+
+
+                </div>
+                <div class="card-body py-0">
+                  <form [formGroup]="advanceSalaryForm">
+                    <div class="row">
+                      <ng-container *ngFor="let label of formData.labels">
+                        <ng-container *ngIf="!label?.hide">
+                        <div class="position-relative col-lg-{{ label.col ? label.col : 4 }} mb-2">
+                          <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                            <label
+                              *ngIf="(label.type === 'payrollType' && advanceSalaryForm.value.paymentMethod === '1') || (label.type !== 'payrollType')"
+                              class="form-label fs-6 mb-0" [ngClass]="{
+                        'required': label?.required,
+                        'invalid': sharedService.hasValidationErrors(label, submit, advanceSalaryForm)
+                      }">{{
+                                  label.labelTransformationCancelled ? label.labelName.alias.replace('Id','') :
+                                  label.labelName.alias.replace('Id','') | changeCase : "capital" }}</label>
+                            <ng-container *ngIf="label.type === 'employee'">
+                              <employee-select [isDisabled]="id ? true : false"
+                              [filterDisabled]="id ? true : false"
+                              [patchData]="advanceSalaryData?.employee"
+                                [employeeFilterMeta]="employeeFilterMeta"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, advanceSalaryForm)}"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "></employee-select>
+                              <!-- <custom-ng-select
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, advanceSalaryForm)}"
+                                [apiLink]="label.apiLink"
+                                [formControlName]="label.labelName.defaultValue!"
+                                bindLabel="id"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [multiple]="false">
+                                <ng-template custom-ng-label-temp let-item$="item">
+                                  {{ item$?.employeeId }} : {{item$?.firstName}} {{item$?.lastName}}
+                                </ng-template>
+                              </custom-ng-select> -->
+                            </ng-container>
+                            <ng-container class="align-items-center" *ngIf="label.type === 'file'">
+                              <input-file-upload [allowPdf]="true" theme="light" fieldStyle="compact"
+                                [formControlName]="label.labelName.defaultValue!"></input-file-upload>
+                              <!--  <input [formControlName]="label.labelName.defaultValue!" [type]="label.type"
+                                  (change)="onFileSelect($event)" class="form-control form-control-sm "
+                                  placeholder="Placeholder Text" /> -->
+                            </ng-container>
+
+                            <app-input-text-field [patchValue]="advanceSalaryForm?.value[label.labelName.defaultValue!]"
+                              [formControlName]="label.labelName.defaultValue!"
+                              [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                              [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, advanceSalaryForm) }"
+                              [maxLength]="label?.max"
+                              [type]="label.type" [name]="label.labelName.alias!"
+                              [isVisible]="id ? label.onEditVisible ?? true : label.onCreateVisible ?? true"></app-input-text-field>
+                            <ng-container *ngIf="label.type === 'date'">
+                              <input *ngIf="label.labelName.defaultValue === 'requestDate'" readonly type="text"
+                                [formControlName]="label.labelName.defaultValue!" class="form-control form-control-sm "
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, advanceSalaryForm) }">
+                              <!-- ngb-bootstrap datepicker -->
+                              <ng-container *ngIf="label.labelName.defaultValue === 'installmentStartDate'">
+                                <div class="position-relative">
+                                  <!-- <input (input)="sharedService.formatDate($event)"  [minDate]="advanceSalaryForm.value.requestDate | dateToJson"
+                                    class="form-control form-control-sm" data-type="date"
+                                    formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD"
+                                    name="dp" ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"
+                                    (click)="d.toggle()" [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate"/>
+                                  <span class="date-icon" (click)="d.toggle()"></span> -->
+                                  <input-date-picker  [minDate]="installMinDate"
+                                  [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, advanceSalaryForm) }"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                ></input-date-picker>
+                                </div>
+                              </ng-container>
+
+                              <!-- -- -->
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'dropdown'">
+                              <custom-ng-select
+                                [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, advanceSalaryForm) }"
+                                [apiLink]="label.apiLink" [maxLimit]="2" [formGroup]="advanceSalaryForm"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [controlName]="label.labelName.defaultValue!"
+                                [patchData]="advanceSalaryData[label.labelName.defaultValue!] ? advanceSalaryData[label.labelName.defaultValue!] : undefined"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                [multiple]="label.multiple">
+                              </custom-ng-select>
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'requestType'">
+                              <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                (onchange)="requestTypeChange()"
+                                [controlName]="label.labelName.defaultValue!"
+                                [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, advanceSalaryForm) }"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [patchData]="advanceSalaryData[label.labelName.defaultValue!] ? advanceSalaryData[label.labelName.defaultValue!] : undefined"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                              </custom-ng-select>
+
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'installmentRecoveryType'">
+                              <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                [controlName]="label.labelName.defaultValue!"
+                                [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, advanceSalaryForm) }"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [patchData]="advanceSalaryData[label.labelName.defaultValue!] ? advanceSalaryData[label.labelName.defaultValue!] : undefined"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                              </custom-ng-select>
+
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'paymentMethod'">
+                              <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                              (onchange)="paymentMethodChange($event)"
+                                [controlName]="label.labelName.defaultValue!"
+                                [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, advanceSalaryForm) }"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [patchData]="advanceSalaryData[label.labelName.defaultValue!] ? advanceSalaryData[label.labelName.defaultValue!] : undefined"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')"
+                                >
+                              </custom-ng-select>
+
+                            </ng-container>
+                            <ng-container
+                              *ngIf="label.type === 'payrollType' && advanceSalaryForm.value.paymentMethod === '1'">
+                              <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                [controlName]="label.labelName.defaultValue!"
+                                [ngClass]="{ 'invalid': sharedService.hasValidationErrors(label,submit, advanceSalaryForm) }"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [fetchCondition]="label?.fetchCondition"
+                                [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, advanceSalaryForm) }"
+                                [patchData]="advanceSalaryData[label.labelName.defaultValue!] ? advanceSalaryData[label.labelName.defaultValue!] : undefined"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                              </custom-ng-select>
+
+                            </ng-container>
+                            <ng-container *ngIf="label.type === 'transactionStatus'">
+                              <custom-ng-select  [multiple]="label.multiple"
+                                [jsonListName]="label.jsonListName" [controlName]="label.labelName.defaultValue!"
+                                [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, advanceSalaryForm) }"
+                                [formControlName]="label.labelName.defaultValue!"
+                                [controlName]="label.labelName.defaultValue!"
+                                [patchData]="advanceSalaryData[label.labelName.defaultValue!] ? advanceSalaryData[label.labelName.defaultValue!] : undefined"
+                                [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                              </custom-ng-select>
+                            </ng-container>
+                            <ng-container *ngFor="let validation of label.validations;">
+                              <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                          validation: validation.name,
+                          message: validation.message,
+                          control: advanceSalaryForm.get(label.labelName.defaultValue)
+                        }"></ng-container>
+                            </ng-container>
+                          </div>
+                        </div>
+                        </ng-container>
+                      </ng-container>
+                    </div>
+                  </form>
+                  <ng-container></ng-container>
+                  <div *ngIf="installmentTable.length>0" class="form-table-card overflow-hidden mb-4 me-9">
+                    <table class="table m-0 border table-bordered table-rounded">
+                      <thead class="bg-{{ theme }}-bright rounded-3 rounded-top">
+                        <tr class="fw-bold h-36px">
+                          <!--  <th class="fs-7 vertical-middle min-w-150px">
+                          Particular
+                        </th> -->
+                          <th class="fs-7 text-center vertical-middle min-w-125px">
+                            Transaction Type
+                          </th>
+                          <th class="fs-7 text-center vertical-middle min-w-125px">
+                            Date
+                          </th>
+                          <th class="fs-7 text-center vertical-middle min-w-150px">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="bg-white h-34px">
+                          <td class="vertical-middle text-center">Payment
+                          </td>
+                          <td class="vertical-middle text-center">{{advanceSalaryForm.value.requestDate}}</td>
+                          <td class="vertical-middle text-end ">
+                            <div class="mx-auto w-100px max-w-200px">
+                              <p class="m-0 text-end me-6">
+                                {{advanceSalaryForm.value.amount | decimalFormat}}
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="bg-white h-34px" *ngFor="let transaction of installmentTable">
+                          <td class="vertical-middle text-center">Installment
+                          </td>
+                          <td class="vertical-middle text-center">{{transaction?.date}}
+                          </td>
+                          <td class="vertical-middle">
+                            <div class="mx-auto w-100px max-w-200px">
+                              <p class="m-0 text-end me-6">
+                                {{transaction?.amount | decimalFormat}}
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <div class="me-9">
+          <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+<ng-template #skeleton>
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+    <div class="fv-plugins-message-container ">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>

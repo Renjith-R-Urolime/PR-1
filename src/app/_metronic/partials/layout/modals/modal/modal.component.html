@@ -1,0 +1,84 @@
+<div class="modal-body p-4 text-center px-12">
+    <div class="d-flex flex-column gap-4">
+        <ng-container *ngIf="modalName==='delete'">
+            <div class="d-flex flex-column pt-3 gap-4 max-w-400px min-w-400px">
+                <div *ngIf="!isSuccessfull" class="d-flex h-180px justify-content-center mx-auto overflow-hidden w-0px">
+                    <div *ngIf="modalName==='delete'" class=" h-100 w-100  pt-12">
+                        <img class="h-80px img-fluid mt-5 rounded-circle bg-danger p-3" [src]="sumbmittingLogo" />
+                    </div>
+                </div>
+                <div *ngIf="isSuccessfull"
+                    class="d-flex h-200px justify-content-center mx-auto overflow-hidden rounded-circle w-200px">
+                    <img class="h-100" [src]="modalLogo" />
+                </div>
+                <h2 class="fw-bolder my-5">{{confirmMessage}}</h2>
+                    <div  *ngIf="!isSuccessfull" class="mb-2 d-flex gap-6 justify-content-center">
+                        <button [ngClass]="{'text-danger':enableProgressButton}" class="btn btn-{{theme}} btn-sm" [routerLink]="[currentURL, 'view', id]"
+                            (click)="modal.close()">Cancel</button>
+                        <button class="btn border-2 btn-{{theme}}-outline text-dark btn-sm"
+                            (click)="onConfirm()"><ng-container *ngIf="!enableProgressButton">
+                                Yes, Delete
+                            </ng-container>
+                            <ng-container *ngIf="enableProgressButton">
+                                <div class="d-flex gap-3">
+                                    Please wait
+                                    <div class="spinner"></div>
+                                </div>
+                            </ng-container></button>
+                    </div>
+                    <div  *ngIf="isSuccessfull">
+                        <button class="btn border border-2 border-secondary text-dark btn-sm" [routerLink]="[currentURL]"
+                        (click)="modal.close()">List</button>
+                    </div>
+            </div>
+        </ng-container>
+
+
+        <ng-container *ngIf="!isProcessing && isSuccessfull && modalName === 'submit'">
+            <div class="d-flex h-200px justify-content-center mx-auto overflow-hidden rounded-circle w-200px">
+                <img class="h-100" [src]="modalLogo" [lazyLoad]="modalLogo"/>
+            </div>
+            <h3 class="fw-bolder">{{pageName | changeCase : 'capital'}} {{ onEdit ? 'Updated' : "Created"}} Successfully!</h3>
+            <ng-template [ngTemplateOutlet]="( customTemplate || defaultModelButtonTemplate)">
+            </ng-template>
+
+            <!-- Default Buttons -->
+            <ng-template #defaultModelButtonTemplate let-id="id">
+                    <!-- <ng-container *ngIf="isButton && modalName==='submit'"> -->
+                        <div class="my-4 d-flex gap-6 justify-content-center">
+                            <a *ngIf="createdId" class="btn btn-{{theme}} btn-sm" [routerLink]="[currentURL, 'view', createdId]" (click)="modal.close()">
+                               View
+                            </a>
+                            <a class="btn border border-2 border-secondary text-dark btn-sm" [routerLink]="[currentURL]" (click)="modal.close()">
+                               List
+                            </a>
+                        </div>
+                    <!-- </ng-container> -->
+            </ng-template>
+
+        </ng-container>
+
+        <ng-container *ngIf="modalName==='info'">
+            <div class="d-flex flex-column  pt-3 gap-4 max-w-400px min-w-400px min-height-350px max-height-400px">
+                <!-- <div class="d-flex h-200px justify-content-center mx-auto overflow-hidden rounded-circle w-200px">
+                    <img class="h-100" [src]="modalLogo" />
+                </div> -->
+                <h3 class="fw-bolder my-5">{{successMessage}}</h3>
+            </div>
+
+            <ng-template [ngTemplateOutlet]="( customTemplate || defaultModelButtonTemplate)">
+            </ng-template>
+
+            <!-- Default Buttons -->
+            <ng-template #defaultModelButtonTemplate let-id="id">
+                        <div class="mb-2 d-flex gap-6 justify-content-center">
+                            <a class="btn border border-2 border-secondary text-dark btn-sm"  (click)="modal.close()">
+                               Ok
+                            </a>
+                        </div>
+            </ng-template>
+
+        </ng-container>
+    </div>
+
+</div>

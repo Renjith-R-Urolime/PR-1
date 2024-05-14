@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "name": "Auto Approved"
+    },
+    {
+        "id": "2",
+        "name": "One Level"
+    },
+    {
+        "id": "3",
+        "name": "Two Level"
+    },
+    {
+        "id": "4",
+        "name": "Three Level"
+    },
+    {
+        "id": "5",
+        "name": "Four Level"
+    },
+    {
+        "id": "6",
+        "name": "Five Level"
+    }
+]

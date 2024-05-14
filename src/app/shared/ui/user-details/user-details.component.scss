@@ -1,0 +1,126 @@
+.full-screen-modal {
+  width: 100% !important;
+//   height: 100% !important;
+
+}
+.modal-container {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
+
+  .modal-content {
+    height: 100%;
+    overflow: auto;
+  }
+  button svg path {
+    fill: red;
+  }
+  .height-70{
+    height: 70px;
+  }
+  .status-label{
+    height: auto;
+    transform: rotate(-0.005deg);
+    padding: 6px 12px;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    float: right;
+    border-radius: 4px;
+    color: #482084;
+    text-align: right;
+    font-family: inherit;
+    font-size: 12.725px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    background: #F0E5FF;
+  }
+
+
+
+  .status-button{
+      margin-top: 8px;
+      margin-left: 6px;
+  }
+
+
+  .border-bottom-custom{
+    border-bottom: 5px solid #DEDEDE;
+  }
+
+
+  .cust-hr{
+    height: 1px;
+    background: #DEDEDE;
+  }
+
+
+  .text-wrap{
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 25px;
+  }
+
+
+  .profile-pic {
+    width: 210px !important;
+    height: 210px !important;
+  }
+
+
+.profile-pic img {
+  width: 100% !important;
+  object-fit: cover;
+  height: 100% !important;
+  max-width: none;
+}
+
+
+.cust-position{
+  bottom: -46px;
+}
+
+.fs-cus{
+  font-size: 60px;
+}
+
+.loader{
+  width: 210px !important;
+  height: 210px !important; 
+}
+// uploadbutton 
+.user-pic .btn-outline-success{
+  width: 100%!important;
+  border: solid 1px lightseagreen!important;
+  color: lightseagreen!important;
+  text-transform: capitalize!important;
+}
+.user-pic .btn-outline-success:hover{
+  width: 100%!important;
+  border: solid 1px lightseagreen!important;
+  background: lightseagreen!important;
+  color: rgb(255, 255, 255)!important;
+  text-transform: capitalize!important;
+}
+
+
+
+.user-pic .btn-outline-delete{
+  width: 100%!important;
+  border: solid 1px rgb(190, 17, 87)!important;
+  color: rgb(190, 17, 87)!important;
+  text-transform: capitalize!important;
+}
+.user-pic .btn-outline-delete:hover{
+  width: 100%!important;
+  border: solid 1px rgb(190, 17, 87)!important;
+  background: rgb(190, 17, 87)!important;
+  color:rgb(255, 255, 255)!important;
+  text-transform: capitalize!important;
+}

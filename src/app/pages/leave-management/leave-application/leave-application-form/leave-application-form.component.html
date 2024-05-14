@@ -1,0 +1,464 @@
+<app-page-title></app-page-title>
+<!-- <app-error-popup *ngIf="detectedError"></app-error-popup> -->
+<div class="card">
+  <ng-container>
+    <div class="card bs-none p-4">
+      <app-breadcrumb></app-breadcrumb>
+      <ng-container *ngIf="!isLoading; else skeleton">
+
+        <ng-container *ngIf="formSections.length>0">
+          <ng-container *ngFor="let section of formSections; let i=index">
+            <ng-container *ngIf="section.tabName === formData.tabName">
+              <div class="row d-flex flex-column flex-md-row" [ngClass]="{ 'mt-3' : i === 0}">
+                <!--begin::Col-->
+                <div class="ps-9">
+                  <ng-container *ngIf="!isLoading;">
+                    <div class="d-flex">
+                      <div class="fs-5 fw-bold">{{ section.sectionName }}</div>
+                      <div class="hr-side me-8 ms-2">
+                        <hr class="mx-1">
+                      </div>
+                    </div>
+                  </ng-container>
+
+
+                </div>
+                <div class="card-body pe-2 py-0 d-flex">
+                  <div class="col-md-8">
+                    <form [formGroup]="leaveApplicationForm">
+                      <div class="row">
+                        <ng-container *ngFor="let label of formData.labels;let k=index">
+                          <ng-container *ngIf="!label?.hide">
+                            <div class="position-relative col-lg-{{ label.col ? label.col : col }} mb-2">
+                              <div [id]="label?.labelName?.defaultValue" class="w-100 mb-3">
+                                <ng-container *ngIf="label.type !== 'toggle' &&  label.type !== 'employee'">
+                                  <label class="form-label fs-6 mb-0" [ngClass]="{
+                              'required': label?.required,
+                              'invalid': sharedService.hasValidationErrors(label, submit, leaveApplicationForm)
+                            }">{{
+                                    label.labelTransformationCancelled ?
+                                    label.labelName.alias.replace('Id','') :
+                                    label.labelName.alias.replace('Id','') | changeCase :
+                                    "capital" }}</label>
+                                </ng-container>
+
+
+                                <ng-container *ngIf="label.type == 'employee' && !empSelected ">
+                                  <label class="form-label fs-6 mb-0" [ngClass]="{
+                              'required': label?.required,
+                              'invalid': sharedService.hasValidationErrors(label, submit, leaveApplicationForm)
+                            }">{{
+                                    label.labelTransformationCancelled ?
+                                    label.labelName.alias.replace('Id','') :
+                                    label.labelName.alias.replace('Id','') | changeCase :
+                                    "capital" }}</label>
+                                </ng-container>
+                                <ng-container *ngIf="label.type === 'employee'">
+                                  <ng-container *ngIf="!empSelected">
+                                    <employee-select [scope]="label.scope" [isDisabled]="id ? true : false"
+                                      [filterDisabled]="id ? true : false" [employeeFilterMeta]="employeeFilterMeta"
+                                      (onchange)="onEmployeeChange($event,false)"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, leaveApplicationForm)}"
+                                      [patchData]="leaveApplicationData?.employee"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital') "></employee-select>
+                                  </ng-container>
+                                  <ng-container *ngIf="empSelected">
+                                    <div class="d-flex align-items-center flex-row">
+                                      <ng-container *ngIf="empSelected?.['image'] ; else noImage">
+                                        <div class="symbol">
+                                          <ng-container
+                                            *ngIf="empSelected?.['image'] | s3FileFetch | async as imageData; else: imageLoader">
+                                            <ng-container *ngIf="imageData !=='null' ;else noImage">
+                                              <div class="symbol symbol-70px symbol-circle rounded-3"
+                                                data-bs-toggle="tooltip" data-bs-boundary="window"
+                                                data-bs-placement="top"
+                                                [title]="item?.['firstName']+' '+item?.['lastName']">
+                                                <img class="object-fit-contain object-position-top" [src]="imageData"
+                                                  [lazyLoad]="imageData" alt="profile" />
+                                              </div>
+                                            </ng-container>
+                                          </ng-container>
+                                        </div>
+                                      </ng-container>
+                                      <ng-template #noImage>
+                                        <div class="symbol symbol-70px symbol-circle ">
+                                          <div
+                                            class="symbol-label  fw-bolder symbol-color fs-1 bg-{{theme}}">
+                                            {{empSelected?.["firstName"][0] | uppercase}}{{empSelected?.["lastName"][0]
+                                            |
+                                            uppercase}}
+                                          </div>
+                                        </div>
+                                      </ng-template>
+                                      <div class="mx-9 d-flex flex-column align-items-center">
+                                        <div>
+                                          {{empSelected?.["employeeId"]}}
+                                        </div>
+                                        <label class=" form-label fs-7 ">
+                                          {{ empSelected?.["firstName"] | changeCase : "capital" }} {{
+                                          empSelected?.["lastName"] |
+                                          changeCase : "capital" }}
+                                        </label>
+                                      </div>
+                                      <div>
+                                      </div>
+                                    </div>
+                                  </ng-container>
+
+                                </ng-container>
+                                <app-input-text-field
+                                  [patchValue]="leaveApplicationForm?.value[label.labelName.defaultValue!]"
+                                  [formControlName]="label.labelName.defaultValue!"
+                                  [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital') "
+                                  [ngClass]="{'invalid': sharedService.hasValidationErrors(label, submit, leaveApplicationForm) }"
+                                  [type]="label.type" [name]="label.labelName.alias!"></app-input-text-field>
+
+                                <ng-container *ngIf="label.type === 'hour'">
+
+                                  <app-new-time-picker [formControlName]="label.labelName.defaultValue!"
+                                    [isTimeIntervalMode]="true" [isDisabled]="!allowHourly"></app-new-time-picker>
+                                </ng-container>
+                                <ng-container *ngIf="label.type === 'leaveType'">
+                                  <div class="d-flex gap-2">
+                                    <custom-ng-select class="w-100" (onchange)="onTypeChange($event)" [multiple]="false"
+                                      [items]="leaveTypeList" [controlName]="label.labelName.defaultValue!"
+                                      [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, leaveApplicationForm) }"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      [controlName]="label.labelName.defaultValue!"
+                                      [patchData]="leaveApplicationData?.leaveType"
+                                      [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                    </custom-ng-select>
+                                    <div class="d-flex gap-2">
+                                      <button class="border-1 border-gray-600 box-36px bg-white"
+                                        [id]="'kt_drawer_leave_toggle'">
+                                        <span [inlineSVG]="'./assets/media/icons/document-text-outline.svg'"
+                                          class="svg-icon svg-icon-3 p-0 me-0"></span>
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <!-- <ng-container *ngIf="leaveApplicationForm.value.leaveTypeId">
+                                    <div class="fv-plugins-message-container ">
+                                      <div  class="text-{{theme}}  fs-9 fw-bold">
+                                        Available Days {{availableDays}}, Leave Days {{leaveDays}}, Loss of Pay Days {{lopDays}}, Balance Days {{balanceDays}}
+                                      </div>
+                                    </div>
+                                  </ng-container> -->
+                                  <ng-container *ngIf="entitlementMsg">
+                                    <div class="fv-plugins-message-container ">
+                                      <span role="alert" class="fv-help-block fs-9">
+                                        {{ entitlementMsg }}
+                                      </span>
+                                    </div>
+                                  </ng-container>
+                                </ng-container>
+                                <ng-container *ngIf="label.type === 'duration'">
+                                  <custom-ng-select (onchange)="onDurationChange($event)" [multiple]="label?.multiple"
+                                    [jsonListName]="label.jsonListName" [fetchCondition]="durationCondition"
+                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, leaveApplicationForm) }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                  </custom-ng-select>
+                                </ng-container>
+                                <ng-container *ngIf="label.type === 'leaveReason'">
+                                  <custom-ng-select (onchange)="onReasonChange($event)" [multiple]="label?.multiple"
+                                    [items]="leaveReasonList" [controlName]="label.labelName.defaultValue!"
+                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, leaveApplicationForm) }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [controlName]="label.labelName.defaultValue!"
+                                    [patchData]="leaveApplicationData[label.labelName.defaultValue!] ? leaveApplicationData[label.labelName.defaultValue!] : undefined"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Select '+( label.labelName.alias | changeCase : 'capital')">
+                                  </custom-ng-select>
+                                </ng-container>
+                                <ng-container *ngIf="label.type === 'file'">
+                                  <input-file-upload [allowPdf]="true" theme="light" fieldStyle="compact"
+                                    [formControlName]="label.labelName.defaultValue!"></input-file-upload>
+                                  <ng-container *ngIf="docValidatnMsg">
+                                    <div class="fv-plugins-message-container ">
+                                      <span role="alert" class="fv-help-block fs-9">
+                                        {{ docValidatnMsg }}
+                                      </span>
+                                    </div>
+                                  </ng-container>
+                                </ng-container>
+                                <ng-container *ngIf="label.type === 'date'">
+                                  <!-- ngb-bootstrap datepicker -->
+                                  <div class="position-relative">
+                                    <!-- <input  (input)="onInputChange($event,label.labelName.defaultValue);sharedService.formatDate($event)" (dateSelect)="onInputChange($event,label.labelName.defaultValue)"[minDate]="label.labelName.defaultValue === 'endDate' ? (leaveApplicationForm.value.startDate | dateToJson) : (label.labelName.defaultValue === 'dateOfReturn' ? (leaveApplicationForm.value.dateOfDeparture | dateToJson) : null)"
+                                       class="form-control form-control-sm" data-type="date" formControlName="{{ label.labelName.defaultValue! }}" placeholder="YYYY/MM/DD" name="dp" ngbDatepicker datepickerClass="calendar-{{theme}}" #d="ngbDatepicker"  (click)="d.toggle()" [minDate]="sharedService.minDate" [maxDate]="sharedService.maxDate"/>
+                                      <span class="date-icon"></span> -->
+                                    <input-date-picker
+                                      [minDate]="label.labelName.defaultValue === 'endDate' ? minDate : (label.labelName.defaultValue === 'startDate' ? onBoardDate : (label.labelName.defaultValue === 'rejoiningDate' ? rejoinMinDate : null))"
+                                      [maxDate]="label.labelName.defaultValue === 'startDate' ? maxDate : null"
+                                      [formControlName]="label.labelName.defaultValue!"
+                                      (dateSelected)="onInputChange(label.labelName.defaultValue)"></input-date-picker>
+
+                                  </div>
+                                  <!-- -- -->
+                                  <ng-container *ngIf="label.labelName.defaultValue === 'endDate' && negativeLvMsg">
+                                    <div class="fv-plugins-message-container ">
+                                      <span role="alert" class="fv-help-block fs-9">
+                                        {{ negativeLvMsg }}
+                                      </span>
+                                    </div>
+                                  </ng-container>
+                                  <ng-container *ngIf="label.labelName.defaultValue === 'startDate' && maxLvMsg">
+                                    <div class="fv-plugins-message-container ">
+                                      <span role="alert" class="fv-help-block fs-9">
+                                        {{ maxLvMsg }}
+                                      </span>
+                                    </div>
+                                  </ng-container>
+                                </ng-container>
+
+                                <ng-container *ngIf="label.type === 'transactionStatus'">
+                                  <custom-ng-select [multiple]="label.multiple" [jsonListName]="label.jsonListName"
+                                    [controlName]="label.labelName.defaultValue!"
+                                    [ngClass]="{ 'invalid' : sharedService.hasValidationErrors(label,submit, leaveApplicationForm) }"
+                                    [formControlName]="label.labelName.defaultValue!"
+                                    [controlName]="label.labelName.defaultValue!"
+                                    [placeholder]="label.placeholder ? label.placeholder : 'Enter '+( label.labelName.alias | changeCase : 'capital')">
+                                  </custom-ng-select>
+                                </ng-container>
+
+                                <ng-container *ngFor="let validation of label.validations;">
+                                  <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+                                validation: validation.name,
+                                message: validation.message,
+                                control: leaveApplicationForm.get(label.labelName.defaultValue)
+                              }"></ng-container>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </ng-container>
+                        </ng-container>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="d-flex flex-column col-md-4">
+                    <ng-container *ngIf="!leaveApplicationForm.value.leaveTypeId">
+                      <div class="rounded-1 border-{{theme}} h-100 mb-4 w-92">
+                        <div class="px-4 py-2 fw-bold fs-5">
+                          Leave Balance
+                        </div>
+                        <ng-container *ngIf="!leaveLoading; else skeletoncard">
+                          <ng-container *ngIf="!leaveApplicationForm.value.employeeId; else dataExisit">
+                            <div class="d-flex flex-column h-90 justify-content-center">
+                              <div class="d-flex justify-content-center p-6 symbol symbol-200px">
+                                <span [inlineSVG]="'./assets/media/icons/people-outline.svg'"
+                                  class="svg-icon svg-icon-5hx svg-icon-{{theme}}-light "></span>
+                              </div>
+                              <div class="d-flex justify-content-center ">
+                                Please Select Employee
+                              </div>
+                            </div>
+                          </ng-container>
+                          <ng-template #dataExisit>
+                            <div class="overflow-y-auto h-425px">
+                              <ng-container *ngFor="let leave of leaveTypeList; let last=last">
+                                <div class="d-flex flex-row justify-content-between py-2 px-4">
+                                  <div>
+                                    {{leave.name}}
+                                  </div>
+                                  <div> {{leave.availableDays}}</div>
+                                </div>
+                                <div *ngIf="!last">
+                                  <hr class="mx-4 mt-0 mb-1">
+                                </div>
+                              </ng-container>
+                            </div>
+
+                          </ng-template>
+                        </ng-container>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="leaveApplicationForm.value.leaveTypeId">
+                      <div class="mt-2">
+                        <div class="leave-border  border-{{theme}}">
+                          <div class="px-4 py-2 text-muted fs-4">
+                            Your Request Includes
+                          </div>
+                          <div class="d-flex flex-row justify-content-between py-2 px-4 fs-3">
+                            <div>
+                              {{ leaveApplicationForm.value.startDate | date:'MMM-dd' }} - {{
+                              leaveApplicationForm.value.endDate |
+                              date:'MMM-dd' }}
+                            </div>
+
+                            <div class="text-{{theme}}">{{leaveDays}} Days</div>
+
+                          </div>
+                          <div class="px-4">
+                            {{selectedLeaveName}}
+                          </div>
+                          <div class="d-flex flex-row  py-2 px-4">
+                            <div class="form-check  form-check-color-{{theme}}">
+                              <input [disabled]="true" class="form-check-input" type="checkbox"
+                                [checked]="leaveApplicationForm.value.advanceSalaryRequest" />
+                              <label class="fs-6">Advance Vacation Salary Requested</label>
+                            </div>
+
+
+                          </div>
+                          <div class="d-flex flex-row  py-2 px-4">
+                            <div class="form-check  form-check-color-{{theme}}">
+                              <input [disabled]="true" class="form-check-input" type="checkbox"
+                                [checked]="leaveApplicationForm.value.airTicketReimbursementRequest" />
+                              <label class=" fs-6 ">
+                                Air Ticket Reimbursement Requested
+                              </label>
+                            </div>
+
+                          </div>
+                          <div class="d-flex flex-row justify-content-between py-2 px-4">
+                            <div>
+                              Departure date: {{ leaveApplicationForm.value.dateOfDeparture ?
+                              leaveApplicationForm.value.dateOfDeparture : 'Not available' }}
+                            </div>
+
+                            <div>Return: {{leaveApplicationForm.value.dateOfReturn ?
+                              leaveApplicationForm.value.dateOfReturn : 'Not available'}}</div>
+
+                          </div>
+                          <hr class="mx-4 mt-0 mb-1">
+                          <div class="pt-2 px-4 fs-3">
+                            {{availableDays}} Available Days
+                          </div>
+                          <div class="d-flex flex-row justify-content-between py-2 px-4">
+                            <div>
+                              {{balanceDays}} Balance days
+                            </div>
+                            <div>{{lopDays}} Loss of Pay Days </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <div class="me-9">
+          <app-progress-button (submitEvent)="onSubmit()" [isProcessing]="isProcessing"></app-progress-button>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #skeleton>
+  <app-edit-form-skeleton></app-edit-form-skeleton>
+</ng-template>
+<ng-template #formError let-control="control" let-message="message" let-validation="validation">
+  <ng-container *ngIf="submit && control.hasError(validation)">
+    <div class="fv-plugins-message-container ">
+      <span role="alert" class="fv-help-block fs-9">
+        {{ message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
+<ng-template #leaveBalance>
+  <div class="row mt-2">
+    <!-- <div *ngFor="let leaveType of balanceList" class="col-md-6">
+      <div class="card border-4 border-transparent  mt-5 card-border1"
+        [ngClass]="{'active-card': leaveApplicationForm?.value.leaveTypeId === leaveType?.id, 'inactive-card': leaveApplicationForm?.value.leaveTypeId !== leaveType?.id}">
+        <div class="p-2 border-0">
+          <div class="card-title d-flex flex-column">
+            <div class="row">
+              <div class="d-flex justify-content-center align-items-center h-50px">
+                <div class="rounded-0">
+                  <div class="fs-3 fw-bolder text-{{theme}}">{{ leaveType?.name }}</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="card-body px-3 p-0">
+            <div class="d-flex">
+              <p class="flex-grow-1">Carry Over</p>
+              <p>{{ leaveType.carryOver }}</p>
+            </div>
+          <div class="d-flex">
+            <p class="flex-grow-1">Current Year</p>
+            <p>{{ leaveType.currentYear }}</p>
+          </div>
+        </div>
+        <div class="card-body px-3 p-0  card-border">
+            <div class="d-flex mt-2">
+              <p class="flex-grow-1 fs-3 fw-bolder">Available</p>
+              <p>{{ leaveType?.availableDays }}</p>
+            </div>
+        </div>
+      </div>
+    </div> -->
+
+    <div *ngFor="let item of balanceList">
+      <div class="border1 card mb-4 pt-3 px-4 h-80px d-flex flex-row"
+        [ngClass]="'bg-' + (leaveApplicationForm?.value.leaveTypeId === item?.id ? theme + '-bright' : '')">
+        <div class="w-30px ms-n4 mt-n3"
+          [ngStyle]="{'border-left': (leaveApplicationForm?.value.leaveTypeId === item?.id ? '12px solid #1177ff' : '12px solid #a3a3a3'), 'border-radius': '10px'}">
+        </div>
+
+
+        <div>
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex justify-content-start flex-column">
+              <a href="#" class="text-dark fw-bolder text-hover-primary fs-6">{{ item.name }}</a>
+              <!-- <span class="text-muted fw-bold text-muted d-block fs-7">{{ item.postedDate }}</span> -->
+            </div>
+          </div>
+          <div class="d-flex flex-column">
+            <div class="d-flex flex-row justify-content-between align-items-center mt-n3">
+              <div class="d-flex flex-row">
+                <div class="me-3">Carry Over</div>
+                <div>{{ item.carryOver }}</div>
+              </div>
+              <hr class="line mx-2">
+              <div class="d-flex flex-row">
+                <div class="me-3">Current Year</div>
+                <div>{{ item.currentYear }}</div>
+              </div>
+              <hr class="line mx-2">
+              <div class="d-flex flex-row">
+                <div class="me-3">Available</div>
+                <div>{{ item?.availableDays }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+
+  </div>
+
+
+
+</ng-template>
+<app-form-drawer [headerText]="'Leave Balance'" [formTemplate]="leaveBalance" [viewMode]="true"
+  [formDrawerId]="'#kt_drawer_leave_toggle'"></app-form-drawer>
+<ng-template #skeletoncard>
+  <div class="d-flex flex-row justify-content-between my-5 px-6 m-0">
+    <ngx-skeleton-loader [theme]="{ width: '20em', height: '2em' }"></ngx-skeleton-loader>
+    <ngx-skeleton-loader [theme]="{ width: '5rem', height: '2em' }"></ngx-skeleton-loader>
+  </div>
+  <div class="d-flex flex-row justify-content-between my-5 px-6 m-0">
+    <ngx-skeleton-loader [theme]="{ width: '20em', height: '2em' }"></ngx-skeleton-loader>
+    <ngx-skeleton-loader [theme]="{ width: '5rem', height: '2em' }"></ngx-skeleton-loader>
+  </div>
+  <div class="d-flex flex-row justify-content-between my-5 px-6 m-0">
+    <ngx-skeleton-loader [theme]="{ width: '20em', height: '2em' }"></ngx-skeleton-loader>
+    <ngx-skeleton-loader [theme]="{ width: '5rem', height: '2em' }"></ngx-skeleton-loader>
+  </div>
+  <div class="d-flex flex-row justify-content-between my-5 px-6 m-0">
+    <ngx-skeleton-loader [theme]="{ width: '20em', height: '2em' }"></ngx-skeleton-loader>
+    <ngx-skeleton-loader [theme]="{ width: '5rem', height: '2em' }"></ngx-skeleton-loader>
+  </div>
+</ng-template>

@@ -1,0 +1,59 @@
+<div>
+  <div class="row">
+    <div class="col-10">
+      <app-page-title></app-page-title>
+    </div>
+    <div class="col-2 col-2 d-flex justify-content-end">
+      <div class="dropdown">
+        <button class="btn btn-primary export-button" type="button" id="exportDropdown" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          <div class="row">
+            <div class="col-3 export-icon">
+              <span [inlineSVG]="'./assets/media/icons/share-outline.svg'" class="svg-icon svg-icon-2 "></span>
+            </div>
+            <div class="col-7">
+              Export As
+            </div>
+            <div class="col-2">
+              <span [inlineSVG]="'./assets/media/icons/down-arrow.svg'" class="arrow-svg-icon" style="width: 1em; height: 1em;"></span>
+            </div>            
+          </div>
+
+        </button>
+        <ul class="dropdown-menu dropdown-custom" aria-labelledby="exportDropdown">
+          <li><a class="dropdown-item" (click)="downloadReportExcel()">Export as XLS</a></li>
+          <li><a class="dropdown-item" (click)="downloadReportCSV()">Export as CSV</a></li>
+        </ul>
+      </div>
+
+
+      <!-- </div> -->
+    </div>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="d-flex flex-row justify-content-between align-items-center pt-1 mb-1">
+    <app-breadcrumb [breadcrumbs]="['reports']"></app-breadcrumb>
+    <div class="button-header">
+      <ng-container>
+        <report-search-and-filter (onSubmit)="filteredData($event)"></report-search-and-filter>
+      </ng-container>
+    </div>
+  </div>
+  <ng-container *ngIf="!isLoading ; else skeleton">
+  <!-- <div id="my-tabular-table"></div> -->
+  <div id="slickgrid-wrapper" class="overflow-auto w-100 card p-1  my-custom-page" *ngIf="showSlickGrid">
+    <angular-slickgrid gridId="audit-report" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+      [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
+    </angular-slickgrid>
+  </div>
+</ng-container>
+  <!-- Include the custom footer container -->
+  <div class="custom-footer-container"></div>
+</div>
+
+<ng-template #skeleton>
+  <app-edit-form-skeleton [isLoading]="isLoading"></app-edit-form-skeleton>
+</ng-template>

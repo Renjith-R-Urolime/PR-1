@@ -1,0 +1,45 @@
+// .dropdown{
+//     position: absolute;
+//     width: 180px;
+//     z-index: 1;
+// }
+// .dropdown1{
+//     position: absolute;
+//     width: 230px;
+//     z-index: 1;
+// }
+
+// .btn-smal{
+// padding: 0px !important;
+// font-size: 12px !important;
+// }
+
+
+.form-control.time-input{
+    &::placeholder {
+        // color: $color;
+        font-size: 36px !important;
+    }
+
+    // Firefox
+    &::-moz-placeholder {
+        // color: $color;
+        opacity: 1;
+    }
+}
+input[readonly]{
+    cursor: auto!important;
+    background-color: var(--bs-body-bg)!important;
+}
+
+/* styles.css */
+
+body {
+    margin: 0;
+    overflow: hidden; /* Prevent body from scrolling */
+}
+
+.scrollable {
+    height: auto;
+    overflow-y: hidden; /* Enable vertical scrolling within the div */
+}

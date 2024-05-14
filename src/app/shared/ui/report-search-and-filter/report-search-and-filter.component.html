@@ -1,0 +1,21 @@
+<div class="d-flex align-items-center">
+  <div class="d-flex flex-end gap-3 my-1 pe-3">
+    <div class="search-input-{{theme}} bg-white align-items-center d-flex ps-3 rounded-1 min-w-225px h-30px">
+      <span [inlineSVG]="'./assets/media/icons/search-outline.svg'" class="svg-icon svg-icon-3"></span>
+      <input type="text" data-kt-permissions-table-filter="search"
+        class="border-0 w-100 p-1" placeholder="Search"
+        [(ngModel)]="searchText" name="searchText" (keyup)="applySearchFilter()" />
+    </div>
+    <ng-container *ngIf="multipleViewOptions">
+      <button class="btn btn-icon btn-30px bg-white btn-active-{{ theme }}" [ngClass]="{ 'active' : view === 'card' }" (click)="changeView('card')"><span [inlineSVG]="gridIcon"
+          class="svg-icon svg-icon-2"></span></button>
+      <button class="btn btn-icon btn-30px bg-white btn-active-{{ theme }}" [ngClass]="{ 'active' : view === 'table' }" (click)="changeView('table')"> <span [inlineSVG]="tableIcon"
+          class="svg-icon svg-icon-2"></span></button>
+    </ng-container>
+    <ng-template [ngTemplateOutlet]="additionalOptions"></ng-template>
+  </div>
+  <div class="d-flex position-relative ms-auto gap-4">
+    <app-response-filter [responseFilterMeta]="reportFilterMeta" (onSubmit)="filteredData($event)" ></app-response-filter>
+  </div>
+</div>
+

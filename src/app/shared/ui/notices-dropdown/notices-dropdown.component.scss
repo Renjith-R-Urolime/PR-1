@@ -1,0 +1,57 @@
+.anotherClass {
+    border-bottom: 2px solid black !important
+}
+.bg-color-a {
+    background-color: #FFF3E6;
+}
+.bg-color-b {
+    background-color: #F0E5FF;
+}
+.bg-color-c {
+    background-color: #FFFFFF;
+}
+.btn-color {
+    background-color: #5B65CF !important;
+    color: #FFFFFF;
+}
+.btn-color-no-bg {
+    color: #5B65CF !important;
+}
+.custom-scrollbar {
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar for Internet Explorer and Edge */
+}
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0.5rem;
+    background-color: transparent;
+    display: none; /* Hide scrollbar for Chrome and Safari */
+}
+.hidden {
+    display: none;
+}
+.tabColor {
+    color: #afa1a1 !important;
+    // background-color: #5B65CF;
+}
+.tab-body {
+    padding-bottom: 20px;
+}
+.close-button {
+    border: none;
+    display: inline-block;
+    padding: 8px 16px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    background-color: inherit;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap
+}
+.topright {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 30px;
+}
