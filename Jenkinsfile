@@ -4,14 +4,17 @@ pipeline {
     }
     environment {
         AWS_ACCOUNT_ID="016222040435"
-        AWS_DEFAULT_REGION="me-south-1"
+        AWS_DEFAULT_REGION="us-east-1"
+        ALTERNATE_REGION="me-south-1"
         IMAGE_NAME="app-frontend"
-        REPOSITORY_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_NAME}"
+        REPOSITORY_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${TARGET_REGION}.amazonaws.com/${IMAGE_NAME}"
         BRANCH=getBranch()
         DEPLOY_TAG="${BRANCH}_${GIT_COMMIT}"
         CONTAINER_IMAGE="${REPOSITORY_URI}:${DEPLOY_TAG}"
         CLUSTER_NAME=getClusterName()
         K8S_NS=getk8sns()
+        TARGET_REGION=getTargetRegion()
+        
     }
 
     stages {
@@ -19,7 +22,7 @@ pipeline {
         stage('Logging into AWS ECR') {
             steps {
                 script {
-                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                    sh "aws ecr get-login-password --region ${TARGET_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${TARGET_REGION}.amazonaws.com"
                 }
             }
         }
@@ -140,3 +143,12 @@ if (env.GIT_BRANCH == 'origin/development' || env.GIT_BRANCH == 'origin/staging'
         return 'infithra-production-cluster'
     } 
 }
+def getTargetRegion() {
+    if (env.GIT_BRANCH == 'origin/main') {
+        return 'me-south-1' // Target region for main branch
+    } else {
+        return 'us-east-1' // Default region for other branches
+    }
+}
+
+
